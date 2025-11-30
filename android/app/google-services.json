@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "823956476241",
+    "project_id": "diamate-61d52",
+    "storage_bucket": "diamate-61d52.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823956476241:android:9bdf63362bac81b7a30370",
+        "android_client_info": {
+          "package_name": "com.example.diamate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQtmMu_l3v7OrR7cQMSNMfllymnB1sxzw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
