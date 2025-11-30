@@ -1,4 +1,5 @@
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class ChatbotView extends StatelessWidget {
               CustomAppBar(
                 title: '',
                 onTap: () {
-                  context.pop();
+                  context.pushReplacementNamed(AppRoutes.main);
                 },
                 notification: false,
               ),

@@ -62,7 +62,7 @@ class LoginView extends StatelessWidget {
                 SizedBox(height: 16),
                 CustomButton(
                   onTap: () {
-                    context.pushNamedAndRemoveUntil(AppRoutes.main);
+                    context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
                   },
                   text: "Login",
                 ),

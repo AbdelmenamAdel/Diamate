@@ -71,7 +71,7 @@ class _SignupViewState extends State<SignupView> {
         color: context.color.primaryColor,
         title: 'Signup complete (mock)',
       );
-      context.pushNamedAndRemoveUntil(AppRoutes.main);
+      context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
     }
   }
 

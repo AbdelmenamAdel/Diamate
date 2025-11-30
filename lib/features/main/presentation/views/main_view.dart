@@ -16,18 +16,27 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  int _currentIndex = 2;
+  static int _savedTabIndex = 0;
+  int _currentIndex = _savedTabIndex;
+  int _lastNonChatbotIndex = 0;
 
   final List<Widget> _screens = [
     HomeView(),
     FoodView(),
-    SizedBox(),
+    SizedBox(), //! ChatBot
     Scaffold(),
     Scaffold(),
   ];
 
-  void _navigate() {
-    context.pushNamed(AppRoutes.chatbot);
+  void _navigateToChatbot() async {
+    if (_currentIndex != 2) {
+      _lastNonChatbotIndex = _currentIndex;
+    }
+    await context.pushNamed(AppRoutes.chatbot);
+    setState(() {
+      _currentIndex = _lastNonChatbotIndex;
+      _savedTabIndex = _currentIndex;
+    });
   }
 
   @override
@@ -37,7 +46,7 @@ class _MainViewState extends State<MainView> {
         child: IndexedStack(index: _currentIndex, children: _screens),
       ),
       bottomNavigationBar: SizedBox(
-        height: 92.h,
+        height: 90.h,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -77,8 +86,14 @@ class _MainViewState extends State<MainView> {
     return Expanded(
       child: InkWell(
         onTap: () {
-          setState(() => _currentIndex = index);
-          if (_currentIndex == 2) _navigate();
+          if (index == 2) {
+            _navigateToChatbot();
+          } else {
+            setState(() {
+              _currentIndex = index;
+              _savedTabIndex = _currentIndex;
+            });
+          }
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -89,7 +104,6 @@ class _MainViewState extends State<MainView> {
               Container(
                 height: 56.h,
                 width: 56.h,
-                // margin: EdgeInsets.only(bottom: 12),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 decoration: BoxDecoration(
                   color: Colors.blueAccent,
