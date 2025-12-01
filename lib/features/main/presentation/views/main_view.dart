@@ -3,7 +3,9 @@ import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/features/food/presentation/views/food_view.dart';
+import 'package:diamate/features/glucose/presentation/views/glucose_view.dart';
 import 'package:diamate/features/main/presentation/views/home_view.dart';
+import 'package:diamate/features/profile/presentation/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,8 +26,8 @@ class _MainViewState extends State<MainView> {
     HomeView(),
     FoodView(),
     SizedBox(), //! ChatBot
-    Scaffold(),
-    Scaffold(),
+    GlucoseView(),
+    ProfileView(),
   ];
 
   void _navigateToChatbot() async {

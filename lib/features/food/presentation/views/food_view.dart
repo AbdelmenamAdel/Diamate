@@ -18,7 +18,7 @@ class FoodView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 12.h,
         children: [
-          CustomAppBar(title: 'Food Log'),
+          CustomAppBar(back: false, title: 'Food Log'),
 
           CustomTextFormField(
             hint: 'Search',
