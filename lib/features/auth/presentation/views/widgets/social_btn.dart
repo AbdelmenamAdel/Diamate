@@ -22,7 +22,7 @@ class SocialBtn extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Sign in with Google",
+            "Login with Google",
             style: TextStyle(
               color: Colors.black,
               fontFamily: K.sg,
