@@ -15,7 +15,7 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 2), () {
       if (!mounted) return;
       context.pushReplacementNamed(AppRoutes.login);
     });
@@ -29,7 +29,10 @@ class _SplashViewState extends State<SplashView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 120.h),
-          SizedBox(height: 100.h, child: Image.asset(Assets.newLogo)),
+          SizedBox(
+            height: 100.h,
+            child: Hero(tag: "splash", child: Image.asset(Assets.newLogo)),
+          ),
           SizedBox(height: 24.h),
           Text(
             "support for your daily",

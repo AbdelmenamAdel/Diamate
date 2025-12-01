@@ -1,3 +1,5 @@
+import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -7,7 +9,9 @@ class NotificationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.pushNamed(AppRoutes.notifications);
+      },
       child: Container(
         height: 42.h,
         width: 42.h,

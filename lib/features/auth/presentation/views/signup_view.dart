@@ -141,34 +141,33 @@ class _SignupViewState extends State<SignupView> {
             ),
           ),
           SizedBox(height: 16.h),
-          SizedBox(
-            height: 56.h,
 
-            child: Row(
-              spacing: 8.h,
-              children: [
-                Expanded(
-                  child: CustomTextFormField(
-                    hint: 'First Name',
-                    controller: _nameCtrl,
-                  ),
-                ),
-                Expanded(
-                  child: CustomTextFormField(
-                    hint: 'Last Name',
-                    controller: _nameCtrl,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // SizedBox(
+          //   height: 56.h,
 
-          // SizedBox(height: 16.h),
-          // CustomTextFormField(
-          //   hint: 'Phone number',
-          //   image: Assets.phone,
-          //   controller: _phoneCtrl,
+          //   child: Row(
+          //     spacing: 8.h,
+          //     children: [
+          //       Expanded(
+          //         child: CustomTextFormField(
+          //           hint: 'First Name',
+          //           controller: _nameCtrl,
+          //         ),
+          //       ),
+          //       Expanded(
+          //         child: CustomTextFormField(
+          //           hint: 'Last Name',
+          //           controller: _nameCtrl,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
           // ),
+          CustomTextFormField(
+            hint: 'Phone number',
+            image: Assets.phone,
+            controller: _phoneCtrl,
+          ),
           SizedBox(height: 16.h),
           CustomTextFormField(
             hint: 'Date of birth',
