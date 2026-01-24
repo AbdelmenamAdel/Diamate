@@ -362,37 +362,55 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom / 4;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Positioned(child: Image.asset(Assets.bgImgLogin)),
           Positioned.fill(
             child: Image.asset(Assets.gradientBg, fit: BoxFit.cover),
           ),
-          Column(
-            children: [
-              SizedBox(height: 240.h),
-              SizedBox(height: 24),
-
-              _buildHeader(),
-              SizedBox(
-                height: 450.h, // لازم نحدد ارتفاع للـ PageView
-                child: PageView(
-                  controller: _pageController, // اعمل PageController فوق
-                  onPageChanged: (index) {
-                    setState(() => _step = index);
-                  },
-                  children: [_stepOne(), _stepTwo(), _stepThree()],
-                ),
+          // Use a scrollable layout that respects the keyboard inset
+          SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: bottomInset + 24, // extra space for keyboard
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height - bottomInset,
               ),
-              SizedBox(height: 24),
-            ],
+              child: Column(
+                children: [
+                  SizedBox(height: 240.h),
+                  SizedBox(height: 24),
+                  _buildHeader(),
+                  // Wrap PageView with padding to account for keyboard
+                  Padding(
+                    padding: EdgeInsets.only(bottom: bottomInset),
+                    child: SizedBox(
+                      height: 450.h, // لازم نحدد ارتفاع للـ PageView
+                      child: PageView(
+                        controller: _pageController, // اعمل PageController فوق
+                        onPageChanged: (index) {
+                          setState(() => _step = index);
+                        },
+                        children: [_stepOne(), _stepTwo(), _stepThree()],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                ],
+              ),
+            ),
           ),
 
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
+              padding: EdgeInsets.only(
+                bottom: bottomInset > 0 ? bottomInset + 16.h : 16.h,
+              ),
               child: HaveAccQ(),
             ),
           ),
