@@ -19,6 +19,12 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+  );
+
   runApp(
     BlocProvider(
       create: (context) => sl<AppCubit>()..getSavedThemeMode(),
@@ -63,8 +69,9 @@ class DiaMate extends StatelessWidget {
                   supportedLocales: AppLocalizationsSetup.supportedLocales,
                   locale: AppLocalizationsSetup.supportedLocales.last,
                   theme: themeLight(),
-                  darkTheme: themeDark(),
-                  themeMode: _getThemeMode(context.watch<AppCubit>().appTheme),
+                  // ! this mode here to controle the theme from here only uncomment these lines
+                  // darkTheme: themeDark(),
+                  // themeMode: _getThemeMode(context.watch<AppCubit>().appTheme),
                   builder: (context, child) => Stack(
                     children: [
                       if (child != null) child,
@@ -75,7 +82,7 @@ class DiaMate extends StatelessWidget {
                           if (value) {
                             return const SizedBox.shrink();
                           } else {
-                            return const NoInternet();
+                            return const NoInternetWidget();
                           }
                         },
                       ),

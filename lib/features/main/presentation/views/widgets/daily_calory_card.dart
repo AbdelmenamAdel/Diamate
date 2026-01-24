@@ -23,7 +23,7 @@ class DailyCaloryCard extends StatelessWidget {
             'Daily Calory',
             style: TextStyle(
               fontFamily: K.sg,
-              fontSize: 16,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -45,7 +45,7 @@ class DailyCaloryCard extends StatelessWidget {
                     "1420",
                     style: TextStyle(
                       fontFamily: K.sg,
-                      fontSize: 14,
+                      fontSize: 12,
                       color: Colors.black,
                       fontWeight: FontWeight.w900,
                     ),
@@ -54,7 +54,7 @@ class DailyCaloryCard extends StatelessWidget {
                     "/1800\nKcal",
                     style: TextStyle(
                       fontFamily: K.sg,
-                      fontSize: 12,
+                      fontSize: 10,
                       color: Colors.grey,
                       fontWeight: FontWeight.w900,
                     ),

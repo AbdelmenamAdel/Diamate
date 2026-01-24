@@ -17,7 +17,7 @@ class HomeView extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -30,7 +30,7 @@ class HomeView extends StatelessWidget {
                       'Hello, Abdelmoneim 👋',
                       style: TextStyle(
                         fontFamily: K.sg,
-                        fontSize: 16.sp,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -38,7 +38,7 @@ class HomeView extends StatelessWidget {
                       "Here's your health overview for today",
                       style: TextStyle(
                         fontFamily: K.sg,
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -68,7 +68,7 @@ class HomeView extends StatelessWidget {
               "Recommended for you",
               style: TextStyle(
                 fontFamily: K.sg,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -86,7 +86,7 @@ class HomeView extends StatelessWidget {
               "Quick Actions",
               style: TextStyle(
                 fontFamily: K.sg,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),

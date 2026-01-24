@@ -62,6 +62,10 @@ class Assets {
   /// assets/images/logo.png
   static const String logo = "assets/images/logo.png";
 
+  /// Assets for men3em
+  /// assets/images/Men3em.png
+  static const String men3em = "assets/images/Men3em.png";
+
   /// Assets for newLogo
   /// assets/images/new_logo.png
   static const String newLogo = "assets/images/new_logo.png";

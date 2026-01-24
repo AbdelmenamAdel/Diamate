@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant Patient
+    participant ReadingPage as Reading Page
+    participant Validation
+    participant DB as Database
+
+    Patient->>ReadingPage: Open "Add Reading"
+    Patient->>ReadingPage: Enter reading value
+    ReadingPage->>Validation: Validate data
+    Validation-->>ReadingPage: OK
+    ReadingPage->>DB: Save(newReading)
+    DB-->>ReadingPage: Success
+    ReadingPage->>Patient: Show "Reading Added Successfully"

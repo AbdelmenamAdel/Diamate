@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant Patient
+    participant AuthPage as Auth Page
+    participant Validation
+    participant AuthCtrl as Auth Controller
+    participant DB as Database
+
+    Patient->>AuthPage: Open App
+
+    alt Login
+        Patient->>AuthPage: Enter Email & Password
+        AuthPage->>AuthCtrl: Send Credentials
+        AuthCtrl->>DB: Verify(email, password)
+        DB-->>AuthCtrl: Valid / Invalid
+        AuthCtrl-->>AuthPage: Auth Result
+
+    else Signup
+        Patient->>AuthPage: Fill Registration Form
+        AuthPage->>Validation: Validate Input
+        Validation-->>AuthPage: Valid / Errors
+        AuthPage->>DB: Create User Account
+        DB-->>AuthPage: Success
+    end
+
+    AuthPage->>AuthPage: Redirect to Dashboard

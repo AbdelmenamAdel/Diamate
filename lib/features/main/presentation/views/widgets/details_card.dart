@@ -64,7 +64,7 @@ class DetailsCard extends StatelessWidget {
           style: TextStyle(
             color: color,
             fontFamily: K.sg,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
         ),

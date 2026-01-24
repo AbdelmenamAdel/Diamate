@@ -34,14 +34,14 @@ class QuickActionWidget extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundColor: color.withOpacity(.1),
-                  radius: 28,
+                  radius: 24,
                   child: SvgPicture.asset(image, color: color),
                 ),
                 Text(
                   text,
                   style: TextStyle(
                     fontFamily: K.sg,
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

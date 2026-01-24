@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> UserEntersCredentials: User inputs
+    UserEntersCredentials --> ValidatingCredentials: Submit
+    ValidatingCredentials --> CredentialsValid: Check validity
+    
+    CredentialsValid --> Authenticated: Yes
+    CredentialsValid --> ErrorDisplayed: No
+    
+    Authenticated --> Redirecting: Valid
+    Redirecting --> LoggedIn: Complete
+    ErrorDisplayed --> Idle: Retry
+    
+    LoggedIn --> [*]

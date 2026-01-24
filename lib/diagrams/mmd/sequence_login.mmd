@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant Patient
+    participant LoginPage as Login Page
+    participant AuthCtrl as Auth Controller
+    participant DB as Database
+
+    Patient->>LoginPage: Open App
+    Patient->>LoginPage: Enter Email & Password
+    LoginPage->>AuthCtrl: Send Credentials
+    AuthCtrl->>DB: Verify(email, password)
+    DB-->>AuthCtrl: Valid / Invalid
+    AuthCtrl-->>LoginPage: Auth Result
+
+    alt Valid Credentials
+        LoginPage->>LoginPage: Redirect to Dashboard
+    else Invalid Credentials
+        LoginPage->>Patient: Show "Invalid username or password"
+    end

@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> AddReadingPageOpened
+    AddReadingPageOpened --> UserEntersData: Page loads
+    UserEntersData --> ValidatingInput: User inputs
+    ValidatingInput --> Valid: Check data
+    
+    Valid --> SavingToDatabase: Yes
+    Valid --> ShowError: No
+    
+    SavingToDatabase --> SuccessMessage: Save complete
+    ShowError --> UserEntersData: Retry
+    SuccessMessage --> [*]

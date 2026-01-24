@@ -369,32 +369,30 @@ class _SignupViewState extends State<SignupView> {
           Positioned.fill(
             child: Image.asset(Assets.gradientBg, fit: BoxFit.cover),
           ),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 240.h),
-                SizedBox(height: 24),
+          Column(
+            children: [
+              SizedBox(height: 240.h),
+              SizedBox(height: 24),
 
-                _buildHeader(),
-                SizedBox(
-                  height: 450.h, // لازم نحدد ارتفاع للـ PageView
-                  child: PageView(
-                    controller: _pageController, // اعمل PageController فوق
-                    onPageChanged: (index) {
-                      setState(() => _step = index);
-                    },
-                    children: [_stepOne(), _stepTwo(), _stepThree()],
-                  ),
+              _buildHeader(),
+              SizedBox(
+                height: 450.h, // لازم نحدد ارتفاع للـ PageView
+                child: PageView(
+                  controller: _pageController, // اعمل PageController فوق
+                  onPageChanged: (index) {
+                    setState(() => _step = index);
+                  },
+                  children: [_stepOne(), _stepTwo(), _stepThree()],
                 ),
-                SizedBox(height: 24),
-              ],
-            ),
+              ),
+              SizedBox(height: 24),
+            ],
           ),
 
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: EdgeInsets.only(bottom: 28.h),
+              padding: EdgeInsets.only(bottom: 16.h),
               child: HaveAccQ(),
             ),
           ),

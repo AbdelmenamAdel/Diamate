@@ -34,7 +34,7 @@ class RecommededItem extends StatelessWidget {
               Text(
                 "Grilled Chicken Salad",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   height: 2,
                   fontFamily: K.sg,
                   fontWeight: FontWeight.w600,
@@ -43,7 +43,7 @@ class RecommededItem extends StatelessWidget {
               Text(
                 "150 Cal",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontFamily: K.sg,
 
                   fontWeight: FontWeight.w600,
@@ -52,7 +52,7 @@ class RecommededItem extends StatelessWidget {
               Text(
                 "31 protien .50 Carbs",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontFamily: K.sg,
 
                   fontWeight: FontWeight.w400,
@@ -77,7 +77,7 @@ class RecommededItem extends StatelessWidget {
               "More",
               style: TextStyle(
                 fontFamily: K.sg,
-                fontSize: 12,
+                fontSize: 10,
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
               ),

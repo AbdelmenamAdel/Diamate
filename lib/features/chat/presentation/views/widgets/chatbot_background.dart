@@ -13,7 +13,7 @@ class ChatbotBackground extends StatelessWidget {
       alignment: AlignmentGeometry.bottomCenter,
       children: [
         Container(
-          height: 50,
+          height: 80,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xff4EACFF), Color(0xff043978)],

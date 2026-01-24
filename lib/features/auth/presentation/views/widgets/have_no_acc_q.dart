@@ -9,38 +9,33 @@ class HaveNoAccQ extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 28.h,
-      right: 0,
-      left: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "You don’t have an account ? ",
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "You don’t have an account ? ",
+          style: TextStyle(
+            fontFamily: K.sg,
+            fontWeight: FontWeight.w500,
+            fontSize: 12.sp,
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            context.pushNamed(AppRoutes.signUp);
+          },
+          child: Text(
+            "Create Account",
             style: TextStyle(
               fontFamily: K.sg,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               fontSize: 12.sp,
+              height: 2,
+              decoration: TextDecoration.underline,
             ),
           ),
-          InkWell(
-            onTap: () {
-              context.pushNamed(AppRoutes.signUp);
-            },
-            child: Text(
-              "Create Account",
-              style: TextStyle(
-                fontFamily: K.sg,
-                fontWeight: FontWeight.w600,
-                fontSize: 12.sp,
-                height: 2,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

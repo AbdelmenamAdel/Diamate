@@ -13,7 +13,7 @@ class FoodView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 12.h,
@@ -76,7 +76,7 @@ class FoodView extends StatelessWidget {
                 SliverGrid.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 2 / 3,
+                    childAspectRatio: 1.96 / 3,
                     crossAxisSpacing: 8.w,
                     mainAxisSpacing: 8.h,
                   ),

@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant Patient
+    participant SignupPage as SignUp Page
+    participant Validation
+    participant DB as Database
+    participant Dashboard
+
+    Patient->>SignupPage: Fill registration form
+    SignupPage->>Validation: Validate Input
+    Validation-->>SignupPage: Valid / Errors
+
+    alt Valid Data
+        SignupPage->>DB: Create User Account
+        DB-->>SignupPage: Success
+        SignupPage->>Dashboard: Redirect to home
+
+    else Validation Error
+        SignupPage->>Patient: Show error messages
+    end

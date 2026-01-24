@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-12-11" agent="5.0" version="14.0">
+  <diagram name="SignUp Sequence" id="signup-seq">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Actors & Systems -->
+        <mxCell id="patient" value="Patient" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="30" width="30" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="signupPage" value="SignUp Page" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="40" width="100" height="40" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="validation" value="Validation" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="40" width="100" height="40" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="database" value="Database" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="40" width="100" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- Lifelines -->
+        <mxCell id="line1" value="" style="line;strokeWidth=1;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry x="35" y="90" width="1" height="500" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="line2" value="" style="line;strokeWidth=1;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry x="200" y="90" width="1" height="500" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="line3" value="" style="line;strokeWidth=1;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry x="380" y="90" width="1" height="500" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="line4" value="" style="line;strokeWidth=1;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry x="560" y="90" width="1" height="400" as="geometry"/>
+        </mxCell>
+        
+        <!-- Messages -->
+        <mxCell id="msg1" value="1: Fill registration form" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="35" y="130" as="sourcePoint"/>
+            <mxPoint x="200" y="130" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="msg2" value="2: Validate Input" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="200" y="160" as="sourcePoint"/>
+            <mxPoint x="380" y="160" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="msg3" value="3: Valid / Errors" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="380" y="190" as="sourcePoint"/>
+            <mxPoint x="200" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Alt Valid Data -->
+        <mxCell id="altBox1" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="10" y="220" width="650" height="110" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="altLabel1" value="alt Valid Data" style="text;html=1;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="15" y="220" width="80" height="20" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="msg4" value="4: Create User Account" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="200" y="250" as="sourcePoint"/>
+            <mxPoint x="560" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="msg5" value="5: Success" style="endArrow=open;dashed=1;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="560" y="280" as="sourcePoint"/>
+            <mxPoint x="200" y="280" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="msg6" value="6: Redirect to Dashboard" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="200" y="310" as="sourcePoint"/>
+            <mxPoint x="200" y="330" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Validation Error -->
+        <mxCell id="altBox2" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="10" y="360" width="650" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="altLabel2" value="else Validation Error" style="text;html=1;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="15" y="360" width="120" height="20" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="msg7" value="7: Show error messages" style="endArrow=block;html=1;" edge="1" parent="1">
+          <mxGeometry x="0" y="0" relative="1" as="geometry">
+            <mxPoint x="200" y="390" as="sourcePoint"/>
+            <mxPoint x="35" y="390" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

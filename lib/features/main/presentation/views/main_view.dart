@@ -29,6 +29,14 @@ class _MainViewState extends State<MainView> {
     GlucoseView(),
     ProfileView(),
   ];
+  @override
+  void initState() {
+    // SystemChrome.setEnabledSystemUIMode(
+    //   SystemUiMode.manual,
+    //   overlays: [SystemUiOverlay.top],
+    // );
+    super.initState();
+  }
 
   void _navigateToChatbot() async {
     if (_currentIndex != 2) {
