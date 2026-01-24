@@ -1,62 +1,51 @@
 import 'package:diamate/features/auth/domain/entites/user_entity.dart';
 
-class LoginResponse extends UserEntity {
+class LoginResponse {
   final String accessToken;
   final String refreshToken;
   final String tokenType;
+  final UserEntity user;
   const LoginResponse({
     required this.accessToken,
     required this.refreshToken,
     required this.tokenType,
-    required super.studentCode,
-    required super.name,
-    required super.phone,
-    required super.email,
-    required super.parentPhone,
-    required super.city,
-    required super.grade,
-    required super.password,
+    required this.user,
   });
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
       accessToken: json['access_token'],
       refreshToken: json['refresh_token'],
       tokenType: json['token_type'],
-      studentCode: json['data']['student_code'],
-      name: json['data']['name'],
-      phone: json['data']['phone'],
-      email: json['data']['email'],
-      parentPhone: json['data']['parent_phone'],
-      city: json['data']['city'],
-      grade: json['data']['grade'],
-      password: json['data']['password'],
+      user: UserEntity.fromMap(json['data']),
     );
   }
 
   UserEntity toEntity() {
     return UserEntity(
-      studentCode: studentCode,
-      name: name,
-      phone: phone,
-      email: email,
-      parentPhone: parentPhone,
-      city: city,
-      grade: grade,
-      password: password,
+      userName: user.userName,
+      password: user.password,
+      firstName: user.firstName,
+      secondName: user.secondName,
+      thirdName: user.thirdName,
+      lastName: user.lastName,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      address: user.address,
+      phone: user.phone,
+      homePhone: user.homePhone,
+      email: user.email,
+      profileImage: user.profileImage,
+      weight: user.weight,
+      notes: user.notes,
     );
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return {
-      'student_code': studentCode,
-      'name': name,
-      'phone': phone,
-      'email': email,
-      'parent_phone': parentPhone,
-      'city': city,
-      'grade': grade,
-      'password': password,
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+      'tokenType': tokenType,
+      'user': user.toMap(),
     };
   }
 }

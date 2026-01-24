@@ -140,10 +140,14 @@ class DioConsumer extends ApiConsumer {
         }
 
       case DioExceptionType.cancel:
-        throw CancelException(Failure(errorMessage: e.toString()));
+        throw CancelException(
+          Failure(errorMessage: e.toString(), statusCode: 400),
+        );
 
       case DioExceptionType.unknown:
-        throw UnknownException(Failure(errorMessage: e.toString()));
+        throw UnknownException(
+          Failure(errorMessage: e.toString(), statusCode: 400),
+        );
       // throw ServerException('badResponse');
     }
   }

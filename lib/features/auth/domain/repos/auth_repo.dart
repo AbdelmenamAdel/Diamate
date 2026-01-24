@@ -8,6 +8,9 @@ abstract class AuthRepo {
     String email,
     String password,
   );
+  Future<Either<Failure, String>> signupWithEmailAndPassword({
+    required UserEntity user,
+  });
 
   Future saveUserData({required LoginResponse response});
   Future<Either<Failure, UserEntity>> getUserData({required String token});

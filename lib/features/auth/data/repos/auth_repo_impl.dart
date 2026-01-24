@@ -14,6 +14,47 @@ class AuthRepoImpl extends AuthRepo {
   AuthRepoImpl({required this.api});
 
   @override
+  Future<Either<Failure, String>> signupWithEmailAndPassword({
+    required UserEntity user,
+  }) async {
+    try {
+      final response = await api.post(
+        EndPoint.signUp,
+        data: {
+          Apikeys.userName: user.userName,
+          Apikeys.password: user.password,
+          Apikeys.firstName: user.firstName,
+          Apikeys.secondName: user.secondName,
+          Apikeys.thirdName: user.thirdName,
+          Apikeys.lastName: user.lastName,
+          Apikeys.dateOfBirth: user.dateOfBirth,
+          Apikeys.gender: user.gender,
+          Apikeys.address: user.address,
+          Apikeys.phone: user.phone,
+          Apikeys.homePhone: user.homePhone,
+          Apikeys.email: user.email,
+          Apikeys.profileImage: user.profileImage,
+          Apikeys.weight: user.weight,
+          Apikeys.notes: user.notes,
+        },
+      );
+
+      if (response == null) {
+        return left(
+          Failure(errorMessage: 'No response from server', statusCode: 400),
+        );
+      }
+      log(response.toString());
+      return right("loginResponse");
+    } catch (e) {
+      log(
+        'Exception in AuthRepoImpl.signupWithEmailAndPassword: ${e.toString()}',
+      );
+      return left(Failure(errorMessage: e.toString(), statusCode: 400));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> signinWithEmailAndPassword(
     String email,
     String password,
@@ -21,22 +62,28 @@ class AuthRepoImpl extends AuthRepo {
     try {
       final response = await api.post(
         EndPoint.login,
-        data: {Apikeys.identifier: email, Apikeys.password: password},
+        data: {Apikeys.userName: email, Apikeys.password: password},
       );
       if (response == null) {
-        return left(Failure(errorMessage: 'No response from server'));
+        return left(
+          Failure(errorMessage: 'No response from server', statusCode: 400),
+        );
       }
+      log(response.toString());
       final user = LoginResponse.fromJson(response);
       if (user.accessToken.isEmpty || user.refreshToken.isEmpty) {
-        return left(Failure(errorMessage: 'Invalid credentials'));
+        return left(
+          Failure(errorMessage: 'Invalid credentials', statusCode: 400),
+        );
       }
+      log(user.toString());
       await saveUserData(response: user);
       return right(user.toEntity());
     } catch (e) {
       log(
         'Exception in AuthRepoImpl.signinWithEmailAndPassword: ${e.toString()}',
       );
-      return left(Failure(errorMessage: e.toString()));
+      return left(Failure(errorMessage: e.toString(), statusCode: 400));
     }
   }
 
@@ -49,11 +96,11 @@ class AuthRepoImpl extends AuthRepo {
         EndPoint.getUserData,
         data: {'Authorization': token},
       );
-      final user = LoginResponse.fromJson(userData).toEntity();
+      final user = UserEntity.fromMap(userData['data']);
       return right(user);
     } catch (e) {
       log('Exception in AuthRepoImpl.getUserData: ${e.toString()}');
-      return left(Failure(errorMessage: e.toString()));
+      return left(Failure(errorMessage: e.toString(), statusCode: 400));
     }
   }
 
