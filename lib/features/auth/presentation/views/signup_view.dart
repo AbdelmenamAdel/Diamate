@@ -6,6 +6,7 @@ import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
+import 'package:diamate/features/auth/domain/entites/user_entity.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
 import 'package:diamate/features/auth/presentation/views/widgets/have_acc_q.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _SignupViewState extends State<SignupView> {
   final TextEditingController _nameCtrl = TextEditingController();
   final TextEditingController _lastNameCtrl = TextEditingController();
   final TextEditingController _phoneCtrl = TextEditingController();
+  final TextEditingController _phoneHomeCtrl = TextEditingController();
   final TextEditingController _dobCtrl = TextEditingController();
 
   // Step 2
@@ -47,7 +49,7 @@ class _SignupViewState extends State<SignupView> {
   final GlobalKey<FormState> _formKey1 = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey3 = GlobalKey<FormState>();
-  final AutovalidateMode _autoValidatorMode = AutovalidateMode.disabled;
+  AutovalidateMode autoValidatorMode = AutovalidateMode.disabled;
 
   @override
   void dispose() {
@@ -55,6 +57,7 @@ class _SignupViewState extends State<SignupView> {
     _nameCtrl.dispose();
     _lastNameCtrl.dispose();
     _phoneCtrl.dispose();
+    _phoneHomeCtrl.dispose();
     _dobCtrl.dispose();
     _diagnosisDateCtrl.dispose();
     _weightCtrl.dispose();
@@ -66,17 +69,30 @@ class _SignupViewState extends State<SignupView> {
     super.dispose();
   }
 
-  void _next() {
+  void _next(BuildContext context) {
     bool isValid = false;
     if (_step == 0) {
-      if (_formKey1.currentState!.validate()) isValid = true;
+      if (_formKey1.currentState!.validate()) {
+        isValid = true;
+      } else {
+        setState(() {
+          autoValidatorMode = AutovalidateMode.always;
+        });
+      }
     } else if (_step == 1) {
-      if (_formKey2.currentState!.validate()) isValid = true;
+      if (_formKey2.currentState!.validate()) {
+        isValid = true;
+      } else {
+        setState(() {
+          autoValidatorMode = AutovalidateMode.always;
+        });
+      }
     }
 
     if (isValid && _step < 2) {
       setState(() {
         _step++;
+        autoValidatorMode = AutovalidateMode.disabled;
       });
 
       _pageController.animateToPage(
@@ -86,18 +102,30 @@ class _SignupViewState extends State<SignupView> {
       );
     } else if (_step == 2) {
       if (_formKey3.currentState!.validate()) {
-        showAchievementView(
-          context: context,
-          color: context.color.primaryColor,
-          title: 'Signup complete (mock)',
-        );
-
-        // Implement actual registration logic calls here or in proper place
-        // For now preventing context.push to allow validator verification visually
-        // context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
-
         // Triggering registration via Cubit (as example)
-        // context.read<AuthCubit>().register(user: ...);
+        final user = UserEntity(
+          firstName: _nameCtrl.text,
+          secondName: _lastNameCtrl.text,
+          thirdName: '',
+          lastName: '',
+          phone: _phoneCtrl.text,
+          userName: _usernameCtrl.text,
+          password: _passwordCtrl.text,
+          dateOfBirth: _dobCtrl.text,
+          gender: _gender == "Male" ? 0 : 1,
+          address: "",
+          email: _emailCtrl.text,
+          profileImage: '',
+          weight: int.parse(_weightCtrl.text),
+          // height: int.parse(_heightCtrl.text),
+          // diabetesType: _diabetes,
+          // diagnosisDate: _diagnosisDateCtrl.text,
+        );
+        context.read<AuthCubit>().register(user: user);
+      } else {
+        setState(() {
+          autoValidatorMode = AutovalidateMode.always;
+        });
       }
     }
   }
@@ -141,9 +169,10 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget _stepOne() {
+  Widget _stepOne(BuildContext context) {
     return Form(
       key: _formKey1,
+      autovalidateMode: autoValidatorMode,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -198,6 +227,22 @@ class _SignupViewState extends State<SignupView> {
             ),
             SizedBox(height: 16.h),
             CustomTextFormField(
+              hint: 'Home Phone number',
+              image: Assets.phone,
+              controller: _phoneHomeCtrl,
+              keyboardType: TextInputType.phone,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Required';
+                }
+                if (value.length < 10) {
+                  return 'Invalid Phone';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 16.h),
+            CustomTextFormField(
               hint: 'Date of birth',
               image: Assets.calendarDate,
               controller: _dobCtrl,
@@ -209,7 +254,7 @@ class _SignupViewState extends State<SignupView> {
               },
             ),
             SizedBox(height: 16.h),
-            CustomButton(onTap: _next, text: 'Next'),
+            CustomButton(onTap: () => _next(context), text: 'Next'),
             SizedBox(height: 16.h),
             // SocialBtn(),
           ],
@@ -261,9 +306,10 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget _stepTwo() {
+  Widget _stepTwo(BuildContext context) {
     return Form(
       key: _formKey2,
+      autovalidateMode: autoValidatorMode,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -378,7 +424,10 @@ class _SignupViewState extends State<SignupView> {
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
-                  child: CustomButton(onTap: _next, text: 'Next'),
+                  child: CustomButton(
+                    onTap: () => _next(context),
+                    text: 'Next',
+                  ),
                 ),
               ],
             ),
@@ -388,9 +437,10 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget _stepThree() {
+  Widget _stepThree(BuildContext context) {
     return Form(
       key: _formKey3,
+      autovalidateMode: autoValidatorMode,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -457,7 +507,7 @@ class _SignupViewState extends State<SignupView> {
               },
             ),
             SizedBox(height: 16.h),
-            CustomButton(onTap: _next, text: 'Sign Up'),
+            CustomButton(onTap: () => _next(context), text: 'Sign Up'),
             SizedBox(height: 16.h),
             // SocialBtn(),
           ],
@@ -469,62 +519,97 @@ class _SignupViewState extends State<SignupView> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom / 4;
-    return BlocProvider(
+    return BlocProvider<AuthCubit>(
       create: (context) => sl<AuthCubit>(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Stack(
-          children: [
-            Positioned(child: Image.asset(Assets.bgImgLogin)),
-            Positioned.fill(
-              child: Image.asset(Assets.gradientBg, fit: BoxFit.cover),
-            ),
-            // Use a scrollable layout that respects the keyboard inset
-            SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: bottomInset + 24, // extra space for keyboard
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height - bottomInset,
-                ),
-                child: Column(
+      child: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is RegisterSuccess) {
+            showAchievementView(
+              context: context,
+              color: context.color.primaryColor,
+              title: 'Account Created Successfully!',
+            );
+            // Navigate to chatbots or home
+            // context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
+          } else if (state is RegisterFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        builder: (context, state) {
+          return Stack(
+            children: [
+              Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: Stack(
                   children: [
-                    SizedBox(height: 240.h),
-                    SizedBox(height: 24),
-                    _buildHeader(),
-                    // Wrap PageView with padding to account for keyboard
-                    Padding(
-                      padding: EdgeInsets.only(bottom: bottomInset),
-                      child: SizedBox(
-                        height: 450.h, // لازم نحدد ارتفاع للـ PageView
-                        child: PageView(
-                          controller:
-                              _pageController, // اعمل PageController فوق
-                          onPageChanged: (index) {
-                            setState(() => _step = index);
-                          },
-                          children: [_stepOne(), _stepTwo(), _stepThree()],
+                    Positioned(child: Image.asset(Assets.bgImgLogin)),
+                    Positioned.fill(
+                      child: Image.asset(Assets.gradientBg, fit: BoxFit.cover),
+                    ),
+                    // Use a scrollable layout that respects the keyboard inset
+                    SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        bottom: bottomInset + 24, // extra space for keyboard
+                      ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight:
+                              MediaQuery.of(context).size.height - bottomInset,
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(height: 240.h),
+                            SizedBox(height: 24),
+                            _buildHeader(),
+                            // Wrap PageView with padding to account for keyboard
+                            Padding(
+                              padding: EdgeInsets.only(bottom: bottomInset),
+                              child: SizedBox(
+                                height: 450.h, // لازم نحدد ارتفاع للـ PageView
+                                child: PageView(
+                                  controller:
+                                      _pageController, // اعمل PageController فوق
+                                  onPageChanged: (index) {
+                                    setState(() => _step = index);
+                                  },
+                                  physics:
+                                      const NeverScrollableScrollPhysics(), // Disable swipe
+                                  children: [
+                                    _stepOne(context),
+                                    _stepTwo(context),
+                                    _stepThree(context),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                          ],
                         ),
                       ),
                     ),
-                    SizedBox(height: 24),
+
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          bottom: bottomInset > 0 ? bottomInset + 16.h : 16.h,
+                        ),
+                        child: HaveAccQ(),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: bottomInset > 0 ? bottomInset + 16.h : 16.h,
+              if (state is RegisterLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
-                child: HaveAccQ(),
-              ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -2,6 +2,9 @@ import 'package:diamate/core/app/app_cubit/app_cubit.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
 import 'package:diamate/core/database/api/dio_consumer.dart';
 import 'package:diamate/core/database/secure_storage.dart';
+import 'package:diamate/features/auth/data/repos/auth_repo_impl.dart';
+import 'package:diamate/features/auth/domain/repos/auth_repo.dart';
+import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -22,8 +25,8 @@ Future<void> _initCore() async {
 
 Future<void> _initAuth() async {
   sl.registerLazySingleton<ApiConsumer>(() => DioConsumer(sl<Dio>()));
-  // ..registerLazySingleton<AuthRepo>(
-  //   () => AuthRepoImpl(api: sl<ApiConsumer>()),
-  // )
-  // ..registerFactory<LoginCubit>(() => LoginCubit(sl<AuthRepo>()));
+  sl.registerLazySingleton<AuthRepo>(
+    () => AuthRepoImpl(api: sl<ApiConsumer>()),
+  );
+  sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthRepo>()));
 }
