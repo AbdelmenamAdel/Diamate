@@ -29,7 +29,7 @@ class _SignupViewState extends State<SignupView> {
   final TextEditingController _dobCtrl = TextEditingController();
 
   // Step 2
-  String _gender = '';
+  String _gender = 'Male';
   String _diabetes = 'Type 1';
   final TextEditingController _diagnosisDateCtrl = TextEditingController();
   final TextEditingController _weightCtrl = TextEditingController();
@@ -91,6 +91,7 @@ class _SignupViewState extends State<SignupView> {
           color: context.color.primaryColor,
           title: 'Signup complete (mock)',
         );
+
         // Implement actual registration logic calls here or in proper place
         // For now preventing context.push to allow validator verification visually
         // context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
