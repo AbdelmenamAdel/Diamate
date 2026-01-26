@@ -1,9 +1,34 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
+import 'package:diamate/core/widgets/custom_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  File? _image;
+  String? _base64Image;
+
+  void _pickImage(ImageSource source) async {
+    final pickedFile = await pickImageWithFile(source);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _image = pickedFile;
+        _base64Image = base64Encode(bytes);
+      });
+      if (mounted) Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +61,41 @@ class ProfileView extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage(Assets.men3em),
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: _image != null
+                            ? FileImage(_image!) as ImageProvider
+                            : AssetImage(Assets.men3em),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            ImagePickerComponent.show(
+                              context,
+                              cameraOnTap: () {
+                                _pickImage(ImageSource.camera);
+                              },
+                              galleryOnTap: () {
+                                _pickImage(ImageSource.gallery);
+                              },
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Icon(Icons.edit_outlined, size: 20),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   const Text(

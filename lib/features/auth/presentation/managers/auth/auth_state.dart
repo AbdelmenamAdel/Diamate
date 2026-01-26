@@ -6,11 +6,7 @@ final class AuthInitial extends AuthState {}
 
 final class LoginLoading extends AuthState {}
 
-final class LoginSuccess extends AuthState {
-  final UserEntity userEntity;
-
-  LoginSuccess({required this.userEntity});
-}
+final class LoginSuccess extends AuthState {}
 
 final class LoginFailure extends AuthState {
   final String message;

@@ -11,7 +11,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(RegisterLoading());
     var result = await authRepo.signupWithEmailAndPassword(user: user);
     result.fold(
-      (failure) => emit(RegisterFailure(message: failure.errorMessage)),
+      (failure) => emit(RegisterFailure(message: failure)),
       (text) => emit(RegisterSuccess()),
     );
   }
@@ -20,8 +20,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(LoginLoading());
     var result = await authRepo.signinWithEmailAndPassword(email, password);
     result.fold(
-      (failure) => emit(LoginFailure(message: failure.errorMessage)),
-      (userEntity) => emit(LoginSuccess(userEntity: userEntity)),
+      (failure) => emit(LoginFailure(message: failure)),
+      (userEntity) => emit(LoginSuccess()),
     );
   }
 }

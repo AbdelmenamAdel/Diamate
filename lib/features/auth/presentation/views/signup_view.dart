@@ -1,10 +1,13 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/generated/app_assets.dart';
+import 'package:diamate/core/routes/app_routes.dart';
 
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
+import 'package:diamate/core/widgets/custom_date_picker.dart';
+import 'package:diamate/core/widgets/custom_image_picker.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
 import 'package:diamate/features/auth/domain/entites/user_entity.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
@@ -69,7 +72,7 @@ class _SignupViewState extends State<SignupView> {
     super.dispose();
   }
 
-  void _next(BuildContext context) {
+  Future<void> _next(BuildContext context) async {
     bool isValid = false;
     if (_step == 0) {
       if (_formKey1.currentState!.validate()) {
@@ -103,6 +106,7 @@ class _SignupViewState extends State<SignupView> {
     } else if (_step == 2) {
       if (_formKey3.currentState!.validate()) {
         // Triggering registration via Cubit (as example)
+        final String base64Image = await assetImageToBase64(Assets.men3em);
         final user = UserEntity(
           firstName: _nameCtrl.text,
           secondName: _lastNameCtrl.text,
@@ -113,14 +117,16 @@ class _SignupViewState extends State<SignupView> {
           password: _passwordCtrl.text,
           dateOfBirth: _dobCtrl.text,
           gender: _gender == "Male" ? 0 : 1,
-          address: "",
+          address: "", // to be added later and it accept null
           email: _emailCtrl.text,
-          profileImage: '',
+          profileImage: base64Image,
           weight: int.parse(_weightCtrl.text),
           // height: int.parse(_heightCtrl.text),
           // diabetesType: _diabetes,
           // diagnosisDate: _diagnosisDateCtrl.text,
         );
+        // login accout to try
+        // joooo - 1234yY@
         context.read<AuthCubit>().register(user: user);
       } else {
         setState(() {
@@ -246,10 +252,16 @@ class _SignupViewState extends State<SignupView> {
               hint: 'Date of birth',
               image: Assets.calendarDate,
               controller: _dobCtrl,
+              readOnly: true,
+              onTap: () async {
+                await pickDate(context, _dobCtrl);
+                setState(() {});
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Required';
                 }
+
                 return null;
               },
             ),
@@ -364,6 +376,11 @@ class _SignupViewState extends State<SignupView> {
               hint: 'Date of Diagnosis',
               image: Assets.calendarDate,
               controller: _diagnosisDateCtrl,
+              readOnly: true,
+              onTap: () async {
+                await pickDate(context, _diagnosisDateCtrl);
+                setState(() {});
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Required';
@@ -387,6 +404,10 @@ class _SignupViewState extends State<SignupView> {
                       if (double.tryParse(value) == null) {
                         return 'Invalid';
                       }
+                      if (double.parse(value) < 40 ||
+                          double.parse(value) > 250) {
+                        return 'Invalid';
+                      }
                       return null;
                     },
                   ),
@@ -403,6 +424,10 @@ class _SignupViewState extends State<SignupView> {
                         return 'Required';
                       }
                       if (double.tryParse(value) == null) {
+                        return 'Invalid';
+                      }
+                      if (double.parse(value) < 60 ||
+                          double.parse(value) > 250) {
                         return 'Invalid';
                       }
                       return null;
@@ -487,6 +512,18 @@ class _SignupViewState extends State<SignupView> {
                 if (value.length < 8) {
                   return 'Min 8 chars';
                 }
+                if (!RegExp(r'(?=.*[0-9])').hasMatch(value)) {
+                  return 'Need at least 1 number';
+                }
+                if (!RegExp(r'(?=.*[A-Z])').hasMatch(value)) {
+                  return 'Need at least 1 uppercase';
+                }
+                if (!RegExp(r'(?=.*[a-z])').hasMatch(value)) {
+                  return 'Need at least 1 lowercase';
+                }
+                if (!RegExp(r'(?=.*[!@#\$&*~])').hasMatch(value)) {
+                  return 'Need special char (!@#\$&*~)';
+                }
                 return null;
               },
             ),
@@ -530,11 +567,13 @@ class _SignupViewState extends State<SignupView> {
               title: 'Account Created Successfully!',
             );
             // Navigate to chatbots or home
-            // context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
+            context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
           } else if (state is RegisterFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            showAchievementView(
+              context: context,
+              color: Colors.red,
+              title: state.message,
+            );
           }
         },
         builder: (context, state) {

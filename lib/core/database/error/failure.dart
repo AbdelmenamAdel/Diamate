@@ -4,9 +4,13 @@ class Failure {
   Failure({required this.errorMessage, required this.statusCode});
 
   factory Failure.fromJson(Map<String, dynamic> json) {
+    String errorMessage = json['title'] ?? 'User not authenticated.';
+    if (json.containsKey('') && json[''] is List) {
+      errorMessage = (json[''] as List).join('\n');
+    }
     return Failure(
-      errorMessage: json['title'] ?? 'User not authenticated.',
-      statusCode: json['status'],
+      errorMessage: errorMessage,
+      statusCode: json['status'] ?? 400,
     );
   }
 }
