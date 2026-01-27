@@ -1,9 +1,0 @@
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> UserTypesMessage: User inputs
-    UserTypesMessage --> SendingQuery: Submit
-    SendingQuery --> WaitingForResponse: In progress
-    WaitingForResponse --> ReceivingResponse: Response incoming
-    ReceivingResponse --> DisplayingResponse: Data received
-    DisplayingResponse --> Idle: Complete
-    Idle --> [*]

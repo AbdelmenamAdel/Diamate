@@ -1,0 +1,71 @@
+stateDiagram-v2
+    [*] --> Login
+    
+    state Login {
+        [*] --> EnterCredentials
+        EnterCredentials --> Validate : Submit
+        Validate --> Success : Valid
+        Validate --> Failure : Invalid
+        Success --> [*]
+        Failure --> EnterCredentials : Retry
+        EnterCredentials --> Signup : Edit Signup
+    }
+    
+    state Signup {
+        [*] --> FillForm
+        FillForm --> CreateAccount : Submit
+        CreateAccount --> Registered : Success
+        CreateAccount --> FormError : Failure
+        Registered --> [*]
+        FormError --> FillForm : Edit
+    }
+    
+    Login --> Chatbot : Redirect after Success
+    Signup --> Chatbot : Redirect after Registered
+    
+    state Chatbot {
+        [*] --> QueryInput
+        QueryInput --> ProcessQuery : Send Query
+        ProcessQuery --> RetrieveData
+        RetrieveData --> GenerateAnswer
+        GenerateAnswer --> DisplayResponse
+        DisplayResponse --> SaveConversation
+        SaveConversation --> QueryInput : Next Query
+    }
+    
+    state Dashboard {
+        [*] --> OutcomeRate
+        OutcomeRate --> SaveResults
+        SaveResults --> Visualization
+    }
+    
+    state Logs {
+        [*] --> FeedLog
+        FeedLog --> HeadacheLog
+        HeadacheLog --> MedicineEntry
+    }
+    
+    state ImageAnalysis {
+        [*] --> InsertImage
+        InsertImage --> AnalyzeImage
+        AnalyzeImage --> SaveInfo
+        SaveInfo --> Recommendations
+    }
+    
+    state FileProcessing {
+        [*] --> ParseFiles
+        ParseFiles --> StoreExtracted
+        StoreExtracted --> Notifications
+    }
+    
+    state Recommendations {
+        [*] --> FoodRecommendation
+        FoodRecommendation --> MedicineInfo
+        MedicineInfo --> HealthcareAlerts
+    }
+    
+    Chatbot --> Dashboard
+    Chatbot --> Logs
+    Chatbot --> ImageAnalysis
+    Chatbot --> FileProcessing
+    Chatbot --> Recommendations
