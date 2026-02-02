@@ -1,0 +1,47 @@
+Sequence Diagram Description:
+
+1. Authentication Process:
+- Login: The Patient enters their Email and Password in the Mobile App. The app sends these credentials to the Database, which returns a Login Result. If successful, a pop-up is shown, and the user is redirected to the Home View.
+- Signup: The Patient fills out a Registration Form. The Mobile App sends the data to the Database to create a new user account. The Database returns a Registration Result, and a pop-up confirms the outcome.
+
+2. AI Chatbot Interaction:
+- The Patient writes a query in the Chatbot interface.
+- The Mobile App sends the query to the AI service.
+- The AI service processes the query, retrieves relevant documents (likely from a vector store or knowledge base), and generates an LLM-based answer.
+- Simultaneously, the conversation is stored in the Database for history.
+- The AI returns the response to the Mobile App, which displays it to the Patient. History is also retrievable for future context.
+
+3. Glucose Reading Tracking:
+- The Patient enters their glucose reading data.
+- The Mobile App saves the new readings to the Database.
+- A confirmation pop-up is displayed.
+- The App can then retrieve all previous readings from the Database for visualization (charts/trends).
+
+4. Food Log & Nutritional Analysis:
+- The Patient inputs food data or uploads an image of their meal.
+- The Mobile App sends this to the AI for analysis.
+- The AI estimates calories and provides nutritional information.
+- The Database stores this log and provides food recommendations based on the analysis.
+
+5. Medicine Log & Reminders:
+- The Patient records their medicine intake and schedule.
+- The Mobile App saves this information to the Database.
+- The Database triggers notification alerts to the Mobile App to remind the user of their next dose.
+
+6. Diabetic Foot Ulcer (DFU) Analysis:
+- The Patient uploads images of their feet.
+- The Mobile App sends the images to the AI for specialized analysis.
+- The AI analyzes the image for signs of ulcers or complications.
+- The images and results are saved in the Database.
+- The final analysis results are displayed back to the user.
+
+7. Lab Test Management:
+- The Patient uploads lab test results.
+- The Mobile App sends these to the AI to "Check" and "Parse" the data.
+- Extracted information and the original lab results are stored in the Database.
+- The AI provides recommended actions and a clinical analysis of the lab results.
+
+8. Automated Health Alerts ("Follow Me"):
+- The system monitors user data against predefined rules.
+- Rule-based health care alerts are triggered and sent to the Mobile App.
+- The system provides follow-up recommendations and asks subsequent health questions to the user based on their current status.

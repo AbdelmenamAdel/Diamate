@@ -1,0 +1,38 @@
+State Diagram Description:
+
+1. Login Lifecycle:
+- Initial State: User starts at the Login screen.
+- Credential Entry: Transitions to the "Enter Credentials" state.
+- Validation: On "Submit", the system moves to the "Validate" state.
+- Success: If credentials match, the system transitions to "Success" and then to the final state (Redirect to Dashboard).
+- Failure: If credentials are invalid, the system transitions to "Failure" and allows for a "Retry" back to the Credential Entry state.
+
+2. Signup Lifecycle:
+- Entry: Accessible from the initial application gate.
+- Form Entry: Moves to the "Fill Form" state.
+- Account Creation: On submission, the system enters the "Create Account" state.
+- Outcome: Either transitions to "Registered" (Success) or "Form Error" (Failure).
+- Loopback: In case of a "Form Error", the user can "Edit" the data to return to the "Fill Form" state.
+
+3. AI Chatbot State Machine:
+- Input: The user starts in the "Query Input" state.
+- Processing: Once a query is sent, the machine moves through "Query Process" and "Retrieve Data".
+- Response: Transitions to "Generate Answer" and then "Display Response".
+- Context Management: Moves to "Attention to Current Conversation" to maintain history and context.
+- Iteration: Returns to "Query Input" for subsequent user interactions.
+
+4. Dashboard & Visualization States:
+- This module handles the data presentation layer.
+- States include calculating the "Outcome Rate", "Saving Results", and finally rendering the "Visualizations".
+
+5. Logging & History System:
+- Manages various user logs including "Food Logs", "Ache Logs", and "Medicine Logs".
+- Each log type follows a specialized path of entry, processing, and long-term storage.
+
+6. Image & File Processing States:
+- Image Processing: Follows a transition from "Insert Image" -> "Analysis Image" -> "Store Info".
+- File Processing: Follows a transition from "Parse Files" -> "Store Extracted" -> "Notifications".
+- Both modules integrate with the Recommendations engine for actionable insights.
+
+7. Recommendations & Alerts Engine:
+- Aggregates data from various processing states to provide "Food Recommendations", "Medicine Info", and trigger timely "Notification Alerts".
