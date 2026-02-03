@@ -9,11 +9,13 @@ class ChatHistoryDrawer extends StatelessWidget {
     required this.sessions,
     required this.onSessionTap,
     required this.onNewChat,
+    required this.onSessionDelete,
   });
 
   final List<ChatSession> sessions;
   final Function(ChatSession) onSessionTap;
   final VoidCallback onNewChat;
+  final Function(ChatSession) onSessionDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +103,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                           Navigator.pop(context);
                           onSessionTap(session);
                         },
+                        onLongPress: () => onSessionDelete(session),
                         borderRadius: BorderRadius.circular(15.r),
                         child: Container(
                           padding: EdgeInsets.all(16.w),

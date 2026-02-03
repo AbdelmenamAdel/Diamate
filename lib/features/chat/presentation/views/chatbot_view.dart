@@ -3,6 +3,7 @@ import 'package:diamate/constant.dart';
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/features/chat/presentation/managers/chat_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/chat_history_drawer.dart';
@@ -141,6 +142,31 @@ class _ChatbotContentState extends State<ChatbotContent> {
             onSessionTap: (session) =>
                 context.read<ChatCubit>().loadSession(session),
             onNewChat: () => context.read<ChatCubit>().startNewChat(),
+            onSessionDelete: (session) {
+              showCupertinoDialog(
+                context: context,
+                builder: (dialogContext) => CupertinoAlertDialog(
+                  title: const Text('Delete Chat'),
+                  content: const Text(
+                    'Are you sure you want to delete this chat?',
+                  ),
+                  actions: [
+                    CupertinoDialogAction(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      child: const Text('Cancel'),
+                    ),
+                    CupertinoDialogAction(
+                      isDestructiveAction: true,
+                      onPressed: () {
+                        context.read<ChatCubit>().deleteSession(session.id);
+                        Navigator.pop(dialogContext);
+                      },
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           body: ChatbotBackground(
             trailing: Builder(

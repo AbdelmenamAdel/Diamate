@@ -56,7 +56,7 @@ class MessageBubble extends StatelessWidget {
               ),
               child: message.type == MessageType.voice
                   ? VoiceMessageBubble(audioPath: message.audioPath ?? '')
-                  : Text(
+                  : SelectableText(
                       message.text,
                       style: TextStyle(
                         color: isUser ? Colors.white : Colors.black,

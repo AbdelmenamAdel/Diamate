@@ -8,24 +8,22 @@ class ChatNotStarted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          SizedBox(height: 24.h),
-          Image.asset(height: 80.h, Assets.aiLogo),
-          SizedBox(height: 12.h),
-          Text(
-            "Want better glucose control? Tell me your\ngoal, and I’ll show you the right tools",
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black.withOpacity(.5),
-              fontFamily: K.sg,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
+    return Column(
+      children: [
+        SizedBox(height: 24.h),
+        Image.asset(height: 80.h, Assets.aiLogo),
+        SizedBox(height: 12.h),
+        Text(
+          "Want better glucose control? Tell me your\ngoal, and I’ll show you the right tools",
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.black.withOpacity(.5),
+            fontFamily: K.sg,
+            fontWeight: FontWeight.w600,
           ),
-        ],
-      ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

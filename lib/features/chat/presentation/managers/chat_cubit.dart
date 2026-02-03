@@ -58,8 +58,7 @@ class ChatCubit extends Cubit<ChatState> {
     await Future.delayed(const Duration(seconds: 2));
 
     final aiMessage = ChatMessage(
-      text:
-          "I'm here to help you with your glucose control. What tools are you looking for?",
+      text: "Don't worry about your graduation project, you will hack it",
       type: MessageType.ai,
     );
     _messages.add(aiMessage);
@@ -98,7 +97,8 @@ class ChatCubit extends Cubit<ChatState> {
     await Future.delayed(const Duration(seconds: 2));
 
     final aiMessage = ChatMessage(
-      text: "I've received your voice message. How can I help you further?",
+      text:
+          "Don't worry about your glucose level, I will help you to control it",
       type: MessageType.ai,
     );
     _messages.add(aiMessage);
@@ -106,6 +106,16 @@ class ChatCubit extends Cubit<ChatState> {
     await _chatLocalService.saveSession(_currentSession!);
 
     _isTyping = false;
+    _emitSuccess();
+  }
+
+  Future<void> deleteSession(String sessionId) async {
+    await _chatLocalService.deleteSession(sessionId);
+    _sessions.removeWhere((s) => s.id == sessionId);
+    if (_currentSession?.id == sessionId) {
+      _currentSession = null;
+      _messages = [];
+    }
     _emitSuccess();
   }
 
