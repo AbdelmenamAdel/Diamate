@@ -5,8 +5,9 @@ import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class ChatbotBackground extends StatelessWidget {
-  const ChatbotBackground({super.key, required this.child});
+  const ChatbotBackground({super.key, required this.child, this.trailing});
   final Widget child;
+  final Widget? trailing;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -58,6 +59,7 @@ class ChatbotBackground extends StatelessWidget {
                     context.pushReplacementNamed(AppRoutes.main);
                   },
                   notification: false,
+                  trailing: trailing,
                 ),
               ),
             ),

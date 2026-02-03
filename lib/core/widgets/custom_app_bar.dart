@@ -10,11 +10,13 @@ class CustomAppBar extends StatelessWidget {
     required this.title,
     this.back = true,
     this.onTap,
+    this.trailing,
   });
   final bool notification;
   final String title;
   final bool back;
   final void Function()? onTap;
+  final Widget? trailing;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -49,6 +51,7 @@ class CustomAppBar extends StatelessWidget {
           ),
         ),
         Spacer(),
+        if (trailing != null) trailing!,
         if (notification) NotificationButton(),
       ],
     );

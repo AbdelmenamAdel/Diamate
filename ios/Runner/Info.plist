@@ -49,6 +49,8 @@
    <string>We need to use the camera to take food photos</string>
    <key>NSPhotoLibraryUsageDescription</key>
    <string>We need access to save/select photos</string>
+   <key>NSMicrophoneUsageDescription</key>
+   <string>We need access to the microphone to record voice messages.</string>
 
 </dict>
 </plist>

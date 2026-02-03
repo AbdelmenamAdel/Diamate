@@ -8,12 +8,23 @@ import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:diamate/features/chat/data/services/chat_local_service.dart';
+
+import 'package:diamate/features/chat/presentation/managers/chat_cubit.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
   await _initCore();
   await _initAuth();
-  // await _initHome();
+  await _initChat();
+}
+
+Future<void> _initChat() async {
+  final chatService = ChatLocalService();
+  await chatService.init();
+  sl.registerLazySingleton<ChatLocalService>(() => chatService);
+  sl.registerFactory<ChatCubit>(() => ChatCubit(sl<ChatLocalService>()));
 }
 
 Future<void> _initCore() async {
