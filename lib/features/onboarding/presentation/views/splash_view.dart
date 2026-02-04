@@ -17,7 +17,7 @@ class _SplashViewState extends State<SplashView> {
   void initState() {
     Future.delayed(Duration(seconds: 2), () {
       if (!mounted) return;
-      context.pushReplacementNamed(AppRoutes.chatbot);
+      context.pushReplacementNamed(AppRoutes.login);
     });
     super.initState();
   }

@@ -1,0 +1,11 @@
+STT (Speech-to-Text) Model Comparison for Flutter (Arabic & English)
+
+| Modality              | Stability                 | Accuracy (Arabic/English) | Limitations                                                                 | Pricing           |
+|-----------------------|---------------------------|---------------------------|-----------------------------------------------------------------------------|-------------------|
+| **Google ML Kit (On-Device)** | Very High (Native)        | High (Balanced)           | Large model download (~30MB+ per lang), limited complexity.                 | Free              |
+| **SpeechToText (Native)**     | Medium (Platform Dep.)    | High (Online reliant)      | Requires internet for best accuracy; inconsistent between OS versions.      | Free              |
+| **Vosk (Open Source)**       | High (Self-contained)     | Medium (Model Dep.)       | Very large assets (100MB+ for better models); high CPU usage on mobile.     | Free              |
+| **OpenAI Whisper (API)**     | High (Server-side)        | Extremely High            | Requires internet; Pay-per-minute; Latency to upload files.                 | Paid ($0.006/min) |
+
+SELECTED FREE MODEL: Google ML Kit (On-Device)
+Reasoning: It provides the best balance of stability (Google-backed), ease of implementation in Flutter, and reliable accuracy for both Arabic and English without requiring constant internet connection after initial model download.

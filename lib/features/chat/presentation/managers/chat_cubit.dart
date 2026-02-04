@@ -1,14 +1,17 @@
 import 'package:diamate/features/chat/data/models/chat_message.dart';
 import 'package:diamate/features/chat/data/models/chat_session.dart';
 import 'package:diamate/features/chat/data/services/chat_local_service.dart';
+import 'package:diamate/core/services/chat_companion_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
   final ChatLocalService _chatLocalService;
+  final ChatCompanionService _companionService;
 
-  ChatCubit(this._chatLocalService) : super(ChatInitial());
+  ChatCubit(this._chatLocalService, this._companionService)
+    : super(ChatInitial());
 
   List<ChatMessage> _messages = [];
   List<ChatSession> _sessions = [];
@@ -57,8 +60,10 @@ class ChatCubit extends Cubit<ChatState> {
     // Simulate AI response
     await Future.delayed(const Duration(seconds: 2));
 
+    // For simplicity, we use the "after meal" category for general chat for now,
+    // as it's the most common interaction point.
     final aiMessage = ChatMessage(
-      text: "Don't worry about your graduation project, you will hack it",
+      text: _companionService.getAfterMealMessage(),
       type: MessageType.ai,
     );
     _messages.add(aiMessage);
@@ -97,8 +102,7 @@ class ChatCubit extends Cubit<ChatState> {
     await Future.delayed(const Duration(seconds: 2));
 
     final aiMessage = ChatMessage(
-      text:
-          "Don't worry about your glucose level, I will help you to control it",
+      text: _companionService.getAfterMealMessage(),
       type: MessageType.ai,
     );
     _messages.add(aiMessage);

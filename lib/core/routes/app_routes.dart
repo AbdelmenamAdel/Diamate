@@ -2,7 +2,7 @@ import 'package:diamate/features/auth/presentation/views/login_view.dart';
 import 'package:diamate/features/auth/presentation/views/signup_view.dart';
 import 'package:diamate/features/chat/presentation/views/chatbot_view.dart';
 import 'package:diamate/features/main/presentation/views/main_view.dart';
-import 'package:diamate/features/notifications/presentation/views/notifications_view.dart';
+import 'package:diamate/features/notifications/presentation/views/notification_view.dart';
 import 'package:diamate/features/onboarding/presentation/views/splash_preview.dart';
 import 'package:diamate/features/onboarding/presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';

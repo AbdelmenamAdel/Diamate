@@ -1,25 +1,17 @@
 import 'package:diamate/features/chat/data/models/chat_message.dart';
 import 'package:diamate/features/chat/data/models/chat_session.dart';
+import 'package:diamate/core/services/hive/hive_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class ChatLocalService {
   static const String _sessionBoxName = 'chat_sessions';
 
   Future<void> init() async {
-    await Hive.initFlutter();
+    HiveService.registerAdapter(MessageTypeAdapter());
+    HiveService.registerAdapter(ChatMessageAdapter());
+    HiveService.registerAdapter(ChatSessionAdapter());
 
-    // Register Adapters
-    if (!Hive.isAdapterRegistered(0)) {
-      Hive.registerAdapter(MessageTypeAdapter());
-    }
-    if (!Hive.isAdapterRegistered(1)) {
-      Hive.registerAdapter(ChatMessageAdapter());
-    }
-    if (!Hive.isAdapterRegistered(2)) {
-      Hive.registerAdapter(ChatSessionAdapter());
-    }
-
-    await Hive.openBox<ChatSession>(_sessionBoxName);
+    await HiveService.openBox<ChatSession>(_sessionBoxName);
   }
 
   Box<ChatSession> get _sessionBox => Hive.box<ChatSession>(_sessionBoxName);
