@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'base_routes.dart';
 
 class AppRoutes {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   static const String initial = '/';
   static const String splash = 'splash';
   static const String onboarding = 'onboarding';

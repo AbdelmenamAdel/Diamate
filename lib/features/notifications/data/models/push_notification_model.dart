@@ -18,7 +18,7 @@ class PushNotificationModel extends HiveObject {
   String body;
 
   @HiveField(2)
-  int productId;
+  String productId;
 
   @HiveField(3)
   final DateTime createAt;

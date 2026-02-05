@@ -30,7 +30,16 @@ class NotificationLocalService {
   }
 
   Future<void> deleteNotification(dynamic key) async {
-    await _box.delete(key);
+    if (_box.containsKey(key)) {
+      await _box.delete(key);
+    } else if (key is String) {
+      // If key is a string and not a direct key, try searching by title or payload (productId)
+      final keysToDelete = _box.keys.where((k) {
+        final item = _box.get(k);
+        return item?.title == key || item?.productId == key;
+      }).toList();
+      await _box.deleteAll(keysToDelete);
+    }
   }
 
   Future<void> deleteMultipleNotifications(List<dynamic> keys) async {

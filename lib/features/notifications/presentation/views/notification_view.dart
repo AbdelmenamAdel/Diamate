@@ -92,11 +92,38 @@ class _NotificationsViewState extends State<NotificationsView> {
                       },
                     ),
                   ),
-                  if (_isSelectionMode)
+                  if (_isSelectionMode) ...[
+                    TextButton(
+                      onPressed: () {
+                        final allKeys = Hive.box<PushNotificationModel>(
+                          'notifications_box',
+                        ).keys.toList();
+                        setState(() {
+                          if (_selectedKeys.length == allKeys.length) {
+                            _selectedKeys.clear();
+                          } else {
+                            _selectedKeys.addAll(allKeys);
+                          }
+                        });
+                      },
+                      child: Text(
+                        _selectedKeys.length ==
+                                Hive.box<PushNotificationModel>(
+                                  'notifications_box',
+                                ).length
+                            ? 'Deselect All'
+                            : 'Select All',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: _deleteSelected,
                     ),
+                  ],
                 ],
               ),
             ),
@@ -126,7 +153,19 @@ class _NotificationsViewState extends State<NotificationsView> {
                     );
                   }
 
-                  final notifications = box.values.toList().reversed.toList();
+                  final now = DateTime.now();
+                  var notifications = box.values
+                      .where(
+                        (n) =>
+                            n.createAt.isBefore(now) ||
+                            n.createAt.isAtSameMomentAs(now),
+                      )
+                      .toList();
+
+                  // Sort by newest first
+                  notifications.sort(
+                    (a, b) => b.createAt.compareTo(a.createAt),
+                  );
 
                   return ListView.separated(
                     padding: EdgeInsets.all(16.w),
