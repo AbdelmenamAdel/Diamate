@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:diamate/constant.dart';
+import 'package:diamate/core/database/secure_storage.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/generated/app_assets.dart';
+import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/core/widgets/custom_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -142,7 +146,10 @@ class _ProfileViewState extends State<ProfileView> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  SecureStorage.setBoolean(key: K.isLogged, value: false);
+                  context.pushNamedAndRemoveUntil(AppRoutes.splash);
+                },
                 child: const Text(
                   "تسجيل الخروج",
                   style: TextStyle(color: Colors.red, fontSize: 16),

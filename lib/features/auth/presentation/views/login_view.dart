@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/core/services/services_locator.dart';
@@ -52,6 +53,7 @@ class _LoginViewState extends State<LoginView> {
                 color: Colors.red,
               );
             } else if (state is LoginSuccess) {
+              SecureStorage.setBoolean(key: K.isLogged, value: true);
               context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
               showAchievementView(
                 context: context,

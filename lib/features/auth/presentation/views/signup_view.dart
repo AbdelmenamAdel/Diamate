@@ -1,5 +1,6 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 
@@ -561,6 +562,7 @@ class _SignupViewState extends State<SignupView> {
       child: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is RegisterSuccess) {
+            SecureStorage.setBoolean(key: K.isLogged, value: true);
             showAchievementView(
               context: context,
               color: context.color.primaryColor,

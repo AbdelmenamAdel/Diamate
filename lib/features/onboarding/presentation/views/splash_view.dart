@@ -5,6 +5,8 @@ import 'package:diamate/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:diamate/core/database/secure_storage.dart';
+
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
 
@@ -15,11 +17,22 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 2), () {
-      if (!mounted) return;
-      context.pushReplacementNamed(AppRoutes.onboarding);
-    });
+    _navigateToNext();
     super.initState();
+  }
+
+  Future<void> _navigateToNext() async {
+    final isLogged = await SecureStorage.getBoolean(key: K.isLogged) ?? false;
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    if (isLogged) {
+      context.pushReplacementNamed(AppRoutes.chatbot);
+    } else {
+      context.pushReplacementNamed(AppRoutes.onboarding);
+    }
   }
 
   @override
