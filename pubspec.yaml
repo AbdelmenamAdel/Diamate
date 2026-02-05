@@ -39,6 +39,7 @@ dependencies:
   audio_waveforms: ^2.0.2
   firebase_messaging: ^16.1.1
   flutter_local_notifications: ^20.0.0
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +52,7 @@ flutter:
     - assets/images/
     - assets/fonts/
     - assets/langs/
+    - assets/video/
 
   fonts:
     - family: SpaceGrotesk

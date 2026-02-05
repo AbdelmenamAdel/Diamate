@@ -5,12 +5,14 @@ import 'package:diamate/features/main/presentation/views/main_view.dart';
 import 'package:diamate/features/notifications/presentation/views/notification_view.dart';
 import 'package:diamate/features/onboarding/presentation/views/splash_preview.dart';
 import 'package:diamate/features/onboarding/presentation/views/splash_view.dart';
+import 'package:diamate/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:flutter/material.dart';
 import 'base_routes.dart';
 
 class AppRoutes {
   static const String initial = '/';
   static const String splash = 'splash';
+  static const String onboarding = 'onboarding';
   static const String login = 'login';
   static const String main = 'main';
   static const String signUp = 'signUp';
@@ -26,6 +28,8 @@ class AppRoutes {
         return BaseRoute(page: const SplashView());
       case main:
         return BaseRoute(page: const MainView());
+      case onboarding:
+        return BaseRoute(page: const OnboardingView());
       case login:
         return BaseRoute(page: const LoginView());
       case signUp:

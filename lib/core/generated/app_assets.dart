@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_single_quotes
 class Assets {
   Assets._();
-  
+
   /// Assets for aiLogo
   /// assets/images/aiLogo.png
   static const String aiLogo = "assets/images/aiLogo.png";
@@ -101,5 +101,63 @@ class Assets {
   /// Assets for wifiOff
   /// assets/images/wifi_off.gif
   static const String wifiOff = "assets/images/wifi_off.gif";
-}
 
+  /// Assets for onboarding1Welcome
+  /// assets/images/onboarding_1_welcome.png
+  static const String onboarding1Welcome =
+      "assets/images/onboarding_1_welcome.png";
+
+  /// Assets for onboarding2Tracking
+  /// assets/images/onboarding_2_tracking.png
+  static const String onboarding2Tracking =
+      "assets/images/onboarding_2_tracking.png";
+
+  /// Assets for onboarding3Ai
+  /// assets/images/onboarding_3_ai.png
+  static const String onboarding3Ai = "assets/images/onboarding_3_ai.png";
+
+  /// Assets for onboarding4Reports
+  /// assets/images/onboarding_4_reports.png
+  static const String onboarding4Reports =
+      "assets/images/onboarding_4_reports.png";
+
+  /// Assets for onboarding5Start
+  /// assets/images/onboarding_5_start.png
+  static const String onboarding5Start = "assets/images/onboarding_5_start.png";
+
+  /// Assets for aiRobot
+  /// assets/images/ai_robot.png
+  static const String aiRobot = "assets/images/ai_robot.png";
+
+  /// Assets for diamateLogo
+  /// assets/images/diamate_logo.png
+  static const String diamateLogo = "assets/images/diamate_logo.png";
+
+  /// Assets for diamateIcon
+  /// assets/images/diamate_icon.png
+  static const String diamateIcon = "assets/images/diamate_icon.png";
+
+  /// Assets for onboardingReportsIllustration
+  /// assets/images/onboarding_reports_illustration.png
+  static const String onboardingReportsIllustration =
+      "assets/images/onboarding_reports_illustration.png";
+
+  /// Assets for onboardingNotifications
+  /// assets/images/onboarding_notifications.png
+  static const String onboardingNotifications =
+      "assets/images/onboarding_notifications.png";
+
+  /// Assets for getStartedHero
+  /// assets/images/get_started_hero.jpg
+  static const String getStartedHero = "assets/images/get_started_hero.jpg";
+
+  /// Assets for introOnboardingVideo
+  /// assets/video/intro_onboarding1.mp4
+  static const String introOnboardingVideo =
+      "assets/video/intro_onboarding1.mp4";
+
+  /// Assets for introOnboardingVideo
+  /// assets/video/intro_onboarding2.mp4
+  static const String introOnboardingVideo2 =
+      "assets/video/intro_onboarding2.mp4";
+}
