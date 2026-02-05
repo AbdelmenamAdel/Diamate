@@ -128,11 +128,12 @@ class _NotificationsViewState extends State<NotificationsView> {
               ),
             ),
             Expanded(
-              child: ValueListenableBuilder(
-                valueListenable: Hive.box<PushNotificationModel>(
-                  'notifications_box',
-                ).listenable(),
-                builder: (context, Box<PushNotificationModel> box, _) {
+              child: StreamBuilder<void>(
+                stream: sl<NotificationLocalService>().notificationStream,
+                builder: (context, snapshot) {
+                  final box = Hive.box<PushNotificationModel>(
+                    'notifications_box',
+                  );
                   if (box.isEmpty) {
                     return Center(
                       child: Column(

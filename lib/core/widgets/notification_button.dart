@@ -29,11 +29,9 @@ class NotificationButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
             color: Colors.white,
           ),
-          child: ValueListenableBuilder(
-            valueListenable: Hive.box<PushNotificationModel>(
-              'notifications_box',
-            ).listenable(),
-            builder: (context, box, child) {
+          child: StreamBuilder<void>(
+            stream: sl<NotificationLocalService>().notificationStream,
+            builder: (context, snapshot) {
               final unreadCount = sl<NotificationLocalService>()
                   .getUnreadCount();
               return Badge(

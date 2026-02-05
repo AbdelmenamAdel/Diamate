@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:diamate/features/notifications/data/models/push_notification_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:diamate/core/services/hive/hive_service.dart';
@@ -5,15 +6,28 @@ import 'package:diamate/core/services/hive/hive_service.dart';
 class NotificationLocalService {
   static const String _boxName = 'notifications_box';
 
+  // Stream to trigger UI updates (both on Hive changes and Time passing)
+  final StreamController<void> _updateController = StreamController.broadcast();
+  Stream<void> get notificationStream => _updateController.stream;
+
   Future<void> init() async {
     HiveService.registerAdapter(PushNotificationModelAdapter());
     try {
       await HiveService.openBox<PushNotificationModel>(_boxName);
     } catch (e) {
-      // In case of schema mismatch (like adding isRead field), wipe the box
       await Hive.deleteBoxFromDisk(_boxName);
       await HiveService.openBox<PushNotificationModel>(_boxName);
     }
+
+    // 1. Listen to Database Changes
+    _box.watch().listen((event) {
+      _updateController.add(null);
+    });
+  }
+
+  // Trigger manual refresh (useful for onResume)
+  void refresh() {
+    _updateController.add(null);
   }
 
   Box<PushNotificationModel> get _box =>
@@ -51,7 +65,13 @@ class NotificationLocalService {
   }
 
   int getUnreadCount() {
-    return _box.values.where((notification) => !notification.isRead).length;
+    final now = DateTime.now();
+    return _box.values.where((notification) {
+      final isTimePassed =
+          notification.createAt.isBefore(now) ||
+          notification.createAt.isAtSameMomentAs(now);
+      return !notification.isRead && isTimePassed;
+    }).length;
   }
 
   Future<void> markAsRead(dynamic key) async {

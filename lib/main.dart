@@ -61,10 +61,34 @@ void main() async {
   );
 }
 
-class DiaMate extends StatelessWidget {
+class DiaMate extends StatefulWidget {
   const DiaMate({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<DiaMate> createState() => _DiaMateState();
+}
+
+class _DiaMateState extends State<DiaMate> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Refresh notifications when app comes back to foreground
+      sl<NotificationLocalService>().refresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
