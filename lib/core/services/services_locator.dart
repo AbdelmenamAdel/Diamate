@@ -21,6 +21,8 @@ import 'package:diamate/core/services/permission_service.dart';
 
 import 'package:diamate/features/lab_tests/data/services/lab_test_local_service.dart';
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
+import 'package:diamate/features/dfu_test/data/services/dfu_test_local_service.dart';
+import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -30,6 +32,16 @@ Future<void> setupInjector() async {
   await _initChat();
   await _initNotifications();
   await _initLabTests();
+  await _initDfuTests();
+}
+
+Future<void> _initDfuTests() async {
+  final dfuService = DfuTestLocalService();
+  await dfuService.init();
+  sl.registerLazySingleton<DfuTestLocalService>(() => dfuService);
+  sl.registerFactory<DfuTestCubit>(
+    () => DfuTestCubit(sl<DfuTestLocalService>()),
+  );
 }
 
 Future<void> _initLabTests() async {

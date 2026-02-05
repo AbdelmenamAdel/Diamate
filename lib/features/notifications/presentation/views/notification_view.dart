@@ -1,3 +1,4 @@
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/features/notifications/data/models/push_notification_model.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,13 @@ class NotificationsView extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: const CustomAppBar(title: 'Notifications'),
+              child: CustomAppBar(
+                title: 'Notifications',
+                notification: false,
+                onTap: () {
+                  context.pop();
+                },
+              ),
             ),
             Expanded(
               child: ValueListenableBuilder(

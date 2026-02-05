@@ -8,6 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'quick_action.dart';
 
+import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
+import 'package:diamate/features/dfu_test/presentation/widgets/upload_dfu_bottom_sheet.dart';
+
 class QuickActionSection extends StatelessWidget {
   const QuickActionSection({super.key});
 
@@ -41,7 +44,17 @@ class QuickActionSection extends StatelessWidget {
         QuickActionWidget(
           color: Color(0xffDD6400),
           text: "DFU Test",
-          onTap: () {},
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => BlocProvider<DfuTestCubit>(
+                create: (context) => sl<DfuTestCubit>(),
+                child: const UploadDfuBottomSheet(),
+              ),
+            );
+          },
           icon: Icons.image_rounded,
         ),
       ],

@@ -11,6 +11,8 @@ import 'package:diamate/core/widgets/custom_image_picker.dart';
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
 import 'package:diamate/features/lab_tests/presentation/views/lab_tests_list_view.dart';
+import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
+import 'package:diamate/features/dfu_test/presentation/views/dfu_tests_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -135,6 +137,25 @@ class _ProfileViewState extends State<ProfileView> {
               title: "الإعدادات",
               icon: Icons.settings_outlined,
               onTap: () {},
+            ),
+
+            const SizedBox(height: 12),
+
+            /// DFU Test Button
+            _ProfileTile(
+              title: "نتائج فحص القدم (DFU)",
+              icon: Icons.personal_injury_outlined,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider<DfuTestCubit>(
+                      create: (context) => sl<DfuTestCubit>(),
+                      child: const DfuTestsListView(),
+                    ),
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 12),
