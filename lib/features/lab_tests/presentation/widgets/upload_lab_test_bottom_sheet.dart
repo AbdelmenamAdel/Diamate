@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/widgets/custom_achievement_notification.dart';
@@ -114,44 +115,55 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
           SizedBox(height: 16.h),
           GestureDetector(
             onTap: _pickFile,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-              decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: primaryColor.withOpacity(0.2),
-                  width: 1,
+            child: CustomPaint(
+              painter: DashedPainter(color: primaryColor),
+              child: Container(
+                height: 140.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xffF8F9FA),
+                  borderRadius: BorderRadius.circular(24.r),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.picture_as_pdf_rounded,
-                    color: primaryColor,
-                    size: 28.sp,
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Text(
-                      _fileName ?? "Select PDF File",
-                      style: TextStyle(
-                        fontFamily: K.sg,
-                        fontSize: 14.sp,
-                        color: _fileName != null
-                            ? Colors.black
-                            : Colors.grey[600],
-                        fontWeight: _fileName != null
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.upload_rounded,
+                      color: primaryColor,
+                      size: 44.sp,
                     ),
-                  ),
-                  if (_filePath != null)
-                    Icon(Icons.check_circle, color: Colors.green, size: 20.sp),
-                ],
+                    SizedBox(height: 12.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.picture_as_pdf_rounded,
+                          color: primaryColor.withOpacity(0.8),
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 8.w),
+                        Flexible(
+                          child: Text(
+                            _fileName ?? "Upload PDF Report",
+                            style: TextStyle(
+                              fontFamily: K.sg,
+                              fontSize: 16.sp,
+                              color: _fileName != null
+                                  ? Colors.black
+                                  : Colors.grey[700],
+                              fontWeight: _fileName != null
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -164,12 +176,14 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
                   _filePath!,
                 );
 
-                if (mounted) Navigator.pop(context);
-                showAchievementView(
-                  context: context,
-                  title: "Lab Test Uploaded Successfully",
-                  color: primaryColor,
-                );
+                if (mounted) {
+                  Navigator.pop(context);
+                  showAchievementView(
+                    context: context,
+                    title: "Lab Test Uploaded Successfully",
+                    color: primaryColor,
+                  );
+                }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -184,4 +198,41 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
       ),
     );
   }
+}
+
+class DashedPainter extends CustomPainter {
+  final Color color;
+  DashedPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double dashWidth = 8, dashSpace = 4, startX = 0;
+    final paint = Paint()
+      ..color = color.withOpacity(0.5)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.width, size.height),
+          Radius.circular(24.r),
+        ),
+      );
+
+    for (ui.PathMetric pathMetric in path.computeMetrics()) {
+      startX =
+          0; // Reset startX for each metric to ensure it starts from the beginning of the path
+      while (startX < pathMetric.length) {
+        canvas.drawPath(
+          pathMetric.extractPath(startX, startX + dashWidth),
+          paint,
+        );
+        startX += dashWidth + dashSpace;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
