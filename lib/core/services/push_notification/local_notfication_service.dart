@@ -53,7 +53,7 @@ class LocalNotificationService {
       debugPrint('❌ Error initializing LocalNotificationService: $e');
     }
 
-    // Explicitly request permissions for iOS using the Darwin implementation (v20+)
+    // Explicitly request permissions for both iOS & Android
     if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       final darwinImplementation = _flutterLocalNotificationsPlugin
@@ -68,6 +68,16 @@ class LocalNotificationService {
           sound: true,
         );
         debugPrint('✅ iOS/Darwin permissions requested');
+      }
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      final androidImplementation = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+
+      if (androidImplementation != null) {
+        await androidImplementation.requestNotificationsPermission();
+        debugPrint('✅ Android permissions requested');
       }
     }
   }
@@ -236,9 +246,9 @@ class LocalNotificationService {
 
     const notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
-        'diamate-id',
-        'diamate-name',
-        channelDescription: 'diamate-channel',
+        'diamate_channel_v2', // New Channel ID to reset settings
+        'DiaMate Alerts', // Clean Name
+        channelDescription: 'Main channel for health alerts',
         importance: Importance.max,
         priority: Priority.high,
         playSound: true,
@@ -289,9 +299,9 @@ class LocalNotificationService {
       scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local),
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
-          'diamate-high-id',
-          'diamate-high-name',
-          channelDescription: 'Main channel for health alerts',
+          'diamate_scheduled_v2', // New Channel ID
+          'DiaMate Reminders',
+          channelDescription: 'Scheduled water and health reminders',
           importance: Importance.max,
           priority: Priority.high,
           playSound: true,

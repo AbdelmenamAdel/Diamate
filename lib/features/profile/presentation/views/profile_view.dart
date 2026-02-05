@@ -13,6 +13,7 @@ import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.
 import 'package:diamate/features/lab_tests/presentation/views/lab_tests_list_view.dart';
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
 import 'package:diamate/features/dfu_test/presentation/views/dfu_tests_list_view.dart';
+import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -137,6 +138,22 @@ class _ProfileViewState extends State<ProfileView> {
               title: "الإعدادات",
               icon: Icons.settings_outlined,
               onTap: () {},
+            ),
+
+            const SizedBox(height: 12),
+
+            /// Permissions Button
+            _ProfileTile(
+              title: "الصلاحيات والأذونات",
+              icon: Icons.shield_outlined,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const PermissionsBottomSheet(),
+                );
+              },
             ),
 
             const SizedBox(height: 12),

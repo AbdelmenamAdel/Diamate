@@ -10,6 +10,8 @@ class NotificationLocalService {
   final StreamController<void> _updateController = StreamController.broadcast();
   Stream<void> get notificationStream => _updateController.stream;
 
+  Timer? _nextNotificationTimer;
+
   Future<void> init() async {
     HiveService.registerAdapter(PushNotificationModelAdapter());
     try {
@@ -19,15 +21,46 @@ class NotificationLocalService {
       await HiveService.openBox<PushNotificationModel>(_boxName);
     }
 
-    // 1. Listen to Database Changes
+    // 1. Listen to Database Changes & Schedule Next Update
     _box.watch().listen((event) {
       _updateController.add(null);
+      _scheduleNextUpdate();
     });
+
+    // 2. Initial Schedule
+    _scheduleNextUpdate();
   }
 
   // Trigger manual refresh (useful for onResume)
   void refresh() {
     _updateController.add(null);
+    _scheduleNextUpdate();
+  }
+
+  /// Finds the next upcoming notification and sets a timer to refresh UI exactly when it arrives
+  void _scheduleNextUpdate() {
+    _nextNotificationTimer?.cancel();
+
+    final now = DateTime.now();
+    // Find earliest notification that is still in the future
+    final futureNotifications = _box.values
+        .where((n) => n.createAt.isAfter(now))
+        .map((n) => n.createAt)
+        .toList();
+
+    if (futureNotifications.isEmpty) return;
+
+    // Sort to get the nearest one
+    futureNotifications.sort();
+    final nextTime = futureNotifications.first;
+
+    final duration = nextTime.difference(now);
+
+    // Add a small buffer (e.g., 1 second) to ensure "now" has definitely passed the time when timer fires
+    _nextNotificationTimer = Timer(duration + const Duration(seconds: 1), () {
+      _updateController.add(null); // Refresh UI
+      _scheduleNextUpdate(); // Schedule for the one after that
+    });
   }
 
   Box<PushNotificationModel> get _box =>
