@@ -11,7 +11,7 @@ class AppCubit extends Cubit<AppState> {
   // ignore: strict_top_level_inference
   static AppCubit get(context) => BlocProvider.of(context);
 
-  ThemeEnum appTheme = ThemeEnum.system;
+  ThemeEnum appTheme = ThemeEnum.light;
 
   //Theme Mode
   Future<void> changeAppThemeMode({ThemeEnum? selectedMode}) async {

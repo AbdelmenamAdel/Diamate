@@ -23,11 +23,15 @@ class _SplashViewState extends State<SplashPreview> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SizedBox(
-          height: 150.h,
-          child: Hero(tag: "splash", child: Image.asset(Assets.newLogo)),
+    return Theme(
+      data: ThemeData.light(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: SizedBox(
+            height: 150.h,
+            child: Hero(tag: "splash", child: Image.asset(Assets.newLogo)),
+          ),
         ),
       ),
     );

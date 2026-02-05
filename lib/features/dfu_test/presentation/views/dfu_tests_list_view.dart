@@ -16,26 +16,88 @@ class DfuTestsListView extends StatefulWidget {
 }
 
 class _DfuTestsListViewState extends State<DfuTestsListView> {
+  final Set<dynamic> _selectedKeys = {};
+  bool _isSelectionMode = false;
+
   @override
   void initState() {
     super.initState();
     context.read<DfuTestCubit>().loadDfuTests();
   }
 
+  void _toggleSelection(dynamic key) {
+    setState(() {
+      if (_selectedKeys.contains(key)) {
+        _selectedKeys.remove(key);
+        if (_selectedKeys.isEmpty) _isSelectionMode = false;
+      } else {
+        _selectedKeys.add(key);
+        _isSelectionMode = true;
+      }
+    });
+  }
+
+  Future<void> _deleteSelected() async {
+    final count = _selectedKeys.length;
+    await context.read<DfuTestCubit>().deleteMultipleDfuTests(
+      _selectedKeys.toList(),
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted $count DFU assessments successfully.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+
+    setState(() {
+      _selectedKeys.clear();
+      _isSelectionMode = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF8F9FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              child: CustomAppBar(
-                title: "DFU Assessments",
-                back: true,
-                onTap: () => Navigator.pop(context),
-                notification: false,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CustomAppBar(
+                      title: _isSelectionMode
+                          ? "${_selectedKeys.length} Selected"
+                          : "DFU Assessments",
+                      back: true,
+                      onTap: () {
+                        if (_isSelectionMode) {
+                          setState(() {
+                            _selectedKeys.clear();
+                            _isSelectionMode = false;
+                          });
+                        } else {
+                          context.pop();
+                        }
+                      },
+                      notification: false,
+                      trailing: _isSelectionMode
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                              ),
+                              onPressed: _deleteSelected,
+                            )
+                          : null,
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -57,7 +119,52 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
                           SizedBox(height: 12.h),
                       itemBuilder: (context, index) {
                         final test = state.dfuTests[index];
-                        return _buildDfuCard(context, test);
+                        final isSelected = _selectedKeys.contains(test.key);
+                        return GestureDetector(
+                          onLongPress: () => _toggleSelection(test.key),
+                          onTap: () async {
+                            if (_isSelectionMode) {
+                              _toggleSelection(test.key);
+                            } else {
+                              if (test.imagePaths.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "No images available for this test.",
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+
+                              bool allExist = true;
+                              for (String path in test.imagePaths) {
+                                if (!await File(path).exists()) {
+                                  allExist = false;
+                                  break;
+                                }
+                              }
+
+                              if (allExist) {
+                                _showImageViewer(
+                                  context,
+                                  test.name,
+                                  test.imagePaths,
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Some image files are missing or corrupted.",
+                                    ),
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: _buildDfuCard(context, test, isSelected),
+                        );
                       },
                     );
                   } else if (state is DfuTestError) {
@@ -81,7 +188,8 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
           Icon(
             Icons.add_photo_alternate_outlined,
             size: 64.sp,
-            color: Colors.grey[400],
+            color:
+                context.color.hintColor?.withOpacity(0.5) ?? Colors.grey[400],
           ),
           SizedBox(height: 16.h),
           Text(
@@ -89,7 +197,7 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
             style: TextStyle(
               fontFamily: K.sg,
               fontSize: 16.sp,
-              color: Colors.grey[600],
+              color: context.color.hintColor ?? Colors.grey[600],
             ),
           ),
         ],
@@ -97,12 +205,15 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
     );
   }
 
-  Widget _buildDfuCard(BuildContext context, dynamic test) {
+  Widget _buildDfuCard(BuildContext context, dynamic test, bool isSelected) {
     final primaryColor = context.color.primaryColor ?? Colors.blue;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isSelected
+            ? primaryColor.withOpacity(0.1)
+            : context.color.cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: isSelected ? Border.all(color: primaryColor, width: 2) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -113,29 +224,65 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        leading: Container(
-          width: 50.w,
-          height: 50.h,
-          decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: test.imagePaths.isNotEmpty
-              ? ClipRRect(
+        leading: _isSelectionMode
+            ? Icon(
+                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: primaryColor,
+              )
+            : Container(
+                width: 50.w,
+                height: 50.h,
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    File(test.imagePaths.first),
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : Icon(Icons.image_rounded, color: primaryColor),
-        ),
+                ),
+                child: test.imagePaths.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(test.imagePaths.first),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  padding: EdgeInsets.all(8.w),
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.broken_image_rounded,
+                                    color: primaryColor,
+                                    size: 20.sp,
+                                  ),
+                                ),
+                              ),
+                        ),
+                      )
+                    : Container(
+                        alignment: Alignment.center,
+                        child: Container(
+                          padding: EdgeInsets.all(8.w),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.image_rounded,
+                            color: primaryColor,
+                            size: 20.sp,
+                          ),
+                        ),
+                      ),
+              ),
         title: Text(
           test.name,
           style: TextStyle(
             fontFamily: K.sg,
             fontSize: 14.sp,
             fontWeight: FontWeight.bold,
+            color: context.color.textColor,
           ),
         ),
         subtitle: Text(
@@ -143,18 +290,18 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
           style: TextStyle(
             fontFamily: K.sg,
             fontSize: 12.sp,
-            color: Colors.grey[600],
+            color: context.color.hintColor ?? Colors.grey[600],
           ),
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios_rounded,
-          size: 16.sp,
-          color: Colors.grey[400],
-        ),
-        onTap: () {
-          // Open image viewer
-          _showImageViewer(context, test.name, test.imagePaths);
-        },
+        trailing: _isSelectionMode
+            ? null
+            : Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16.sp,
+                color:
+                    context.color.hintColor?.withOpacity(0.5) ??
+                    Colors.grey[400],
+              ),
       ),
     );
   }
@@ -164,26 +311,23 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
     String title,
     List<String> images,
   ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
+    context.push(
+      Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
           backgroundColor: Colors.black,
-          appBar: AppBar(
-            backgroundColor: Colors.black,
-            title: Text(title, style: const TextStyle(color: Colors.white)),
-            iconTheme: const IconThemeData(color: Colors.white),
-          ),
-          body: PageView.builder(
-            itemCount: images.length,
-            itemBuilder: (context, index) {
-              return Center(
-                child: InteractiveViewer(
-                  child: Image.file(File(images[index]), fit: BoxFit.contain),
-                ),
-              );
-            },
-          ),
+          title: Text(title, style: const TextStyle(color: Colors.white)),
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: PageView.builder(
+          itemCount: images.length,
+          itemBuilder: (context, index) {
+            return Center(
+              child: InteractiveViewer(
+                child: Image.file(File(images[index]), fit: BoxFit.contain),
+              ),
+            );
+          },
         ),
       ),
     );

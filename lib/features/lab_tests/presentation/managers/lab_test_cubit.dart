@@ -65,4 +65,13 @@ class LabTestCubit extends Cubit<LabTestState> {
       emit(LabTestLoaded(currentTests, isDescending: ascending));
     }
   }
+
+  Future<void> deleteMultipleTests(List<dynamic> keys) async {
+    try {
+      await _localService.deleteMultipleTests(keys);
+      loadLabTests();
+    } catch (e) {
+      emit(LabTestError(e.toString()));
+    }
+  }
 }

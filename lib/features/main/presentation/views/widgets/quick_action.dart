@@ -1,4 +1,5 @@
 import 'package:diamate/constant.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -33,7 +34,7 @@ class QuickActionWidget extends StatelessWidget {
               margin: EdgeInsets.all(4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
+                color: context.color.cardColor, // Adaptive background
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -52,6 +53,7 @@ class QuickActionWidget extends StatelessWidget {
                       fontFamily: K.sg,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
+                      color: context.color.textColor, // Adaptive text color
                     ),
                   ),
                 ],

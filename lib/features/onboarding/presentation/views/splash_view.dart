@@ -37,57 +37,64 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 120.h),
-          SizedBox(
-            height: 100.h,
-            child: Hero(tag: "splash", child: Image.asset(Assets.newLogo)),
-          ),
-          SizedBox(height: 24.h),
-          Text(
-            "support for your daily",
-            style: TextStyle(
-              height: 1.8,
-              fontWeight: FontWeight.w500,
-              fontFamily: K.sg,
-              fontSize: 16,
+    return Theme(
+      data: ThemeData.light(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 120.h),
+            SizedBox(
+              height: 100.h,
+              child: Hero(tag: "splash", child: Image.asset(Assets.newLogo)),
             ),
-          ),
-          Row(
-            spacing: 8,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "health journey by",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: K.sg,
-                  fontSize: 16,
-                ),
+            SizedBox(height: 24.h),
+            Text(
+              "support for your daily",
+              style: TextStyle(
+                height: 1.8,
+                fontWeight: FontWeight.w500,
+                fontFamily: K.sg,
+                fontSize: 16,
+                color: Colors.black,
               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.blue,
-                ),
-                child: Text(
-                  "AI-Powered",
+            ),
+            Row(
+              spacing: 8,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "health journey by",
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontFamily: K.sg,
                     fontSize: 16,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-            ],
-          ),
-          Spacer(),
-          Image.asset(Assets.splashBg),
-        ],
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.blue,
+                  ),
+                  child: Text(
+                    "AI-Powered",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontFamily: K.sg,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Spacer(),
+            Image.asset(Assets.splashBg),
+          ],
+        ),
       ),
     );
   }

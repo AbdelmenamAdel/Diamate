@@ -1,3 +1,4 @@
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'dart:io';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class PdfViewerView extends StatelessWidget {
               child: CustomAppBar(
                 title: title,
                 back: true,
-                onTap: () => Navigator.pop(context),
+                onTap: () => context.pop(),
                 notification: false,
               ),
             ),

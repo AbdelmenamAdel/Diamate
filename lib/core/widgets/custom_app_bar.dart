@@ -1,4 +1,5 @@
 import 'package:diamate/constant.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/widgets/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,21 +25,24 @@ class CustomAppBar extends StatelessWidget {
       children: [
         if (back)
           GestureDetector(
-            onTap: onTap ?? () {},
+            onTap: onTap ?? () => Navigator.pop(context),
             child: Container(
               height: 42.h,
               width: 42.h,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
-                color: Colors.black12,
+                color: context.color.blackAndWhite!.withOpacity(0.1),
               ),
               child: Container(
                 margin: EdgeInsets.all(1),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: Colors.white,
+                  color: context.color.cardColor,
                 ),
-                child: Icon(Icons.arrow_back_sharp),
+                child: Icon(
+                  Icons.arrow_back_rounded,
+                  color: context.color.textColor,
+                ),
               ),
             ),
           ),

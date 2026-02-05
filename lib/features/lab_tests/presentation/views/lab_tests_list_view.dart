@@ -18,6 +18,8 @@ class LabTestsListView extends StatefulWidget {
 class _LabTestsListViewState extends State<LabTestsListView> {
   bool _isDescending = true;
   bool _sortByDate = true;
+  final Set<dynamic> _selectedKeys = {};
+  bool _isSelectionMode = false;
 
   @override
   void initState() {
@@ -25,56 +27,120 @@ class _LabTestsListViewState extends State<LabTestsListView> {
     context.read<LabTestCubit>().loadLabTests();
   }
 
+  void _toggleSelection(dynamic key) {
+    setState(() {
+      if (_selectedKeys.contains(key)) {
+        _selectedKeys.remove(key);
+        if (_selectedKeys.isEmpty) _isSelectionMode = false;
+      } else {
+        _selectedKeys.add(key);
+        _isSelectionMode = true;
+      }
+    });
+  }
+
+  Future<void> _deleteSelected() async {
+    final count = _selectedKeys.length;
+    await context.read<LabTestCubit>().deleteMultipleTests(
+      _selectedKeys.toList(),
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted $count lab tests successfully.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+
+    setState(() {
+      _selectedKeys.clear();
+      _isSelectionMode = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF8F9FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              child: CustomAppBar(
-                title: "My Lab Tests",
-                back: true,
-                onTap: () => Navigator.pop(context),
-                notification: false,
-                trailing: IconButton(
-                  icon: Icon(
-                    _isDescending
-                        ? Icons.sort_rounded
-                        : Icons.filter_list_rounded,
-                    color: context.color.primaryColor ?? Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isDescending = !_isDescending;
-                    });
-                    if (_sortByDate) {
-                      context.read<LabTestCubit>().sortTests(_isDescending);
-                    } else {
-                      context.read<LabTestCubit>().sortByName(_isDescending);
-                    }
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Row(
                 children: [
-                  _sortChip("Date", _sortByDate, () {
-                    setState(() => _sortByDate = true);
-                    context.read<LabTestCubit>().sortTests(_isDescending);
-                  }),
-                  SizedBox(width: 8.w),
-                  _sortChip("Name", !_sortByDate, () {
-                    setState(() => _sortByDate = false);
-                    context.read<LabTestCubit>().sortByName(!_isDescending);
-                  }),
+                  Expanded(
+                    child: CustomAppBar(
+                      title: _isSelectionMode
+                          ? "${_selectedKeys.length} Selected"
+                          : "My Lab Tests",
+                      back: true,
+                      onTap: () {
+                        if (_isSelectionMode) {
+                          setState(() {
+                            _selectedKeys.clear();
+                            _isSelectionMode = false;
+                          });
+                        } else {
+                          context.pop();
+                        }
+                      },
+                      notification: false,
+                      trailing: _isSelectionMode
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                              ),
+                              onPressed: _deleteSelected,
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                _isDescending
+                                    ? Icons.sort_rounded
+                                    : Icons.filter_list_rounded,
+                                color:
+                                    context.color.primaryColor ?? Colors.blue,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isDescending = !_isDescending;
+                                });
+                                if (_sortByDate) {
+                                  context.read<LabTestCubit>().sortTests(
+                                    _isDescending,
+                                  );
+                                } else {
+                                  context.read<LabTestCubit>().sortByName(
+                                    _isDescending,
+                                  );
+                                }
+                              },
+                            ),
+                    ),
+                  ),
                 ],
               ),
             ),
+            if (!_isSelectionMode)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  children: [
+                    _sortChip("Date", _sortByDate, () {
+                      setState(() => _sortByDate = true);
+                      context.read<LabTestCubit>().sortTests(_isDescending);
+                    }),
+                    SizedBox(width: 8.w),
+                    _sortChip("Name", !_sortByDate, () {
+                      setState(() => _sortByDate = false);
+                      context.read<LabTestCubit>().sortByName(!_isDescending);
+                    }),
+                  ],
+                ),
+              ),
             SizedBox(height: 16.h),
             Expanded(
               child: BlocBuilder<LabTestCubit, LabTestState>(
@@ -95,7 +161,23 @@ class _LabTestsListViewState extends State<LabTestsListView> {
                           SizedBox(height: 12.h),
                       itemBuilder: (context, index) {
                         final test = state.labTests[index];
-                        return _buildTestCard(context, test);
+                        final isSelected = _selectedKeys.contains(test.key);
+                        return GestureDetector(
+                          onLongPress: () => _toggleSelection(test.key),
+                          onTap: () {
+                            if (_isSelectionMode) {
+                              _toggleSelection(test.key);
+                            } else {
+                              context.push(
+                                PdfViewerView(
+                                  title: test.name,
+                                  pdfPath: test.pdfPath,
+                                ),
+                              );
+                            }
+                          },
+                          child: _buildTestCard(context, test, isSelected),
+                        );
                       },
                     );
                   } else if (state is LabTestError) {
@@ -119,12 +201,13 @@ class _LabTestsListViewState extends State<LabTestsListView> {
         decoration: BoxDecoration(
           color: selected
               ? (context.color.primaryColor ?? Colors.blue)
-              : Colors.white,
+              : context.color.cardColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
                 ? (context.color.primaryColor ?? Colors.blue)
-                : Colors.grey.shade300,
+                : context.color.hintColor?.withOpacity(0.2) ??
+                      Colors.grey.shade300,
           ),
         ),
         child: Text(
@@ -132,7 +215,7 @@ class _LabTestsListViewState extends State<LabTestsListView> {
           style: TextStyle(
             fontFamily: K.sg,
             fontSize: 12.sp,
-            color: selected ? Colors.white : Colors.grey[600],
+            color: selected ? Colors.white : context.color.textColor,
             fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -148,7 +231,8 @@ class _LabTestsListViewState extends State<LabTestsListView> {
           Icon(
             Icons.description_outlined,
             size: 64.sp,
-            color: Colors.grey[400],
+            color:
+                context.color.hintColor?.withOpacity(0.5) ?? Colors.grey[400],
           ),
           SizedBox(height: 16.h),
           Text(
@@ -156,7 +240,7 @@ class _LabTestsListViewState extends State<LabTestsListView> {
             style: TextStyle(
               fontFamily: K.sg,
               fontSize: 16.sp,
-              color: Colors.grey[600],
+              color: context.color.hintColor ?? Colors.grey[600],
             ),
           ),
         ],
@@ -164,12 +248,15 @@ class _LabTestsListViewState extends State<LabTestsListView> {
     );
   }
 
-  Widget _buildTestCard(BuildContext context, dynamic test) {
+  Widget _buildTestCard(BuildContext context, dynamic test, bool isSelected) {
     final primaryColor = context.color.primaryColor ?? Colors.blue;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isSelected
+            ? primaryColor.withOpacity(0.1)
+            : context.color.cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: isSelected ? Border.all(color: primaryColor, width: 2) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -180,24 +267,30 @@ class _LabTestsListViewState extends State<LabTestsListView> {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        leading: Container(
-          padding: EdgeInsets.all(10.w),
-          decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.picture_as_pdf_rounded,
-            color: primaryColor,
-            size: 24.sp,
-          ),
-        ),
+        leading: _isSelectionMode
+            ? Icon(
+                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: primaryColor,
+              )
+            : Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.picture_as_pdf_rounded,
+                  color: primaryColor,
+                  size: 24.sp,
+                ),
+              ),
         title: Text(
           test.name,
           style: TextStyle(
             fontFamily: K.sg,
             fontSize: 14.sp,
             fontWeight: FontWeight.bold,
+            color: context.color.textColor,
           ),
         ),
         subtitle: Text(
@@ -205,23 +298,18 @@ class _LabTestsListViewState extends State<LabTestsListView> {
           style: TextStyle(
             fontFamily: K.sg,
             fontSize: 12.sp,
-            color: Colors.grey[600],
+            color: context.color.hintColor ?? Colors.grey[600],
           ),
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios_rounded,
-          size: 16.sp,
-          color: Colors.grey[400],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  PdfViewerView(title: test.name, pdfPath: test.pdfPath),
-            ),
-          );
-        },
+        trailing: _isSelectionMode
+            ? null
+            : Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16.sp,
+                color:
+                    context.color.hintColor?.withOpacity(0.5) ??
+                    Colors.grey[400],
+              ),
       ),
     );
   }

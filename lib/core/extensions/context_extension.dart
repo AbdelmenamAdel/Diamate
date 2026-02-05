@@ -3,22 +3,17 @@ import 'package:diamate/core/styles/theme/color_extension.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
-  //color
+  // Theme & Colors
   MyColors get color => Theme.of(this).extension<MyColors>()!;
-
-  // images
   MyAssets get assets => Theme.of(this).extension<MyAssets>()!;
+  ThemeData get theme => Theme.of(this);
+  TextTheme get textTheme => Theme.of(this).textTheme;
 
-  // // style
-  // TextStyle get textStyle => Theme.of(this).textTheme.displaySmall!;
+  // Media Query
+  double get width => MediaQuery.of(this).size.width;
+  double get height => MediaQuery.of(this).size.height;
 
-  //Language
-  // String translate(String langkey) {
-  //   return AppLocalizations.of(this)!.translate(langkey).toString();
-  // }
-
-  //Navigation
-
+  // Navigation Shortcuts
   Future<dynamic> pushNamed(String routeName, {Object? arguments}) {
     return Navigator.of(this).pushNamed(routeName, arguments: arguments);
   }
@@ -32,19 +27,30 @@ extension ContextExt on BuildContext {
   Future<dynamic> pushNamedAndRemoveUntil(
     String routeName, {
     Object? arguments,
+    bool Function(Route<dynamic>)? predicate,
   }) {
+    return Navigator.of(this).pushNamedAndRemoveUntil(
+      routeName,
+      predicate ?? (route) => false,
+      arguments: arguments,
+    );
+  }
+
+  Future<dynamic> push(Widget page) {
     return Navigator.of(
       this,
-    ).pushNamedAndRemoveUntil(routeName, (route) => false);
+    ).push(MaterialPageRoute(builder: (context) => page));
   }
 
-  String extractVimeoId(String url) {
-    final regExp = RegExp(r'vimeo\.com/(?:.*?/)?(\d+)');
-    final match = regExp.firstMatch(url);
-    return match?.group(1) ?? '';
+  Future<dynamic> pushReplacement(Widget page) {
+    return Navigator.of(
+      this,
+    ).pushReplacement(MaterialPageRoute(builder: (context) => page));
   }
 
-  double get width => MediaQuery.of(this).size.width;
-  double get height => MediaQuery.of(this).size.height;
-  void pop() => Navigator.of(this).pop();
+  void pop([dynamic result]) {
+    return Navigator.of(this).pop(result);
+  }
+
+  bool get canPop => Navigator.of(this).canPop();
 }

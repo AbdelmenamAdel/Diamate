@@ -30,6 +30,11 @@ class LabTestLocalService {
     await box.deleteAt(index);
   }
 
+  Future<void> deleteMultipleTests(List<dynamic> keys) async {
+    final box = await _getBox();
+    await box.deleteAll(keys);
+  }
+
   Future<void> clearAll() async {
     final box = await HiveService.openBox<LabTestModel>(_boxName);
     await box.clear();

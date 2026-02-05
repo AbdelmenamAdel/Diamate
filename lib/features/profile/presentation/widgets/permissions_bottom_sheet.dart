@@ -1,7 +1,7 @@
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:diamate/core/extensions/context_extension.dart';
 
 class PermissionsBottomSheet extends StatefulWidget {
   const PermissionsBottomSheet({super.key});
@@ -12,15 +12,13 @@ class PermissionsBottomSheet extends StatefulWidget {
 
 class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
     with WidgetsBindingObserver {
-  // Map of permissions to manage
   final Map<Permission, PermissionStatus> _permissionStatuses = {};
 
-  // List of permissions relevant to the app
   final List<Permission> _appPermissions = [
     Permission.notification,
     Permission.camera,
     Permission.microphone,
-    Permission.photos, // Typically for iOS / Android < 13
+    Permission.photos,
   ];
 
   @override
@@ -39,7 +37,6 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // Re-check permissions when user comes back from settings
       _checkPermissions();
     }
   }
@@ -54,24 +51,37 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
 
   Future<void> _handlePermissionClick(Permission permission) async {
     final status = _permissionStatuses[permission];
-
-    if (status == PermissionStatus.granted) {
-      // User likely wants to revoke? They must go to settings.
-      openAppSettings();
+    if (status == PermissionStatus.granted ||
+        status == PermissionStatus.limited ||
+        status == PermissionStatus.provisional) {
+      // Already granted, no need to do anything or maybe show a message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${_getNameForPermission(permission)} is already enabled.',
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } else if (status == PermissionStatus.permanentlyDenied) {
       openAppSettings();
     } else {
-      // Request permission
       final result = await permission.request();
-      setState(() {
-        _permissionStatuses[permission] = result;
-      });
+      _permissionStatuses[permission] = result;
+      if (mounted) setState(() {});
     }
   }
 
+  bool _isPermissionGranted(PermissionStatus? status) {
+    return status == PermissionStatus.granted ||
+        status == PermissionStatus.limited ||
+        status == PermissionStatus.provisional;
+  }
+
   IconData _getIconForPermission(Permission permission) {
-    if (permission == Permission.notification)
-      return Icons.notifications_rounded;
+    if (permission == Permission.notification) {
+      return Icons.notifications_active_rounded;
+    }
     if (permission == Permission.camera) return Icons.camera_alt_rounded;
     if (permission == Permission.microphone) return Icons.mic_rounded;
     if (permission == Permission.photos) return Icons.photo_library_rounded;
@@ -100,9 +110,14 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor =
+        context.color.cardColor; // Using theme card color for sheet bg
+    final textColor = context.color.textColor;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: bgColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30.r),
           topRight: Radius.circular(30.r),
@@ -120,7 +135,6 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Drag Handle
           Center(
             child: Container(
               width: 50.w,
@@ -133,18 +147,17 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
           ),
           SizedBox(height: 24.h),
 
-          // Header
           Row(
             children: [
               Container(
                 padding: EdgeInsets.all(10.w),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4), // Light Green bg
+                  color: const Color(0xFFF0FDF4),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.shield_moon_rounded,
-                  color: const Color(0xFF16A34A), // Green
+                  color: const Color(0xFF16A34A),
                   size: 28.sp,
                 ),
               ),
@@ -154,11 +167,10 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                 children: [
                   Text(
                     'App Permissions',
-
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: textColor, // Adaptive text color
                       fontFamily: 'SpaceGrotesk',
                     ),
                   ),
@@ -178,7 +190,6 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
 
           SizedBox(height: 24.h),
 
-          // Permissions List
           Flexible(
             child: ListView.separated(
               shrinkWrap: true,
@@ -188,7 +199,18 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
               itemBuilder: (context, index) {
                 final permission = _appPermissions[index];
                 final status = _permissionStatuses[permission];
-                final isGranted = status == PermissionStatus.granted;
+                final isGranted = _isPermissionGranted(status);
+
+                // Card Color Logic
+                final cardBg = isGranted
+                    ? (isDark ? Colors.green.withOpacity(0.1) : Colors.white)
+                    : (isDark ? Colors.grey.withOpacity(0.1) : Colors.grey[50]);
+
+                final borderColor = isGranted
+                    ? const Color(0xFF22C55E).withOpacity(0.3)
+                    : (isDark
+                          ? Colors.grey.withOpacity(0.2)
+                          : Colors.grey[300]!);
 
                 return InkWell(
                   onTap: () => _handlePermissionClick(permission),
@@ -197,37 +219,33 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                     duration: const Duration(milliseconds: 300),
                     padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
-                      color: isGranted ? Colors.white : Colors.grey[50],
+                      color: cardBg,
                       borderRadius: BorderRadius.circular(16.r),
                       border: Border.all(
-                        color: isGranted
-                            ? const Color(0xFF22C55E).withOpacity(0.3)
-                            : Colors.grey[300]!,
+                        color: borderColor,
                         width: isGranted ? 1.5 : 1,
                       ),
-                      boxShadow: isGranted
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFF22C55E).withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ]
-                          : [],
                     ),
                     child: Row(
                       children: [
-                        // Icon
                         Container(
                           padding: EdgeInsets.all(10.w),
                           decoration: BoxDecoration(
                             color: isGranted
-                                ? const Color(0xFFDCFCE7)
-                                : Colors.white,
+                                ? (isDark
+                                      ? const Color(0xFFDCFCE7).withOpacity(0.2)
+                                      : const Color(0xFFDCFCE7))
+                                : (isDark
+                                      ? Colors.grey.withOpacity(0.2)
+                                      : Colors.white),
                             shape: BoxShape.circle,
                             border: isGranted
                                 ? null
-                                : Border.all(color: Colors.grey[300]!),
+                                : Border.all(
+                                    color: isDark
+                                        ? Colors.grey.withOpacity(0.2)
+                                        : Colors.grey[300]!,
+                                  ),
                           ),
                           child: Icon(
                             _getIconForPermission(permission),
@@ -239,7 +257,6 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                         ),
                         SizedBox(width: 14.w),
 
-                        // Text Info
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,8 +267,8 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w700,
                                   color: isGranted
-                                      ? Colors.black87
-                                      : Colors.grey[800],
+                                      ? textColor
+                                      : Colors.grey[600],
                                   fontFamily: 'SpaceGrotesk',
                                 ),
                               ),
@@ -271,7 +288,6 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
 
                         SizedBox(width: 8.w),
 
-                        // Status Indicator
                         isGranted
                             ? Container(
                                 padding: EdgeInsets.symmetric(
@@ -279,7 +295,9 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                                   vertical: 6.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFDCFCE7),
+                                  color: isDark
+                                      ? const Color(0xFFDCFCE7).withOpacity(0.2)
+                                      : const Color(0xFFDCFCE7),
                                   borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child: Row(
@@ -302,29 +320,27 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                                   ],
                                 ),
                               )
-                            : Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12.w,
-                                  vertical: 8.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
+                            : GestureDetector(
+                                onTap: () => _handlePermissionClick(permission),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                    vertical: 8.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isDark ? Colors.white : Colors.black,
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  child: Text(
+                                    'Enable',
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? Colors.black
+                                          : Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.sp,
+                                      fontFamily: 'SpaceGrotesk',
                                     ),
-                                  ],
-                                ),
-                                child: Text(
-                                  'Enable',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11.sp,
-                                    fontFamily: 'SpaceGrotesk',
                                   ),
                                 ),
                               ),
@@ -338,7 +354,6 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
 
           SizedBox(height: 24.h),
 
-          // Total Settings Button
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -349,7 +364,7 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14.r),
                 ),
-                foregroundColor: Colors.black87,
+                foregroundColor: textColor,
               ),
               icon: Icon(Icons.settings_outlined, size: 20.sp),
               label: Text(

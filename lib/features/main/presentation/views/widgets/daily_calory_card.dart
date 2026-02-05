@@ -1,5 +1,6 @@
-import 'package:diamate/constant.dart';
-import 'package:diamate/features/main/presentation/widgets/calorie_chart.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
+import '../../../../../../constant.dart';
+import '../../../../../../features/main/presentation/widgets/calorie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -8,12 +9,16 @@ class DailyCaloryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(12),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Color(0xffF5F5F5),
-        border: Border.all(color: Color(0xFFE4E4E4)),
+        color: context.color.cardColor,
+        border: Border.all(
+          color: isDark ? Colors.grey.withOpacity(0.2) : Color(0xFFE4E4E4),
+        ),
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Column(
@@ -25,6 +30,7 @@ class DailyCaloryCard extends StatelessWidget {
               fontFamily: K.sg,
               fontSize: 12,
               fontWeight: FontWeight.w700,
+              color: context.color.textColor,
             ),
           ),
           SizedBox(height: 4.h),
@@ -46,8 +52,8 @@ class DailyCaloryCard extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: K.sg,
                       fontSize: 12,
-                      color: Colors.black,
                       fontWeight: FontWeight.w900,
+                      color: context.color.textColor,
                     ),
                   ),
                   Text(

@@ -1,4 +1,5 @@
 import 'package:diamate/constant.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/styles/text/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +49,16 @@ class CustomTextFormField extends StatelessWidget {
       child: Row(
         children: [
           imagepng == null
-              ? SvgPicture.asset(image ?? Assets.vector)
-              : Image.asset(height: 16, width: 16, imagepng!),
+              ? SvgPicture.asset(
+                  image ?? Assets.vector,
+                  color: context.color.textColor,
+                )
+              : Image.asset(
+                  height: 16,
+                  width: 16,
+                  imagepng!,
+                  color: context.color.textColor,
+                ),
           if (!nodivider)
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
@@ -62,10 +71,10 @@ class CustomTextFormField extends StatelessWidget {
           Expanded(
             child: TextFormField(
               style: TextStyles.regular14.copyWith(
-                color: Colors.black,
+                color: context.color.textColor,
                 fontSize: 12.sp,
               ),
-              cursorColor: Colors.black.withOpacity(.65),
+              cursorColor: context.color.textColor?.withOpacity(.65),
               keyboardType: keyboardType,
               validator: validator,
               controller: controller,
@@ -81,7 +90,7 @@ class CustomTextFormField extends StatelessWidget {
                   fontFamily: K.sg,
                   fontWeight: FontWeight.w500,
                   fontSize: 12.sp,
-                  color: Colors.black,
+                  color: context.color.textColor,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.only(left: 16.0),

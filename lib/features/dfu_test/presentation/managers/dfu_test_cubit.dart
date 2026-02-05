@@ -33,4 +33,13 @@ class DfuTestCubit extends Cubit<DfuTestState> {
       emit(DfuTestError(e.toString()));
     }
   }
+
+  Future<void> deleteMultipleDfuTests(List<dynamic> keys) async {
+    try {
+      await _localService.deleteMultipleDfuTests(keys);
+      loadDfuTests();
+    } catch (e) {
+      emit(DfuTestError(e.toString()));
+    }
+  }
 }

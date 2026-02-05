@@ -121,9 +121,8 @@ class _DiaMateState extends State<DiaMate> with WidgetsBindingObserver {
                   supportedLocales: AppLocalizationsSetup.supportedLocales,
                   locale: AppLocalizationsSetup.supportedLocales.last,
                   theme: themeLight(),
-                  // ! this mode here to controle the theme from here only uncomment these lines
-                  // darkTheme: themeDark(),
-                  // themeMode: _getThemeMode(context.watch<AppCubit>().appTheme),
+                  darkTheme: themeDark(),
+                  themeMode: _getThemeMode(context.watch<AppCubit>().appTheme),
                   navigatorKey: AppRoutes.navigatorKey,
                   initialRoute: AppRoutes.initial,
                   onGenerateRoute: AppRoutes.onGenerateRoute,

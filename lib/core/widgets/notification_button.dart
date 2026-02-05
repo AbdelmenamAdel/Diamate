@@ -21,13 +21,13 @@ class NotificationButton extends StatelessWidget {
         width: 42.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          color: Colors.black12,
+          color: context.color.blackAndWhite!.withOpacity(0.1),
         ),
         child: Container(
           margin: EdgeInsets.all(1),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            color: Colors.white,
+            color: context.color.cardColor,
           ),
           child: StreamBuilder<void>(
             stream: sl<NotificationLocalService>().notificationStream,
@@ -38,7 +38,12 @@ class NotificationButton extends StatelessWidget {
                 label: unreadCount > 0 ? Text(unreadCount.toString()) : null,
                 isLabelVisible: unreadCount > 0,
                 backgroundColor: context.color.primaryColor ?? Colors.blue,
-                child: Center(child: Icon(Icons.notifications_active_outlined)),
+                child: Center(
+                  child: Icon(
+                    Icons.notifications_active_outlined,
+                    color: context.color.textColor,
+                  ),
+                ),
               );
             },
           ),

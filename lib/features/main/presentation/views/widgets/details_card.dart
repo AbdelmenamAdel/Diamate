@@ -9,12 +9,16 @@ class DetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(12),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Color(0xffF5F5F5),
-        border: Border.all(color: Color(0xFFE4E4E4)),
+        color: context.color.cardColor,
+        border: Border.all(
+          color: isDark ? Colors.grey.withOpacity(0.2) : Color(0xFFE4E4E4),
+        ),
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Row(
@@ -34,6 +38,7 @@ class DetailsCard extends StatelessWidget {
                   fontFamily: K.sg,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
+                  color: context.color.textColor,
                 ),
               ),
             ],
@@ -43,9 +48,21 @@ class DetailsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 8,
             children: [
-              _detailRowWidget(text: "%60 Carbs", color: Color(0xff291564)),
-              _detailRowWidget(text: "%30 Proteins", color: Color(0xff043120)),
-              _detailRowWidget(text: "%10 Fats", color: Color(0xff80381E)),
+              _detailRowWidget(
+                context,
+                text: "%60 Carbs",
+                color: Color(0xff291564),
+              ),
+              _detailRowWidget(
+                context,
+                text: "%30 Proteins",
+                color: Color(0xff043120),
+              ),
+              _detailRowWidget(
+                context,
+                text: "%10 Fats",
+                color: Color(0xff80381E),
+              ),
             ],
           ),
           SizedBox(width: context.width * 0.10),
@@ -54,7 +71,13 @@ class DetailsCard extends StatelessWidget {
     );
   }
 
-  Row _detailRowWidget({required Color color, required String text}) {
+  Row _detailRowWidget(
+    BuildContext context, {
+    required Color color,
+    required String text,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         CircleAvatar(radius: 5.r, backgroundColor: color.withOpacity(.25)),
@@ -62,7 +85,7 @@ class DetailsCard extends StatelessWidget {
         Text(
           ' $text',
           style: TextStyle(
-            color: color,
+            color: isDark ? context.color.textColor : color,
             fontFamily: K.sg,
             fontSize: 12,
             fontWeight: FontWeight.bold,

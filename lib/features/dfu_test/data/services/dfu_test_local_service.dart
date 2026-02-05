@@ -29,4 +29,9 @@ class DfuTestLocalService {
     final box = await _getBox();
     await box.deleteAt(index);
   }
+
+  Future<void> deleteMultipleDfuTests(List<dynamic> keys) async {
+    final box = await _getBox();
+    await box.deleteAll(keys);
+  }
 }

@@ -59,14 +59,14 @@ class _MainViewState extends State<MainView> {
         height: 90.h,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.color.cardColor,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20.r),
               topRight: Radius.circular(20.r),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: context.color.textColor!.withOpacity(0.08),
                 blurRadius: 12.r,
                 offset: Offset(0, -4.h),
               ),
@@ -92,7 +92,7 @@ class _MainViewState extends State<MainView> {
     final bool active = _currentIndex == index;
     final color = active
         ? const Color(0xFF2EA6F2)
-        : Colors.black.withOpacity(.6);
+        : context.color.textColor!.withOpacity(.6);
     return Expanded(
       child: InkWell(
         onTap: () {

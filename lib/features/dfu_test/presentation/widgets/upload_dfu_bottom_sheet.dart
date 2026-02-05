@@ -26,7 +26,7 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImages() async {
-    final granted = await sl<PermissionService>().requestStoragePermission();
+    final granted = await sl<PermissionService>().requestPhotosPermission();
 
     if (!granted) {
       if (mounted) {
@@ -64,8 +64,8 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
         24,
         MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: context.color.cardColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -186,7 +186,8 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
               child: Container(
                 height: 140.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xffF8F9FA),
+                  color: (context.color.blackAndWhite ?? Colors.black)
+                      .withOpacity(0.05),
                   borderRadius: BorderRadius.circular(24.r),
                 ),
                 child: Column(
@@ -216,7 +217,7 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
                             fontFamily: K.sg,
                             fontSize: 16.sp,
                             color: _imagePaths.isNotEmpty
-                                ? Colors.black
+                                ? context.color.textColor
                                 : Colors.grey[700],
                             fontWeight: _imagePaths.isNotEmpty
                                 ? FontWeight.w700

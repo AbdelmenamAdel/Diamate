@@ -68,8 +68,8 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
         24,
         MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: context.color.cardColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
@@ -120,7 +120,8 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
               child: Container(
                 height: 140.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xffF8F9FA),
+                  color: (context.color.blackAndWhite ?? Colors.black)
+                      .withOpacity(0.05),
                   borderRadius: BorderRadius.circular(24.r),
                 ),
                 child: Column(
@@ -149,7 +150,7 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
                               fontFamily: K.sg,
                               fontSize: 16.sp,
                               color: _fileName != null
-                                  ? Colors.black
+                                  ? context.color.textColor
                                   : Colors.grey[700],
                               fontWeight: _fileName != null
                                   ? FontWeight.w700

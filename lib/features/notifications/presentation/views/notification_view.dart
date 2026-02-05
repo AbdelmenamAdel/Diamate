@@ -65,8 +65,10 @@ class _NotificationsViewState extends State<NotificationsView> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = context.color.primaryColor ?? Colors.blue;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xffF8F9FA),
+      backgroundColor: context.color.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -142,12 +144,15 @@ class _NotificationsViewState extends State<NotificationsView> {
                           Icon(
                             Icons.notifications_off_outlined,
                             size: 64.sp,
-                            color: Colors.grey,
+                            color: context.color.textColor?.withOpacity(0.5),
                           ),
                           SizedBox(height: 16.h),
-                          const Text(
+                          Text(
                             'No notifications yet',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: context.color.textColor?.withOpacity(0.5),
+                            ),
                           ),
                         ],
                       ),
@@ -197,8 +202,8 @@ class _NotificationsViewState extends State<NotificationsView> {
                             color: isSelected
                                 ? primaryColor.withOpacity(0.1)
                                 : (!notification.isRead
-                                      ? primaryColor.withOpacity(0.04)
-                                      : Colors.white),
+                                      ? primaryColor.withOpacity(0.08)
+                                      : context.color.cardColor),
                             borderRadius: BorderRadius.circular(16.r),
                             border: isSelected
                                 ? Border.all(color: primaryColor, width: 2)
@@ -208,12 +213,14 @@ class _NotificationsViewState extends State<NotificationsView> {
                                           width: 1.5,
                                         )
                                       : Border.all(
-                                          color: Colors.black12,
+                                          color: isDark
+                                              ? Colors.white10
+                                              : Colors.black12,
                                           width: 0.5,
                                         )),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
+                                color: Colors.black.withOpacity(0.05),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -272,7 +279,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                                         fontSize: 16.sp,
                                         color: !notification.isRead
                                             ? primaryColor
-                                            : Colors.black,
+                                            : context.color.textColor,
                                       ),
                                     ),
                                   ),
@@ -290,7 +297,8 @@ class _NotificationsViewState extends State<NotificationsView> {
                                           notification.body,
                                           style: TextStyle(
                                             fontSize: 14.sp,
-                                            color: Colors.grey[800],
+                                            color: context.color.textColor
+                                                ?.withOpacity(0.7),
                                           ),
                                         ),
                                       ),
