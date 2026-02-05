@@ -14,18 +14,21 @@ class QuickActionSection extends StatelessWidget {
       children: [
         QuickActionWidget(
           color: Color(0xff5F0095),
-          text: "Scan Meal",
-          image: Assets.camera,
+          text: "Add Drug",
+          image: Assets.medicine,
+          onTap: () {},
         ),
         QuickActionWidget(
           color: Color(0xff1DC500),
-          text: "Log Glcose",
-          image: Assets.glucose,
+          text: "Lab Test",
+          onTap: () {},
+          icon: Icons.file_copy_rounded,
         ),
         QuickActionWidget(
           color: Color(0xffDD6400),
-          text: "AI Assistant",
-          image: Assets.chat,
+          text: "DFU Test",
+          onTap: () {},
+          icon: Icons.image_rounded,
         ),
       ],
     );

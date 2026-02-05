@@ -34,6 +34,10 @@ class Assets {
   /// assets/images/food.svg
   static const String food = "assets/images/food.svg";
 
+  /// Assets for drug
+  /// assets/images/drug.svg
+  static const String medicine = "assets/images/medicines.svg";
+
   /// Assets for glucose
   /// assets/images/glucose.svg
   static const String glucose = "assets/images/glucose.svg";
