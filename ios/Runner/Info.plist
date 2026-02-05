@@ -51,6 +51,9 @@
    <string>We need access to save/select photos</string>
    <key>NSMicrophoneUsageDescription</key>
    <string>We need access to the microphone to record voice messages.</string>
-
+   <key>UIFileSharingEnabled</key>
+   <true/>
+   <key>LSSupportsOpeningDocumentsInPlace</key>
+   <true/>
 </dict>
 </plist>

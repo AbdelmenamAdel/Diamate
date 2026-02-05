@@ -19,6 +19,9 @@ import 'package:diamate/core/services/push_notification/local_notfication_servic
 import 'package:diamate/core/services/chat_companion_service.dart';
 import 'package:diamate/core/services/permission_service.dart';
 
+import 'package:diamate/features/lab_tests/data/services/lab_test_local_service.dart';
+import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
@@ -26,6 +29,16 @@ Future<void> setupInjector() async {
   await _initAuth();
   await _initChat();
   await _initNotifications();
+  await _initLabTests();
+}
+
+Future<void> _initLabTests() async {
+  final labService = LabTestLocalService();
+  await labService.init();
+  sl.registerLazySingleton<LabTestLocalService>(() => labService);
+  sl.registerFactory<LabTestCubit>(
+    () => LabTestCubit(sl<LabTestLocalService>()),
+  );
 }
 
 Future<void> _initNotifications() async {

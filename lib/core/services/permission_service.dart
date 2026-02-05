@@ -8,9 +8,16 @@ class PermissionService {
       Permission.microphone,
       Permission.photos,
       Permission.notification,
+      Permission.storage,
     ].request();
 
     return statuses;
+  }
+
+  /// Request Storage Permission
+  Future<bool> requestStoragePermission() async {
+    var status = await Permission.storage.request();
+    return status.isGranted;
   }
 
   /// Request Camera Permission

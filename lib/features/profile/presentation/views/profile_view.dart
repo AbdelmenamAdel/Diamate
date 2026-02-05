@@ -8,7 +8,11 @@ import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/core/widgets/custom_image_picker.dart';
+import 'package:diamate/core/services/services_locator.dart';
+import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
+import 'package:diamate/features/lab_tests/presentation/views/lab_tests_list_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileView extends StatefulWidget {
@@ -131,6 +135,25 @@ class _ProfileViewState extends State<ProfileView> {
               title: "الإعدادات",
               icon: Icons.settings_outlined,
               onTap: () {},
+            ),
+
+            const SizedBox(height: 12),
+
+            /// Lab Tests Button
+            _ProfileTile(
+              title: "نتائج التحاليل",
+              icon: Icons.biotech_outlined,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider<LabTestCubit>(
+                      create: (context) => sl<LabTestCubit>(),
+                      child: const LabTestsListView(),
+                    ),
+                  ),
+                );
+              },
             ),
 
             const Spacer(),
