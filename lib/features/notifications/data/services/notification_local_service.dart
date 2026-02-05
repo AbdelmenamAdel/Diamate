@@ -7,7 +7,13 @@ class NotificationLocalService {
 
   Future<void> init() async {
     HiveService.registerAdapter(PushNotificationModelAdapter());
-    await HiveService.openBox<PushNotificationModel>(_boxName);
+    try {
+      await HiveService.openBox<PushNotificationModel>(_boxName);
+    } catch (e) {
+      // In case of schema mismatch (like adding isRead field), wipe the box
+      await Hive.deleteBoxFromDisk(_boxName);
+      await HiveService.openBox<PushNotificationModel>(_boxName);
+    }
   }
 
   Box<PushNotificationModel> get _box =>
@@ -23,11 +29,36 @@ class NotificationLocalService {
     return list;
   }
 
-  Future<void> deleteNotification(int index) async {
-    await _box.deleteAt(index);
+  Future<void> deleteNotification(dynamic key) async {
+    await _box.delete(key);
+  }
+
+  Future<void> deleteMultipleNotifications(List<dynamic> keys) async {
+    await _box.deleteAll(keys);
   }
 
   Future<void> clearAll() async {
     await _box.clear();
+  }
+
+  int getUnreadCount() {
+    return _box.values.where((notification) => !notification.isRead).length;
+  }
+
+  Future<void> markAsRead(dynamic key) async {
+    final notification = _box.get(key);
+    if (notification != null && !notification.isRead) {
+      notification.isRead = true;
+      await notification.save();
+    }
+  }
+
+  Future<void> markAllAsRead() async {
+    for (var notification in _box.values) {
+      if (!notification.isRead) {
+        notification.isRead = true;
+        await notification.save();
+      }
+    }
   }
 }

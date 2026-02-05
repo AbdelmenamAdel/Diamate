@@ -9,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/language/app_localizations_setup.dart';
 import 'core/styles/theme/app_theme.dart';
+import 'package:diamate/core/services/push_notification/local_notfication_service.dart';
+import 'package:diamate/features/notifications/data/services/notification_local_service.dart';
 
 import 'package:diamate/core/utils/time_ago.dart';
 
@@ -17,6 +19,20 @@ void main() async {
   await ConnectivityController.instance.init();
   await setupInjector();
   TimeAgo.setup();
+
+  // Test Local Notifications: Clear previous and send exactly one for verification
+  final notifService = sl<LocalNotificationService>();
+  final localNotifService = sl<NotificationLocalService>();
+
+  // Clear existing to see "it only" as requested
+  // await localNotifService.clearAll();
+
+  // Send one high-quality message from morning or night category
+  await notifService.showSimpleNotification(
+    title: "مرحباً بك في DiaMate 💙",
+    body: "أنا صديقك ومرافقك الصحي، هكون معاك خطوة بخطوة عشان نطمن على صحتك.",
+    payload: "welco",
+  );
   // Do not block app startup with optional background work. Run after first frame.
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

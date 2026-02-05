@@ -21,13 +21,14 @@ class PushNotificationModelAdapter extends TypeAdapter<PushNotificationModel> {
       body: fields[1] as String,
       productId: fields[2] as int,
       createAt: fields[3] as DateTime,
+      isRead: fields[4] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, PushNotificationModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class PushNotificationModelAdapter extends TypeAdapter<PushNotificationModel> {
       ..writeByte(2)
       ..write(obj.productId)
       ..writeByte(3)
-      ..write(obj.createAt);
+      ..write(obj.createAt)
+      ..writeByte(4)
+      ..write(obj.isRead);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:diamate/features/notifications/data/services/notification_local_
 import 'package:diamate/features/notifications/data/models/push_notification_model.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:diamate/core/services/chat_companion_service.dart';
 import 'package:flutter/foundation.dart';
 
 class LocalNotificationService {
@@ -96,5 +97,40 @@ class LocalNotificationService {
     );
 
     debugPrint('⏰ Notification scheduled for $scheduledDate');
+  }
+
+  /// Send random test notifications from ChatCompanionService
+  Future<void> sendRandomTestNotifications() async {
+    final companion = sl<ChatCompanionService>();
+    final hour = DateTime.now().hour;
+    String category = "General";
+    List<String> messages;
+
+    if (hour >= 5 && hour < 12) {
+      category = "Morning Support";
+      messages = companion.morningMessages;
+    } else if (hour >= 12 && hour < 18) {
+      category = "Daily Motivation";
+      messages = companion.afterMealMessages;
+    } else {
+      category = "Night Support";
+      messages = companion.nightAndStreakMessages;
+    }
+
+    // Shuffle and pick 3-5 messages
+    final random = (DateTime.now().millisecond % 3) + 3; // 3 to 5
+    final selectedMessages = (List<String>.from(
+      messages,
+    )..shuffle()).take(random).toList();
+
+    for (var i = 0; i < selectedMessages.length; i++) {
+      await showSimpleNotification(
+        title: category,
+        body: selectedMessages[i],
+        payload: i.toString(),
+      );
+      // Small delay between notifications to ensure order/visibility
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
   }
 }

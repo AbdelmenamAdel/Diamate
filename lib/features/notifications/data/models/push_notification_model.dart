@@ -8,6 +8,7 @@ class PushNotificationModel extends HiveObject {
     required this.body,
     required this.productId,
     required this.createAt,
+    this.isRead = false,
   });
 
   @HiveField(0)
@@ -21,4 +22,7 @@ class PushNotificationModel extends HiveObject {
 
   @HiveField(3)
   final DateTime createAt;
+
+  @HiveField(4)
+  bool isRead;
 }
