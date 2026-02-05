@@ -19,7 +19,12 @@ class PdfViewerView extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              child: CustomAppBar(title: title, back: true),
+              child: CustomAppBar(
+                title: title,
+                back: true,
+                onTap: () => Navigator.pop(context),
+                notification: false,
+              ),
             ),
             Expanded(child: SfPdfViewer.file(File(pdfPath))),
           ],

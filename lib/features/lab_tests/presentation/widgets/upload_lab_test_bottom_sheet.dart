@@ -1,5 +1,6 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
@@ -156,13 +157,19 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
           ),
           SizedBox(height: 32.h),
           CustomButton(
-            onTap: () {
+            onTap: () async {
               if (_nameController.text.isNotEmpty && _filePath != null) {
-                context.read<LabTestCubit>().addLabTest(
+                await context.read<LabTestCubit>().addLabTest(
                   _nameController.text,
                   _filePath!,
                 );
-                Navigator.pop(context);
+
+                if (mounted) Navigator.pop(context);
+                showAchievementView(
+                  context: context,
+                  title: "Lab Test Uploaded Successfully",
+                  color: primaryColor,
+                );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

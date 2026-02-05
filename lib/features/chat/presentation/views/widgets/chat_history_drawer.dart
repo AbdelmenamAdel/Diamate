@@ -1,4 +1,5 @@
 import 'package:diamate/constant.dart';
+import 'package:diamate/core/utils/time_ago.dart';
 import 'package:diamate/features/chat/data/models/chat_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -138,7 +139,10 @@ class ChatHistoryDrawer extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      '${session.date.day}/${session.date.month}/${session.date.year}',
+                                      TimeAgo.formatWithDate(
+                                        session.date,
+                                        context,
+                                      ),
                                       style: TextStyle(
                                         color: Colors.white54,
                                         fontSize: 12.sp,

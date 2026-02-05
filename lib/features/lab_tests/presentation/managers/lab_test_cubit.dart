@@ -13,9 +13,7 @@ class LabTestCubit extends Cubit<LabTestState> {
     emit(LabTestLoading());
     try {
       final tests = await _localService.getLabTests();
-      tests.sort(
-        (a, b) => b.addDate.compareTo(a.addDate),
-      ); // Default sort by date desc
+      tests.sort((a, b) => b.addDate.compareTo(a.addDate));
       emit(LabTestLoaded(tests));
     } catch (e) {
       emit(LabTestError(e.toString()));

@@ -8,7 +8,7 @@ part of 'lab_test_model.dart';
 
 class LabTestModelAdapter extends TypeAdapter<LabTestModel> {
   @override
-  final int typeId = 3;
+  final int typeId = 4;
 
   @override
   LabTestModel read(BinaryReader reader) {

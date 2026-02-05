@@ -1,12 +1,12 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/utils/time_ago.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
 import 'package:diamate/features/lab_tests/presentation/views/pdf_viewer_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 
 class LabTestsListView extends StatefulWidget {
   const LabTestsListView({super.key});
@@ -201,7 +201,7 @@ class _LabTestsListViewState extends State<LabTestsListView> {
           ),
         ),
         subtitle: Text(
-          DateFormat('MMM dd, yyyy').format(test.addDate),
+          TimeAgo.formatWithDate(test.addDate, context),
           style: TextStyle(
             fontFamily: K.sg,
             fontSize: 12.sp,

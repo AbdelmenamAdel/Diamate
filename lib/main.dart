@@ -10,10 +10,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/language/app_localizations_setup.dart';
 import 'core/styles/theme/app_theme.dart';
 
+import 'package:diamate/core/utils/time_ago.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ConnectivityController.instance.init();
   await setupInjector();
+  TimeAgo.setup();
   // Do not block app startup with optional background work. Run after first frame.
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
