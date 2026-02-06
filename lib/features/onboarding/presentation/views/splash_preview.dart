@@ -1,6 +1,7 @@
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
+import 'package:diamate/core/styles/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -24,7 +25,7 @@ class _SplashViewState extends State<SplashPreview> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData.light(),
+      data: themeLight(),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Center(

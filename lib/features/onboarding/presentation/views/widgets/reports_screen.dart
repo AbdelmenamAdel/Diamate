@@ -87,27 +87,33 @@ class ReportsScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 12.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Smart PDF Import",
-                      style: TextStyle(
-                        fontFamily: K.sg,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: ColorsLight.black,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Smart PDF Import",
+                        style: TextStyle(
+                          fontFamily: K.sg,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: ColorsLight.black,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Auto-extract data from lab results",
-                      style: TextStyle(
-                        fontFamily: K.sg,
-                        fontSize: 13.sp,
-                        color: ColorsLight.black.withOpacity(0.5),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+
+                        child: Text(
+                          "Auto-extract data from lab results",
+                          style: TextStyle(
+                            fontFamily: K.sg,
+                            fontSize: 13.sp,
+                            color: ColorsLight.black.withOpacity(0.5),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

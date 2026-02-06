@@ -384,6 +384,10 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                     onPressed: () {
                       SecureStorage.setBoolean(key: K.isLogged, value: false);
+                      SecureStorage.setBoolean(
+                        key: 'has_welcome_v1',
+                        value: false,
+                      );
                       context.pushNamedAndRemoveUntil(AppRoutes.splash);
                     },
                     child: const Text(
@@ -427,11 +431,7 @@ class _ProfileSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
 
-  const _ProfileSection({
-    super.key,
-    required this.title,
-    required this.children,
-  });
+  const _ProfileSection({required this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {

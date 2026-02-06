@@ -268,6 +268,7 @@ class _ChatbotContentState extends State<ChatbotContent> {
                           _controller.clear();
                         },
                         decoration: InputDecoration(
+                          border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 12,

@@ -5,6 +5,7 @@ import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 
 import 'package:diamate/core/services/services_locator.dart';
+import 'package:diamate/core/styles/theme/app_theme.dart';
 import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_date_picker.dart';
@@ -559,98 +560,106 @@ class _SignupViewState extends State<SignupView> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom / 4;
     return BlocProvider<AuthCubit>(
       create: (context) => sl<AuthCubit>(),
-      child: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state is RegisterSuccess) {
-            SecureStorage.setBoolean(key: K.isLogged, value: true);
-            showAchievementView(
-              context: context,
-              color: context.color.primaryColor,
-              title: 'Account Created Successfully!',
-            );
-            // Navigate to chatbots or home
-            context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
-          } else if (state is RegisterFailure) {
-            showAchievementView(
-              context: context,
-              color: Colors.red,
-              title: state.message,
-            );
-          }
-        },
-        builder: (context, state) {
-          return Stack(
-            children: [
-              Scaffold(
-                resizeToAvoidBottomInset: false,
-                body: Stack(
-                  children: [
-                    Positioned(child: Image.asset(Assets.bgImgLogin)),
-                    Positioned.fill(
-                      child: Image.asset(Assets.gradientBg, fit: BoxFit.cover),
-                    ),
-                    // Use a scrollable layout that respects the keyboard inset
-                    SingleChildScrollView(
-                      padding: EdgeInsets.only(
-                        bottom: bottomInset + 24, // extra space for keyboard
-                      ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight:
-                              MediaQuery.of(context).size.height - bottomInset,
+      child: Theme(
+        data: themeLight(),
+        child: BlocConsumer<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is RegisterSuccess) {
+              SecureStorage.setBoolean(key: K.isLogged, value: true);
+              showAchievementView(
+                context: context,
+                color: context.color.primaryColor,
+                title: 'Account Created Successfully!',
+              );
+              // Navigate to chatbots or home
+              context.pushNamedAndRemoveUntil(AppRoutes.chatbot);
+            } else if (state is RegisterFailure) {
+              showAchievementView(
+                context: context,
+                color: Colors.red,
+                title: state.message,
+              );
+            }
+          },
+          builder: (context, state) {
+            return Stack(
+              children: [
+                Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  body: Stack(
+                    children: [
+                      Positioned(child: Image.asset(Assets.bgImgLogin)),
+                      Positioned.fill(
+                        child: Image.asset(
+                          Assets.gradientBg,
+                          fit: BoxFit.cover,
                         ),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 240.h),
-                            SizedBox(height: 24),
-                            _buildHeader(),
-                            // Wrap PageView with padding to account for keyboard
-                            Padding(
-                              padding: EdgeInsets.only(bottom: bottomInset),
-                              child: SizedBox(
-                                height: 450.h, // لازم نحدد ارتفاع للـ PageView
-                                child: PageView(
-                                  controller:
-                                      _pageController, // اعمل PageController فوق
-                                  onPageChanged: (index) {
-                                    setState(() => _step = index);
-                                  },
-                                  physics:
-                                      const NeverScrollableScrollPhysics(), // Disable swipe
-                                  children: [
-                                    _stepOne(context),
-                                    _stepTwo(context),
-                                    _stepThree(context),
-                                  ],
+                      ),
+                      // Use a scrollable layout that respects the keyboard inset
+                      SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                          bottom: bottomInset + 24, // extra space for keyboard
+                        ),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight:
+                                MediaQuery.of(context).size.height -
+                                bottomInset,
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 240.h),
+                              SizedBox(height: 24),
+                              _buildHeader(),
+                              // Wrap PageView with padding to account for keyboard
+                              Padding(
+                                padding: EdgeInsets.only(bottom: bottomInset),
+                                child: SizedBox(
+                                  height:
+                                      450.h, // لازم نحدد ارتفاع للـ PageView
+                                  child: PageView(
+                                    controller:
+                                        _pageController, // اعمل PageController فوق
+                                    onPageChanged: (index) {
+                                      setState(() => _step = index);
+                                    },
+                                    physics:
+                                        const NeverScrollableScrollPhysics(), // Disable swipe
+                                    children: [
+                                      _stepOne(context),
+                                      _stepTwo(context),
+                                      _stepThree(context),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 24),
-                          ],
+                              SizedBox(height: 24),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          bottom: bottomInset > 0 ? bottomInset + 16.h : 16.h,
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: bottomInset > 0 ? bottomInset + 16.h : 16.h,
+                          ),
+                          child: HaveAccQ(),
                         ),
-                        child: HaveAccQ(),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              if (state is RegisterLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-            ],
-          );
-        },
+                if (state is RegisterLoading)
+                  Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

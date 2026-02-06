@@ -62,140 +62,140 @@ class _UploadLabTestBottomSheetState extends State<UploadLabTestBottomSheet> {
   Widget build(BuildContext context) {
     final primaryColor = context.color.primaryColor ?? Colors.blue;
     return Container(
-      padding: EdgeInsets.fromLTRB(
-        24,
-        24,
-        24,
-        MediaQuery.of(context).viewInsets.bottom + 24,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
         color: context.color.cardColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          SizedBox(height: 24.h),
-          Text(
-            "Upload Lab Test",
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              fontFamily: K.sg,
-              color: primaryColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            "Enter a name and select your PDF file",
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[600],
-              fontFamily: K.sg,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24.h),
-          CustomTextFormField(
-            hint: "Lab Test Name (e.g., Blood Test)",
-            controller: _nameController,
-          ),
-          SizedBox(height: 16.h),
-          GestureDetector(
-            onTap: _pickFile,
-            child: CustomPaint(
-              painter: DashedPainter(color: primaryColor),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
               child: Container(
-                height: 140.h,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
-                  color: (context.color.blackAndWhite ?? Colors.black)
-                      .withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(24.r),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.upload_rounded,
-                      color: primaryColor,
-                      size: 44.sp,
-                    ),
-                    SizedBox(height: 12.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.picture_as_pdf_rounded,
-                          color: primaryColor.withOpacity(0.8),
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 8.w),
-                        Flexible(
-                          child: Text(
-                            _fileName ?? "Upload PDF Report",
-                            style: TextStyle(
-                              fontFamily: K.sg,
-                              fontSize: 16.sp,
-                              color: _fileName != null
-                                  ? context.color.textColor
-                                  : Colors.grey[700],
-                              fontWeight: _fileName != null
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 32.h),
-          CustomButton(
-            onTap: () async {
-              if (_nameController.text.isNotEmpty && _filePath != null) {
-                await context.read<LabTestCubit>().addLabTest(
-                  _nameController.text,
-                  _filePath!,
-                );
+            SizedBox(height: 24.h),
+            Text(
+              "Upload Lab Test",
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                fontFamily: K.sg,
+                color: primaryColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              "Enter a name and select your PDF file",
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[600],
+                fontFamily: K.sg,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24.h),
+            CustomTextFormField(
+              hint: "Lab Test Name (e.g., Blood Test)",
+              controller: _nameController,
+            ),
+            SizedBox(height: 16.h),
+            GestureDetector(
+              onTap: _pickFile,
+              child: CustomPaint(
+                painter: DashedPainter(color: primaryColor),
+                child: Container(
+                  height: 140.h,
+                  decoration: BoxDecoration(
+                    color: (context.color.blackAndWhite ?? Colors.black)
+                        .withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(24.r),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.upload_rounded,
+                        color: primaryColor,
+                        size: 44.sp,
+                      ),
+                      SizedBox(height: 12.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.picture_as_pdf_rounded,
+                            color: primaryColor.withOpacity(0.8),
+                            size: 20.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Flexible(
+                            child: Text(
+                              _fileName ?? "Upload PDF Report",
+                              style: TextStyle(
+                                fontFamily: K.sg,
+                                fontSize: 16.sp,
+                                color: _fileName != null
+                                    ? context.color.textColor
+                                    : Colors.grey[700],
+                                fontWeight: _fileName != null
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 32.h),
+            CustomButton(
+              onTap: () async {
+                if (_nameController.text.isNotEmpty && _filePath != null) {
+                  await context.read<LabTestCubit>().addLabTest(
+                    _nameController.text,
+                    _filePath!,
+                  );
 
-                if (mounted) {
-                  Navigator.pop(context);
-                  showAchievementView(
-                    context: context,
-                    title: "Lab Test Uploaded Successfully",
-                    color: primaryColor,
+                  if (mounted) {
+                    Navigator.pop(context);
+                    showAchievementView(
+                      context: context,
+                      title: "Lab Test Uploaded Successfully",
+                      color: primaryColor,
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please enter a name and select a file"),
+                    ),
                   );
                 }
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Please enter a name and select a file"),
-                  ),
-                );
-              }
-            },
-            text: "Upload Results",
-          ),
-        ],
+              },
+              text: "Upload Results",
+            ),
+          ],
+        ),
       ),
     );
   }
