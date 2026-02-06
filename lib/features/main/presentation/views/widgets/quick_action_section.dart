@@ -8,6 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'quick_action.dart';
 
+import 'package:diamate/core/routes/app_routes.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
 import 'package:diamate/features/dfu_test/presentation/widgets/upload_dfu_bottom_sheet.dart';
 
@@ -23,7 +25,9 @@ class QuickActionSection extends StatelessWidget {
           color: Color(0xff5F0095),
           text: "Add Drug",
           image: Assets.medicine,
-          onTap: () {},
+          onTap: () {
+            context.pushNamed(AppRoutes.medications);
+          },
         ),
         QuickActionWidget(
           color: Color(0xff1DC500),

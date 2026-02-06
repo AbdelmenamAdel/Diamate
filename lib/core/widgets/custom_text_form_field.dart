@@ -22,6 +22,7 @@ class CustomTextFormField extends StatelessWidget {
     this.controller,
     this.onTap,
     this.readOnly = false,
+    this.suffix,
   });
 
   final String hint;
@@ -37,6 +38,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool nodivider;
   final VoidCallback? onTap;
   final bool readOnly;
+  final Widget? suffix;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,6 +87,8 @@ class CustomTextFormField extends StatelessWidget {
               onTap: onTap,
               readOnly: readOnly,
               decoration: InputDecoration(
+                suffix: suffix,
+                suffixIconColor: context.color.textColor,
                 hintText: hint,
                 hintStyle: TextStyle(
                   fontFamily: K.sg,

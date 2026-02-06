@@ -38,6 +38,14 @@ class Assets {
   /// assets/images/drug.svg
   static const String medicine = "assets/images/medicines.svg";
 
+  /// Assets for injection
+  /// assets/images/injection.svg
+  static const String injection = "assets/images/injection.svg";
+
+  /// Assets for tablet
+  /// assets/images/tablet.svg
+  static const String tablet = "assets/images/tablet.svg";
+
   /// Assets for glucose
   /// assets/images/glucose.svg
   static const String glucose = "assets/images/glucose.svg";

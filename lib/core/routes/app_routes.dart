@@ -14,6 +14,7 @@ import 'package:diamate/features/onboarding/presentation/views/splash_preview.da
 import 'package:diamate/features/onboarding/presentation/views/splash_view.dart';
 import 'package:diamate/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:diamate/features/profile/presentation/views/about_developers_view.dart';
+import 'package:diamate/features/medications/presentation/views/medications_view.dart';
 import 'package:diamate/core/utils/mini/recomte_configure.dart';
 import 'package:diamate/core/utils/mini/lol_view.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class AppRoutes {
   static const String glucoseReadings = 'glucoseReadings';
   static const String labTests = 'labTests';
   static const String dfuTests = 'dfuTests';
+  static const String medications = 'medications';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -84,6 +86,8 @@ class AppRoutes {
             child: const DfuTestsListView(),
           ),
         );
+      case medications:
+        return BaseRoute(page: const MedicationsView());
       default:
         return BaseRoute(
           page: const Scaffold(body: Center(child: Text('Page not found'))),

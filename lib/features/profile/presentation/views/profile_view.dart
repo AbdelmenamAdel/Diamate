@@ -1,6 +1,7 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
 import 'package:diamate/features/profile/presentation/widgets/theme_bottom_sheet.dart';
@@ -87,10 +88,11 @@ class _ProfileViewState extends State<ProfileView> {
                               width: 3,
                             ),
                             image: const DecorationImage(
-                              image: NetworkImage(
-                                "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg",
-                              ),
-                              fit: BoxFit.cover,
+                              image: AssetImage(Assets.men3em),
+                              // image: NetworkImage(
+                              //   "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg",
+                              // ),
+                              // fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -125,7 +127,7 @@ class _ProfileViewState extends State<ProfileView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Abdelmenam Adel",
+                            "Abdelmoneim Adel",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
