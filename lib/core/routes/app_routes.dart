@@ -6,6 +6,7 @@ import 'package:diamate/features/notifications/presentation/views/notification_v
 import 'package:diamate/features/onboarding/presentation/views/splash_preview.dart';
 import 'package:diamate/features/onboarding/presentation/views/splash_view.dart';
 import 'package:diamate/features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:diamate/features/profile/presentation/views/about_developers_view.dart';
 import 'package:flutter/material.dart';
 import 'base_routes.dart';
 
@@ -13,6 +14,8 @@ class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static const String initial = '/';
+  static const String lol = 'lol';
+  static const String appGate = 'appGate';
   static const String splash = 'splash';
   static const String onboarding = 'onboarding';
   static const String login = 'login';
@@ -20,6 +23,7 @@ class AppRoutes {
   static const String signUp = 'signUp';
   static const String chatbot = 'chatbot';
   static const String notifications = 'notifications';
+  static const String aboutDevelopers = 'aboutDevelopers';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     // var arg = settings.arguments;
@@ -40,6 +44,8 @@ class AppRoutes {
         return BaseRoute(page: const ChatbotView());
       case notifications:
         return BaseRoute(page: const NotificationsView());
+      case aboutDevelopers:
+        return BaseRoute(page: const AboutDevelopersView());
       default:
         return BaseRoute(
           page: const Scaffold(body: Center(child: Text('Page not found'))),

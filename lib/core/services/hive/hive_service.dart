@@ -1,8 +1,12 @@
+import 'package:diamate/features/glucose/data/models/glucose_reading.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveService {
   static Future<void> init() async {
     await Hive.initFlutter();
+
+    // Register adapters
+    registerAdapter(GlucoseReadingAdapter());
   }
 
   static Future<Box<T>> openBox<T>(String boxName) async {

@@ -23,6 +23,8 @@ import 'package:diamate/features/lab_tests/data/services/lab_test_local_service.
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
 import 'package:diamate/features/dfu_test/data/services/dfu_test_local_service.dart';
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
+import 'package:diamate/features/glucose/data/services/glucose_local_service.dart';
+import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -33,6 +35,16 @@ Future<void> setupInjector() async {
   await _initNotifications();
   await _initLabTests();
   await _initDfuTests();
+  await _initGlucose();
+}
+
+Future<void> _initGlucose() async {
+  final glucoseService = GlucoseLocalService();
+  await glucoseService.init();
+  sl.registerLazySingleton<GlucoseLocalService>(() => glucoseService);
+  sl.registerFactory<GlucoseCubit>(
+    () => GlucoseCubit(sl<GlucoseLocalService>()),
+  );
 }
 
 Future<void> _initDfuTests() async {

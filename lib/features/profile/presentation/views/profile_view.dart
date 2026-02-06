@@ -5,6 +5,8 @@ import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
 import 'package:diamate/features/dfu_test/presentation/views/dfu_tests_list_view.dart';
+import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
+import 'package:diamate/features/glucose/presentation/views/glucose_readings_list_view.dart';
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
 import 'package:diamate/features/lab_tests/presentation/views/lab_tests_list_view.dart';
 import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
@@ -210,7 +212,12 @@ class _ProfileViewState extends State<ProfileView> {
                     title: "Glucose Readings",
                     icon: Icons.bloodtype_outlined,
                     onTap: () {
-                      // TODO: Navigate to glucose view
+                      context.push(
+                        BlocProvider<GlucoseCubit>(
+                          create: (context) => sl<GlucoseCubit>(),
+                          child: const GlucoseReadingsListView(),
+                        ),
+                      );
                     },
                   ),
                   _ProfileTile(
@@ -358,7 +365,9 @@ class _ProfileViewState extends State<ProfileView> {
                   _ProfileTile(
                     title: "About Developers",
                     icon: Icons.code_rounded,
-                    onTap: () {},
+                    onTap: () {
+                      context.pushNamed(AppRoutes.aboutDevelopers);
+                    },
                   ),
                 ],
               ),
