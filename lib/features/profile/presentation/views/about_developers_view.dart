@@ -1,5 +1,6 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/utils/mini/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,13 +17,26 @@ class AboutDevelopersView extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 200.h,
             pinned: true,
+            leading: IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: context.color.backgroundColor,
+              ),
+            ),
+            backgroundColor: context.color.primaryColor,
             flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+
               title: Text(
                 'Meet the Developer',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: K.sg,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: context.color.backgroundColor,
                   fontSize: 18.sp,
                 ),
               ),
@@ -37,6 +51,7 @@ class AboutDevelopersView extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 child: Center(
                   child: Icon(
                     Icons.code_rounded,
@@ -55,7 +70,7 @@ class AboutDevelopersView extends StatelessWidget {
                   _DeveloperCard(
                     name: 'Abdelmoneim Adel',
                     role: 'Software Mobile Application Engineer',
-                    image: 'images/Men3em.png',
+                    image: Assets.men3em,
                     bio:
                         'Passionate Flutter developer with a focus on creating beautiful, functional, and user-centric mobile applications.',
                     whatsapp: '+201556878109',
@@ -156,6 +171,8 @@ class _DeveloperCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Profile Photo
           Container(
@@ -167,15 +184,15 @@ class _DeveloperCard extends StatelessWidget {
               ),
             ),
             child: CircleAvatar(
-              radius: 60.r,
+              radius: 75.r,
               backgroundColor: Colors.white,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(60.r),
+                borderRadius: BorderRadius.circular(75.r),
                 child: Image.asset(
                   image,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
-                      Icon(Icons.person, size: 60.r, color: Colors.grey),
+                      Icon(Icons.person, size: 75.r, color: Colors.grey),
                 ),
               ),
             ),
@@ -183,6 +200,8 @@ class _DeveloperCard extends StatelessWidget {
           SizedBox(height: 20.h),
           Text(
             name,
+            textAlign: TextAlign.center,
+
             style: TextStyle(
               fontFamily: K.sg,
               fontSize: 22.sp,
@@ -193,6 +212,8 @@ class _DeveloperCard extends StatelessWidget {
           SizedBox(height: 4.h),
           Text(
             role,
+            textAlign: TextAlign.center,
+
             style: TextStyle(
               fontFamily: K.sg,
               fontSize: 14.sp,
@@ -204,6 +225,7 @@ class _DeveloperCard extends StatelessWidget {
           Text(
             bio,
             textAlign: TextAlign.center,
+
             style: TextStyle(
               fontFamily: K.sg,
               fontSize: 14.sp,

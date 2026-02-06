@@ -1,9 +1,12 @@
 import 'dart:developer';
+import 'package:diamate/constant.dart';
 import 'package:diamate/core/database/secure_storage.dart';
+import 'package:diamate/core/services/remote_config_service.dart';
+import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/core/utils/mini/lol_view.dart';
-import 'package:diamate/features/main/presentation/views/main_view.dart';
+import 'package:diamate/features/auth/presentation/views/login_view.dart';
+import 'package:diamate/features/chat/presentation/views/chatbot_view.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 bool? autherMedia;
 
@@ -24,31 +27,22 @@ class _AppGateState extends State<AppGate> {
   }
 
   Future<void> _checkAppStatus() async {
-    // Using SecureStorage instead of SharedPreferences
+    // Check local storage first for quick response
     bool enabled =
         await SecureStorage.getBoolean(key: 'diamate_enabled') ?? true;
-
     log('Initial app enabled status from SecureStorage: $enabled');
+
     try {
-      final remoteConfig = FirebaseRemoteConfig.instance;
+      // Use the already initialized RemoteConfigService from locator
+      final remoteConfigService = sl<RemoteConfigService>();
 
-      await remoteConfig.setConfigSettings(
-        RemoteConfigSettings(
-          fetchTimeout: const Duration(seconds: 8),
-          minimumFetchInterval: Duration.zero,
-        ),
-      );
-
-      await remoteConfig.fetchAndActivate();
-      enabled = remoteConfig.getBool('diamate_enabled');
-      autherMedia = remoteConfig.getBool('diamate_auther_media');
+      enabled = remoteConfigService.getBool('diamate_enabled');
+      autherMedia = remoteConfigService.getBool('diamate_auther_media');
 
       log('Fetched app enabled status from Remote Config: $enabled');
       await SecureStorage.setBoolean(key: 'diamate_enabled', value: enabled);
     } catch (e) {
-      log(
-        'Failed to fetch Remote Config, using cached value: $enabled. Error: $e',
-      );
+      log('Failed to read Remote Config from service: $e');
     }
 
     if (!mounted) return;
@@ -76,7 +70,26 @@ class _AppGateState extends State<AppGate> {
       return const LolView();
     }
 
-    // Navigating to MainView
-    return const MainView();
+    // Check auth status to decide whether to show Chatbot or Login
+    return FutureBuilder<bool?>(
+      future: SecureStorage.getBoolean(key: K.isLogged),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.data == true) {
+          return const ChatbotView();
+        } else {
+          return const LoginView();
+        }
+      },
+    );
   }
 }

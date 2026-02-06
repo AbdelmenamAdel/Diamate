@@ -15,8 +15,12 @@ import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/services/push_notification/local_notfication_service.dart';
 import 'package:diamate/core/utils/time_ago.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:diamate/firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ConnectivityController.instance.init();
   await setupInjector();
   TimeAgo.setup();

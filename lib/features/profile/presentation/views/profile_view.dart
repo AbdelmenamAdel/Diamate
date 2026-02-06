@@ -2,17 +2,9 @@ import 'package:diamate/constant.dart';
 import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/routes/app_routes.dart';
-import 'package:diamate/core/services/services_locator.dart';
-import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
-import 'package:diamate/features/dfu_test/presentation/views/dfu_tests_list_view.dart';
-import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
-import 'package:diamate/features/glucose/presentation/views/glucose_readings_list_view.dart';
-import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
-import 'package:diamate/features/lab_tests/presentation/views/lab_tests_list_view.dart';
 import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
 import 'package:diamate/features/profile/presentation/widgets/theme_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -212,36 +204,21 @@ class _ProfileViewState extends State<ProfileView> {
                     title: "Glucose Readings",
                     icon: Icons.bloodtype_outlined,
                     onTap: () {
-                      context.push(
-                        BlocProvider<GlucoseCubit>(
-                          create: (context) => sl<GlucoseCubit>(),
-                          child: const GlucoseReadingsListView(),
-                        ),
-                      );
+                      context.pushNamed(AppRoutes.glucoseReadings);
                     },
                   ),
                   _ProfileTile(
                     title: "Lab Test Results",
                     icon: Icons.biotech_rounded,
                     onTap: () {
-                      context.push(
-                        BlocProvider<LabTestCubit>(
-                          create: (context) => sl<LabTestCubit>(),
-                          child: const LabTestsListView(),
-                        ),
-                      );
+                      context.pushNamed(AppRoutes.labTests);
                     },
                   ),
                   _ProfileTile(
                     title: "DFU Test Results",
                     icon: Icons.personal_injury_outlined,
                     onTap: () {
-                      context.push(
-                        BlocProvider<DfuTestCubit>(
-                          create: (context) => sl<DfuTestCubit>(),
-                          child: const DfuTestsListView(),
-                        ),
-                      );
+                      context.pushNamed(AppRoutes.dfuTests);
                     },
                   ),
                 ],
@@ -397,7 +374,7 @@ class _ProfileViewState extends State<ProfileView> {
                         key: 'has_welcome_v1',
                         value: false,
                       );
-                      context.pushNamedAndRemoveUntil(AppRoutes.splash);
+                      context.pushNamedAndRemoveUntil(AppRoutes.initial);
                     },
                     child: const Text(
                       "Logout",

@@ -2,6 +2,7 @@ import 'package:diamate/core/app/app_cubit/app_cubit.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
 import 'package:diamate/core/database/api/dio_consumer.dart';
 import 'package:diamate/core/database/secure_storage.dart';
+import 'package:diamate/core/services/remote_config_service.dart';
 import 'package:diamate/features/auth/data/repos/auth_repo_impl.dart';
 import 'package:diamate/features/auth/domain/repos/auth_repo.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
@@ -96,7 +97,10 @@ Future<void> _initCore() async {
     ..registerLazySingleton<Dio>(() => Dio())
     ..registerLazySingleton<SecureStorage>(() => SecureStorage())
     ..registerLazySingleton<ChatCompanionService>(() => ChatCompanionService())
-    ..registerLazySingleton<PermissionService>(() => PermissionService());
+    ..registerLazySingleton<PermissionService>(() => PermissionService())
+    ..registerLazySingleton<RemoteConfigService>(() => RemoteConfigService());
+
+  await sl<RemoteConfigService>().init();
 }
 
 Future<void> _initAuth() async {

@@ -15,9 +15,9 @@ class SplashPreview extends StatefulWidget {
 class _SplashViewState extends State<SplashPreview> {
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-      context.pushReplacementNamed(AppRoutes.splash);
+      context.pushReplacementNamed(AppRoutes.appGate);
     });
     super.initState();
   }

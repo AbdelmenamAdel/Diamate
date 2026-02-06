@@ -1,4 +1,5 @@
 import 'package:diamate/constant.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
 
 class LolView extends StatelessWidget {
@@ -7,7 +8,7 @@ class LolView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.color.scaffoldBackgroundColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -30,13 +31,13 @@ class LolView extends StatelessWidget {
               const SizedBox(height: 32),
 
               // 📝 Title
-              const Text(
+              Text(
                 'App Temporarily Unavailable',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: context.color.textColor,
                   fontFamily: K.sg,
                 ),
               ),
@@ -44,12 +45,12 @@ class LolView extends StatelessWidget {
               const SizedBox(height: 12),
 
               // 📄 Subtitle
-              const Text(
+              Text(
                 'There is a problem in your phone device\nPlease try again later',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: Colors.grey,
+                  color: context.color.hintColor,
                   height: 1.4,
                   fontFamily: K.sg,
                 ),

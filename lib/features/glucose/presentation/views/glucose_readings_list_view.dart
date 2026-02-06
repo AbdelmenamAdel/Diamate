@@ -3,6 +3,7 @@ import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +71,21 @@ class _GlucoseReadingsListViewState extends State<GlucoseReadingsListView> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16.r),
-              child: Image.file(File(imagePath), fit: BoxFit.contain),
+              child: Image.file(
+                File(imagePath),
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    padding: EdgeInsets.all(40.w),
+                    color: context.color.cardColor,
+                    child: Icon(
+                      Icons.broken_image_rounded,
+                      size: 100.sp,
+                      color: context.color.primaryColor,
+                    ),
+                  );
+                },
+              ),
             ),
             SizedBox(height: 16.h),
             TextButton(
@@ -273,6 +288,25 @@ class _GlucoseReadingsListViewState extends State<GlucoseReadingsListView> {
                                       width: 60.w,
                                       height: 60.w,
                                       fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return Container(
+                                              width: 60.w,
+                                              height: 60.w,
+                                              decoration: BoxDecoration(
+                                                color: context.color.hintColor
+                                                    ?.withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.r),
+                                              ),
+                                              child: Icon(
+                                                Icons.broken_image,
+                                                color:
+                                                    context.color.primaryColor,
+                                                size: 24.sp,
+                                              ),
+                                            );
+                                          },
                                     ),
                                   )
                                 else

@@ -6,8 +6,6 @@ import 'package:diamate/core/styles/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:diamate/core/database/secure_storage.dart';
-
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
 
@@ -23,17 +21,9 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<void> _navigateToNext() async {
-    await SecureStorage.getBoolean(key: K.isLogged).then((isLogged) async {
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (!mounted) return;
-
-      if (isLogged == true) {
-        context.pushReplacementNamed(AppRoutes.chatbot);
-      } else {
-        context.pushReplacementNamed(AppRoutes.onboarding);
-      }
-    });
+    await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
+    context.pushReplacementNamed(AppRoutes.splashPreview);
   }
 
   @override
