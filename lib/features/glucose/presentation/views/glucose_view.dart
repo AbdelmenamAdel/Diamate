@@ -1,7 +1,9 @@
 import 'package:diamate/constant.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
+
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 import 'package:diamate/features/glucose/presentation/widgets/add_glucose_dialog.dart';
 import 'package:diamate/features/glucose/presentation/widgets/glucose_camera_scanner.dart';
@@ -59,24 +61,22 @@ class _GlucoseViewContent extends StatelessWidget {
       child: BlocBuilder<GlucoseCubit, GlucoseState>(
         builder: (context, state) {
           final cubit = context.read<GlucoseCubit>();
+
           final latestReading = cubit.latestReading;
           final averageReading = cubit.averageReading;
           final highestReading = cubit.highestReading;
           final lowestReading = cubit.lowestReading;
-          final last7DaysReadings = cubit.last7DaysReadings;
 
           return SingleChildScrollView(
             child: Column(
-              spacing: 12.h,
+              spacing: 16.h,
               children: [
-                const CustomAppBar(back: false, title: "Glucose Monitor"),
-                Column(
-                  spacing: 12.h,
-                  children: [
-                    SizedBox(height: 4.h),
+                const CustomAppBar(back: false, title: "Glucose monitor"),
 
-                    // Latest Reading Display
-                    if (latestReading != null) ...[
+                // Latest Reading Display
+                if (latestReading != null) ...[
+                  Column(
+                    children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -84,8 +84,9 @@ class _GlucoseViewContent extends StatelessWidget {
                             latestReading.value.toInt().toString(),
                             style: TextStyle(
                               fontFamily: K.sg,
-                              fontSize: 32.sp,
+                              fontSize: 48.sp,
                               fontWeight: FontWeight.w900,
+                              color: context.color.textColor,
                             ),
                           ),
                           Text(
@@ -93,7 +94,7 @@ class _GlucoseViewContent extends StatelessWidget {
                             style: TextStyle(
                               fontFamily: K.sg,
                               fontSize: 20.sp,
-                              color: const Color(0xff838572),
+                              color: context.color.hintColor,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -111,7 +112,7 @@ class _GlucoseViewContent extends StatelessWidget {
                                 ) +
                                 0xFF000000,
                           ),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
@@ -119,76 +120,77 @@ class _GlucoseViewContent extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: K.sg,
                           fontSize: 12.sp,
-                          color: const Color(0xff010101).withOpacity(.6),
-                          fontWeight: FontWeight.w400,
+                          color: context.color.hintColor,
                         ),
                       ),
-                    ] else ...[
-                      Text(
-                        "No readings yet",
-                        style: TextStyle(
-                          fontFamily: K.sg,
-                          fontSize: 18.sp,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
                     ],
+                  ),
+                ] else ...[
+                  SizedBox(height: 10.h),
+                  Text(
+                    "No readings yet",
+                    style: TextStyle(
+                      fontFamily: K.sg,
+                      fontSize: 18.sp,
+                      color: context.color.hintColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
 
-                    // Action Buttons
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Row(
-                        spacing: 8.w,
-                        children: [
-                          Expanded(
-                            child: CustomButton(
-                              radius: 8,
-                              onTap: () => _showAddManualDialog(context),
-                              text: "+ Manual",
-                              color: const Color(0xff2D9CDB),
-                            ),
-                          ),
-                          Expanded(
-                            child: CustomButton(
-                              radius: 8,
-                              onTap: () => _showCameraScanner(context),
-                              text: "Scan",
-                              color: const Color(0xff45C588),
-                            ),
-                          ),
-                        ],
+                // Action Buttons
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Row(
+                    spacing: 12.w,
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          radius: 12,
+                          onTap: () => _showAddManualDialog(context),
+                          text: "+ Manual",
+                          color: const Color(0xff2D9CDB),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: CustomButton(
+                          radius: 12,
+                          onTap: () => _showCameraScanner(context),
+                          text: "Scan",
+                          color: const Color(0xff45C588),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                    // Statistics Cards
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 8.w,
-                      children: [
-                        GlucoseLevel(
-                          level: "High",
-                          value: highestReading,
-                          isHigh: true,
-                        ),
-                        GlucoseLevel(
-                          level: "Average",
-                          value: averageReading,
-                          isAvarage: true,
-                        ),
-                        GlucoseLevel(
-                          level: "Low",
-                          value: lowestReading,
-                          isLow: true,
-                        ),
-                      ],
+                // Statistics Cards
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 12.w,
+                  children: [
+                    GlucoseLevel(
+                      level: "High",
+                      value: highestReading,
+                      isHigh: true,
                     ),
-
-                    // Graph
-                    GlucoseGraph(readings: last7DaysReadings),
+                    GlucoseLevel(
+                      level: "Average",
+                      value: averageReading,
+                      isAvarage: true,
+                    ),
+                    GlucoseLevel(
+                      level: "Low",
+                      value: lowestReading,
+                      isLow: true,
+                    ),
                   ],
                 ),
+
+                // Graph Visualization
+                const GlucoseGraph(),
+
+                SizedBox(height: 20.h),
               ],
             ),
           );
@@ -239,31 +241,40 @@ class GlucoseLevel extends StatelessWidget {
     }
 
     return Container(
-      height: 80.h,
-      width: 80.w,
+      height: 85.h,
+      width: 95.w,
       decoration: BoxDecoration(
-        color: const Color(0xffD9D9D9),
-        borderRadius: BorderRadius.circular(8.r),
+        color: context.color.cardColor,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: context.color.hintColor!.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 4.h,
+        spacing: 2.h,
         children: [
           Text(
             level,
             style: TextStyle(
               fontSize: 12.sp,
               fontFamily: K.sg,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
+              color: context.color.hintColor,
             ),
           ),
           Text(
             value.toInt().toString(),
             style: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 18.sp,
               fontFamily: K.sg,
               color: getColor(),
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w900,
             ),
           ),
           Text(
@@ -271,7 +282,8 @@ class GlucoseLevel extends StatelessWidget {
             style: TextStyle(
               fontSize: 10.sp,
               fontFamily: K.sg,
-              fontWeight: FontWeight.w300,
+              color: context.color.hintColor?.withOpacity(0.7),
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],

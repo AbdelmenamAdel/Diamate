@@ -43,7 +43,7 @@ Future<void> _initGlucose() async {
   final glucoseService = GlucoseLocalService();
   await glucoseService.init();
   sl.registerLazySingleton<GlucoseLocalService>(() => glucoseService);
-  sl.registerFactory<GlucoseCubit>(
+  sl.registerLazySingleton<GlucoseCubit>(
     () => GlucoseCubit(sl<GlucoseLocalService>()),
   );
 }

@@ -1,63 +1,89 @@
+import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 import 'package:diamate/features/glucose/data/models/glucose_reading.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class GlucoseGraph extends StatelessWidget {
-  final List<GlucoseReading> readings;
-
-  const GlucoseGraph({super.key, required this.readings});
+  const GlucoseGraph({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (readings.isEmpty) {
-      return Container(
-        height: 240.h,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.show_chart, size: 48.sp, color: Colors.grey),
-              SizedBox(height: 8.h),
-              Text(
-                'No readings yet',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
+    return BlocBuilder<GlucoseCubit, GlucoseState>(
+      builder: (context, state) {
+        final readings = state is GlucoseLoaded
+            ? state.readings
+            : <GlucoseReading>[];
+
+        if (readings.isEmpty) {
+          return _buildEmptyState(context);
+        }
+
+        // Sort readings by timestamp (ascending for graph)
+        final sortedReadings = readings.toList()
+          ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+        // Use all readings to match "profile glucose readings list" in real-time
+        final displayReadings = sortedReadings;
+
+        return _buildChart(context, displayReadings);
+      },
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Container(
+      height: 240.h,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: context.color.cardColor,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: context.color.hintColor!.withOpacity(0.1)),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.show_chart,
+              size: 48.sp,
+              color: context.color.hintColor?.withOpacity(0.5),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'No readings yet',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: context.color.hintColor,
+                fontWeight: FontWeight.w500,
               ),
-              SizedBox(height: 4.h),
-              Text(
-                'Add your first glucose reading',
-                style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              'Add your first glucose reading',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: context.color.hintColor?.withOpacity(0.7),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    // Sort readings by timestamp
-    final sortedReadings = readings.toList()
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-    // Take last 10 readings for better visualization
-    final displayReadings = sortedReadings.length > 10
-        ? sortedReadings.sublist(sortedReadings.length - 10)
-        : sortedReadings;
-
+  Widget _buildChart(
+    BuildContext context,
+    List<GlucoseReading> displayReadings,
+  ) {
     return Container(
       height: 240.h,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.color.cardColor,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
@@ -66,6 +92,7 @@ class GlucoseGraph extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
+        border: Border.all(color: context.color.hintColor!.withOpacity(0.1)),
       ),
       child: LineChart(
         LineChartData(
@@ -74,7 +101,10 @@ class GlucoseGraph extends StatelessWidget {
             drawVerticalLine: false,
             horizontalInterval: 50,
             getDrawingHorizontalLine: (value) {
-              return FlLine(color: Colors.grey.shade200, strokeWidth: 1);
+              return FlLine(
+                color: context.color.hintColor?.withOpacity(0.1),
+                strokeWidth: 1,
+              );
             },
           ),
           titlesData: FlTitlesData(
@@ -102,7 +132,7 @@ class GlucoseGraph extends StatelessWidget {
                       time,
                       style: TextStyle(
                         fontSize: 10.sp,
-                        color: Colors.grey.shade600,
+                        color: context.color.hintColor,
                       ),
                     ),
                   );
@@ -119,7 +149,7 @@ class GlucoseGraph extends StatelessWidget {
                     value.toInt().toString(),
                     style: TextStyle(
                       fontSize: 10.sp,
-                      color: Colors.grey.shade600,
+                      color: context.color.hintColor,
                     ),
                   );
                 },
@@ -130,7 +160,13 @@ class GlucoseGraph extends StatelessWidget {
           minX: 0,
           maxX: (displayReadings.length - 1).toDouble(),
           minY: 0,
-          maxY: 600,
+          maxY:
+              (displayReadings
+                          .map((e) => e.value)
+                          .reduce((a, b) => a > b ? a : b) +
+                      50)
+                  .clamp(200, 600)
+                  .toDouble(),
           lineBarsData: [
             LineChartBarData(
               spots: displayReadings
@@ -152,7 +188,8 @@ class GlucoseGraph extends StatelessWidget {
                     radius: 4,
                     color: Colors.white,
                     strokeWidth: 2,
-                    strokeColor: const Color(0xff2D9CDB),
+                    strokeColor:
+                        context.color.primaryColor ?? const Color(0xff2D9CDB),
                   );
                 },
               ),
@@ -162,8 +199,10 @@ class GlucoseGraph extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xff2D9CDB).withOpacity(0.3),
-                    const Color(0xff2D9CDB).withOpacity(0.0),
+                    (context.color.primaryColor ?? const Color(0xff2D9CDB))
+                        .withOpacity(0.3),
+                    (context.color.primaryColor ?? const Color(0xff2D9CDB))
+                        .withOpacity(0.0),
                   ],
                 ),
               ),
