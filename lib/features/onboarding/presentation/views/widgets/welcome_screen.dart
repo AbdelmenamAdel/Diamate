@@ -1,3 +1,4 @@
+import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/styles/colors/colors_light.dart';
 import 'package:diamate/constant.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class WelcomeScreen extends StatelessWidget {
   final int totalPages;
   final VoidCallback onNext;
   final VideoPlayerController videoController;
+  final bool hasVideoError;
 
   const WelcomeScreen({
     super.key,
@@ -20,6 +22,7 @@ class WelcomeScreen extends StatelessWidget {
     required this.totalPages,
     required this.onNext,
     required this.videoController,
+    this.hasVideoError = false,
   });
 
   @override
@@ -29,10 +32,39 @@ class WelcomeScreen extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: 20.h),
-          // Hero Video
+          // Hero Video or Fallback Image
           Expanded(
             flex: 5,
-            child: OnboardingVideoPlayer(controller: videoController),
+            child: hasVideoError
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24.r),
+                      color: ColorsLight.primaryColor.withOpacity(0.1),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            Assets.diamateIcon,
+                            height: 120.h,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            'DiaMate',
+                            style: TextStyle(
+                              fontFamily: K.sg,
+                              fontSize: 32.sp,
+                              fontWeight: FontWeight.bold,
+                              color: ColorsLight.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : OnboardingVideoPlayer(controller: videoController),
           ),
           SizedBox(height: 32.h),
           // Title

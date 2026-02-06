@@ -23,17 +23,17 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<void> _navigateToNext() async {
-    final isLogged = await SecureStorage.getBoolean(key: K.isLogged) ?? false;
+    await SecureStorage.getBoolean(key: K.isLogged).then((isLogged) async {
+      await Future.delayed(const Duration(seconds: 2));
 
-    await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
 
-    if (!mounted) return;
-
-    if (isLogged) {
-      context.pushReplacementNamed(AppRoutes.chatbot);
-    } else {
-      context.pushReplacementNamed(AppRoutes.onboarding);
-    }
+      if (isLogged == true) {
+        context.pushReplacementNamed(AppRoutes.chatbot);
+      } else {
+        context.pushReplacementNamed(AppRoutes.onboarding);
+      }
+    });
   }
 
   @override

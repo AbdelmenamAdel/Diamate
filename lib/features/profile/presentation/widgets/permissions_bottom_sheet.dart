@@ -1,4 +1,5 @@
 import 'package:diamate/core/extensions/context_extension.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -64,12 +65,96 @@ class _PermissionsBottomSheetState extends State<PermissionsBottomSheet>
         ),
       );
     } else if (status == PermissionStatus.permanentlyDenied) {
-      openAppSettings();
+      // Show dialog to open settings
+      _showPermissionDialog(permission: permission, isPermanentlyDenied: true);
     } else {
+      // Request permission
       final result = await permission.request();
       _permissionStatuses[permission] = result;
+
+      // If denied after request, show dialog
+      if (result == PermissionStatus.denied) {
+        _showPermissionDialog(
+          permission: permission,
+          isPermanentlyDenied: false,
+        );
+      } else if (result == PermissionStatus.permanentlyDenied) {
+        _showPermissionDialog(
+          permission: permission,
+          isPermanentlyDenied: true,
+        );
+      }
+
       if (mounted) setState(() {});
     }
+  }
+
+  // Show permission dialog
+  Future<void> _showPermissionDialog({
+    required Permission permission,
+    required bool isPermanentlyDenied,
+  }) async {
+    final permissionName = _getNameForPermission(permission);
+    final permissionIcon = _getIconForPermission(permission);
+
+    await showCupertinoDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => CupertinoAlertDialog(
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(
+              permissionIcon,
+              color: Theme.of(context).primaryColor,
+              size: 28,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                isPermanentlyDenied
+                    ? '$permissionName Required'
+                    : 'Enable $permissionName',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          isPermanentlyDenied
+              ? '$permissionName permission is permanently denied. Please enable it in Settings to use this feature.'
+              : 'This app needs $permissionName permission to provide you with the best experience. Would you like to enable it?',
+          style: const TextStyle(fontSize: 12, height: 1.5),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: const Text('Cancel'),
+          ),
+          CupertinoDialogAction(
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+              if (isPermanentlyDenied) {
+                // Open app settings
+                await openAppSettings();
+              } else {
+                // Request permission again
+                final result = await permission.request();
+                _permissionStatuses[permission] = result;
+                if (mounted) setState(() {});
+              }
+            },
+            child: Text(isPermanentlyDenied ? 'Open Settings' : 'Enable'),
+          ),
+        ],
+      ),
+    );
   }
 
   bool _isPermissionGranted(PermissionStatus? status) {

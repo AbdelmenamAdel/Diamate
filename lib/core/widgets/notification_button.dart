@@ -1,11 +1,9 @@
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/routes/app_routes.dart';
-import 'package:diamate/features/notifications/data/models/push_notification_model.dart';
 import 'package:diamate/features/notifications/data/services/notification_local_service.dart';
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 class NotificationButton extends StatelessWidget {
   const NotificationButton({super.key});
