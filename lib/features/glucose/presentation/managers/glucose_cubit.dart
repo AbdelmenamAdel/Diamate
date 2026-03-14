@@ -22,12 +22,12 @@ class GlucoseCubit extends Cubit<GlucoseState> {
 
   Future<void> loadReadings() async {
     try {
-      emit(GlucoseLoading());
+      if (!isClosed) emit(GlucoseLoading());
       _readings = await _localService.getReadings();
       _readings.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-      emit(GlucoseLoaded(readings: _readings));
+      if (!isClosed) emit(GlucoseLoaded(readings: _readings));
     } catch (e) {
-      emit(GlucoseError(message: 'Failed to load readings: $e'));
+      if (!isClosed) emit(GlucoseError(message: 'Failed to load readings: $e'));
     }
   }
 
@@ -76,10 +76,10 @@ class GlucoseCubit extends Cubit<GlucoseState> {
       // Show notification with advice
       _showGlucoseNotification(finalReading);
 
-      emit(GlucoseReadingAdded());
+      if (!isClosed) emit(GlucoseReadingAdded());
       await loadReadings();
     } catch (e) {
-      emit(GlucoseError(message: 'Failed to add reading: $e'));
+      if (!isClosed) emit(GlucoseError(message: 'Failed to add reading: $e'));
     }
   }
 
@@ -121,7 +121,8 @@ class GlucoseCubit extends Cubit<GlucoseState> {
       await _localService.deleteReading(index);
       await loadReadings();
     } catch (e) {
-      emit(GlucoseError(message: 'Failed to delete reading: $e'));
+      if (!isClosed)
+        emit(GlucoseError(message: 'Failed to delete reading: $e'));
     }
   }
 
@@ -130,7 +131,8 @@ class GlucoseCubit extends Cubit<GlucoseState> {
       await _localService.deleteMultipleReadings(keys);
       await loadReadings();
     } catch (e) {
-      emit(GlucoseError(message: 'Failed to delete readings: $e'));
+      if (!isClosed)
+        emit(GlucoseError(message: 'Failed to delete readings: $e'));
     }
   }
 

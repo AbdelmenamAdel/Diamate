@@ -14,7 +14,9 @@ import 'package:diamate/features/onboarding/presentation/views/splash_preview.da
 import 'package:diamate/features/onboarding/presentation/views/splash_view.dart';
 import 'package:diamate/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:diamate/features/profile/presentation/views/about_developers_view.dart';
+import 'package:diamate/features/medications/presentation/managers/medication_cubit.dart';
 import 'package:diamate/features/medications/presentation/views/medications_view.dart';
+import 'package:diamate/features/medications/presentation/views/medications_list_view.dart';
 import 'package:diamate/core/utils/mini/recomte_configure.dart';
 import 'package:diamate/core/utils/mini/lol_view.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +42,7 @@ class AppRoutes {
   static const String labTests = 'labTests';
   static const String dfuTests = 'dfuTests';
   static const String medications = 'medications';
+  static const String medicationList = 'medicationList';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -52,7 +55,15 @@ class AppRoutes {
       case lol:
         return BaseRoute(page: const LolView());
       case main:
-        return BaseRoute(page: const MainView());
+        return BaseRoute(
+          page: MultiBlocProvider(
+            providers: [
+              BlocProvider<MedicationCubit>.value(value: sl<MedicationCubit>()),
+              BlocProvider<GlucoseCubit>.value(value: sl<GlucoseCubit>()),
+            ],
+            child: const MainView(),
+          ),
+        );
       case onboarding:
         return BaseRoute(page: const OnboardingView());
       case login:
@@ -67,8 +78,8 @@ class AppRoutes {
         return BaseRoute(page: const AboutDevelopersView());
       case glucoseReadings:
         return BaseRoute(
-          page: BlocProvider<GlucoseCubit>(
-            create: (context) => sl<GlucoseCubit>(),
+          page: BlocProvider<GlucoseCubit>.value(
+            value: sl<GlucoseCubit>(),
             child: const GlucoseReadingsListView(),
           ),
         );
@@ -87,7 +98,19 @@ class AppRoutes {
           ),
         );
       case medications:
-        return BaseRoute(page: const MedicationsView());
+        return BaseRoute(
+          page: BlocProvider<MedicationCubit>.value(
+            value: sl<MedicationCubit>(),
+            child: const MedicationsView(),
+          ),
+        );
+      case medicationList:
+        return BaseRoute(
+          page: BlocProvider<MedicationCubit>.value(
+            value: sl<MedicationCubit>(),
+            child: const MedicationsListView(),
+          ),
+        );
       default:
         return BaseRoute(
           page: const Scaffold(body: Center(child: Text('Page not found'))),

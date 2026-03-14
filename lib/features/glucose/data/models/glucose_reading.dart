@@ -23,7 +23,7 @@ class GlucoseReading extends HiveObject {
   final String? notes;
 
   @HiveField(6)
-  final String measurementType; // 'fasting', 'after_meal', 'before_sleep', 'random'
+  final String? measurementType; // 'fasting', 'after_meal', 'before_sleep', 'random'
 
   GlucoseReading({
     required this.id,
@@ -32,8 +32,8 @@ class GlucoseReading extends HiveObject {
     required this.source,
     this.imagePath,
     this.notes,
-    this.measurementType = 'random',
-  });
+    String? measurementType = 'random',
+  }) : measurementType = measurementType ?? 'random';
 
   // Get status based on value and measurement type
   String get status {

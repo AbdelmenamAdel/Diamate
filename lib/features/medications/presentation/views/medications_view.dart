@@ -11,6 +11,8 @@ import '../widgets/medication_type_selector.dart';
 import '../widgets/dosage_selector.dart';
 import '../widgets/food_relation_selector.dart';
 import '../widgets/reminder_time_selector.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../managers/medication_cubit.dart';
 
 class MedicationsView extends StatefulWidget {
   const MedicationsView({super.key});
@@ -273,7 +275,24 @@ class _MedicationsViewState extends State<MedicationsView> {
                         text: "Save",
                         onTap: _isFormValid
                             ? () {
-                                // TODO: Implement save logic
+                                final List<String>
+                                reminderTimes = _reminderTimes
+                                    .map(
+                                      (t) =>
+                                          "${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}",
+                                    )
+                                    .toList();
+
+                                context.read<MedicationCubit>().addMedication(
+                                  name: _drugNameController.text,
+                                  type: _selectedType,
+                                  strength: _strengthController.text,
+                                  dosage: _dosageAmount,
+                                  foodRelation: _foodRelation,
+                                  frequency: _frequency,
+                                  reminderTimes: reminderTimes,
+                                  images: _selectedDrugData?["image"] ?? [],
+                                );
                                 Navigator.pop(context);
                               }
                             : null,

@@ -5,7 +5,10 @@ import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
 import 'package:diamate/features/profile/presentation/widgets/theme_bottom_sheet.dart';
+import 'package:diamate/features/medications/presentation/managers/medication_cubit.dart';
+import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -174,11 +177,40 @@ class _ProfileViewState extends State<ProfileView> {
                     icon: Icons.person_outline_rounded,
                     onTap: () {},
                   ),
-                  _ProfileTile(
-                    title: "Your Drugs",
-                    icon: Icons.medication_outlined,
-                    onTap: () {
-                      // TODO: Navigate to drugs view
+                  BlocBuilder<MedicationCubit, MedicationState>(
+                    builder: (context, state) {
+                      String trailingText = "";
+                      if (state is MedicationLoaded) {
+                        trailingText = state.medications.isEmpty
+                            ? "None"
+                            : "${state.medications.length} Saved";
+                      }
+                      return _ProfileTile(
+                        title: "Your Drugs",
+                        icon: Icons.medication_outlined,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (trailingText.isNotEmpty)
+                              Text(
+                                trailingText,
+                                style: TextStyle(
+                                  color: context.color.hintColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                              color: context.color.hintColor?.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          context.pushNamed(AppRoutes.medicationList);
+                        },
+                      );
                     },
                   ),
                   _ProfileTile(
@@ -202,11 +234,40 @@ class _ProfileViewState extends State<ProfileView> {
               _ProfileSection(
                 title: "Health Records",
                 children: [
-                  _ProfileTile(
-                    title: "Glucose Readings",
-                    icon: Icons.bloodtype_outlined,
-                    onTap: () {
-                      context.pushNamed(AppRoutes.glucoseReadings);
+                  BlocBuilder<GlucoseCubit, GlucoseState>(
+                    builder: (context, state) {
+                      String trailingText = "";
+                      if (state is GlucoseLoaded) {
+                        trailingText = state.readings.isEmpty
+                            ? "Empty"
+                            : "${state.readings.length} Records";
+                      }
+                      return _ProfileTile(
+                        title: "Glucose Readings",
+                        icon: Icons.bloodtype_outlined,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (trailingText.isNotEmpty)
+                              Text(
+                                trailingText,
+                                style: TextStyle(
+                                  color: context.color.hintColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                              color: context.color.hintColor?.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          context.pushNamed(AppRoutes.glucoseReadings);
+                        },
+                      );
                     },
                   ),
                   _ProfileTile(

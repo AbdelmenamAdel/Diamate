@@ -23,13 +23,14 @@ class GlucoseReadingAdapter extends TypeAdapter<GlucoseReading> {
       source: fields[3] as String,
       imagePath: fields[4] as String?,
       notes: fields[5] as String?,
+      measurementType: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, GlucoseReading obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class GlucoseReadingAdapter extends TypeAdapter<GlucoseReading> {
       ..writeByte(4)
       ..write(obj.imagePath)
       ..writeByte(5)
-      ..write(obj.notes);
+      ..write(obj.notes)
+      ..writeByte(6)
+      ..write(obj.measurementType);
   }
 
   @override
