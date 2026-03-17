@@ -42,6 +42,7 @@ class _ChatbotContentState extends State<ChatbotContent> {
   late final RecorderController _recorderController;
   bool _isRecording = false;
   bool _hasText = false;
+  bool _showScrollToBottom = false;
   Timer? _timer;
   int _recordDuration = 0;
 
@@ -54,6 +55,19 @@ class _ChatbotContentState extends State<ChatbotContent> {
       setState(() {
         _hasText = _controller.text.trim().isNotEmpty;
       });
+    });
+
+    _scrollController.addListener(() {
+      final isScrolledUp =
+          _scrollController.hasClients &&
+          _scrollController.position.maxScrollExtent -
+                  _scrollController.offset >
+              300;
+      if (isScrolledUp != _showScrollToBottom) {
+        setState(() {
+          _showScrollToBottom = isScrolledUp;
+        });
+      }
     });
   }
 
@@ -214,17 +228,50 @@ class _ChatbotContentState extends State<ChatbotContent> {
                 Expanded(
                   child: messages.isEmpty
                       ? const ChatNotStarted()
-                      : ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          itemCount: messages.length + (isTyping ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            if (index < messages.length) {
-                              return MessageBubble(message: messages[index]);
-                            } else {
-                              return const TypingIndicator();
-                            }
-                          },
+                      : Stack(
+                          children: [
+                            ListView.builder(
+                              controller: _scrollController,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              itemCount: messages.length + (isTyping ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index < messages.length) {
+                                  return MessageBubble(
+                                    message: messages[index],
+                                  );
+                                } else {
+                                  return const TypingIndicator();
+                                }
+                              },
+                            ),
+                            if (_showScrollToBottom)
+                              Positioned(
+                                bottom: 12,
+                                right: 16,
+                                child: GestureDetector(
+                                  onTap: _scrollToBottom,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xff2D9CDB),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.15),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                 ),
                 Padding(
