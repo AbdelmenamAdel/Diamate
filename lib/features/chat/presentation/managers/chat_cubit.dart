@@ -2,6 +2,7 @@ import 'package:diamate/features/chat/data/models/chat_message.dart';
 import 'package:diamate/features/chat/data/models/chat_session.dart';
 import 'package:diamate/features/chat/data/services/chat_local_service.dart';
 import 'package:diamate/core/services/chat_companion_service.dart';
+import 'package:diamate/features/chat/domain/repo/chatbot_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'chat_state.dart';
@@ -9,14 +10,18 @@ part 'chat_state.dart';
 class ChatCubit extends Cubit<ChatState> {
   final ChatLocalService _chatLocalService;
   final ChatCompanionService _companionService;
+  final ChatbotRepo chatRepo;
 
-  ChatCubit(this._chatLocalService, this._companionService)
+  ChatCubit(this._chatLocalService, this._companionService, this.chatRepo)
     : super(ChatInitial());
 
   List<ChatMessage> _messages = [];
   List<ChatSession> _sessions = [];
   ChatSession? _currentSession;
   bool _isTyping = false;
+
+  List<ChatMessage> get messages => _messages;
+  List<ChatSession> get sessions => _sessions;
 
   void loadAllSessions() {
     _sessions = _chatLocalService.getAllSessions();
@@ -70,6 +75,52 @@ class ChatCubit extends Cubit<ChatState> {
     _currentSession!.messages.add(aiMessage);
     await _chatLocalService.saveSession(_currentSession!);
 
+    _isTyping = false;
+    _emitSuccess();
+  }
+
+  Future<void> sendMessageToChat(String text) async {
+    if (text.trim().isEmpty) return;
+
+    final userMessage = ChatMessage(text: text, type: MessageType.user);
+    _messages.add(userMessage);
+
+    if (_currentSession == null) {
+      _currentSession = ChatSession(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: text.length > 30 ? '${text.substring(0, 30)}...' : text,
+        date: DateTime.now(),
+        messages: [],
+      );
+      _sessions.insert(0, _currentSession!);
+    }
+
+    _currentSession!.messages.add(userMessage);
+    await _chatLocalService.saveSession(_currentSession!);
+
+    //! triger the backend here
+    try {
+      _isTyping = true;
+      _emitSuccess();
+      var result = await chatRepo.sendMessage(
+        sessionID: _currentSession!.id.toString(),
+        question: text,
+      );
+      await result.fold((failure) async {
+        emit(ChatError(failure));
+      }, (responseBody) async {
+        final aiMessage = ChatMessage(
+          // text: _companionService.getAfterMealMessage(),
+          text: responseBody.answer ?? '',
+          type: MessageType.ai,
+        );
+        _messages.add(aiMessage);
+        _currentSession!.messages.add(aiMessage);
+        await _chatLocalService.saveSession(_currentSession!);
+      });
+    } catch (e) {
+      emit(ChatError(e.toString()));
+    }
     _isTyping = false;
     _emitSuccess();
   }

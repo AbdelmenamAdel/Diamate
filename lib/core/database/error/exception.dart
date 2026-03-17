@@ -6,7 +6,7 @@ class ServerFailure implements Exception {
   ServerFailure(this.errorModel);
   @override
   String toString() {
-    return errorModel.errorMessage;
+    return errorModel.errorMessage ?? "Error message is null";
   }
 }
 

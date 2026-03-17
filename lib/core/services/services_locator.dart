@@ -6,6 +6,8 @@ import 'package:diamate/core/services/remote_config_service.dart';
 import 'package:diamate/features/auth/data/repos/auth_repo_impl.dart';
 import 'package:diamate/features/auth/domain/repos/auth_repo.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
+import 'package:diamate/features/chat/data/repo/chatbot_repo_implementation.dart';
+import 'package:diamate/features/chat/domain/repo/chatbot_repo.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -97,8 +99,15 @@ Future<void> _initChat() async {
   final chatService = ChatLocalService();
   await chatService.init();
   sl.registerLazySingleton<ChatLocalService>(() => chatService);
+  sl.registerSingleton<ChatbotRepo>(
+    ChatbotRepoImplementation(api: sl<ApiConsumer>()),
+  );
   sl.registerFactory<ChatCubit>(
-    () => ChatCubit(sl<ChatLocalService>(), sl<ChatCompanionService>()),
+    () => ChatCubit(
+      sl<ChatLocalService>(),
+      sl<ChatCompanionService>(),
+      sl<ChatbotRepo>(),
+    ),
   );
 }
 

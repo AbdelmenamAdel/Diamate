@@ -6,7 +6,8 @@ class EndPoint {
   static const String getUserData = 'student/profile';
   static const String getLectures = 'dashboard/my-chapters';
   static const String deleteStudent = 'student/account/confirm-delete';
-  static const String refreshToken = '/token/refresh';
+  static const String refreshToken = 'token/refresh';
+  static const String chatBotSendMessage = 'api/v1/chat';
   // deleteUser + id method in AuthRepoImpl to delete account from server side
 }
 
@@ -31,4 +32,6 @@ class Apikeys {
   static const String profileImage = 'profileImage';
   static const String weight = 'weight';
   static const String notes = 'notes';
+  static const String sessionId = "session_id";
+  static const String question = "question";
 }

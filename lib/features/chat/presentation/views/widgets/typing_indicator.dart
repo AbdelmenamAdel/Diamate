@@ -58,29 +58,40 @@ class _TypingIndicatorState extends State<TypingIndicator>
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (index) {
-                return AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    final delay = index * 0.2;
-                    final value =
-                        (math.sin((_controller.value * 2 * math.pi) + delay) +
-                            1) /
-                        2;
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 2.w),
-                      width: 6.r,
-                      height: 6.r,
-                      decoration: BoxDecoration(
-                        color: Color(
-                          0xff2D9CDB,
-                        ).withOpacity(0.3 + (value * 0.7)),
-                        shape: BoxShape.circle,
-                      ),
-                    );
-                  },
-                );
-              }),
+              children: [
+                Text(
+                  "Answering",
+                  style: TextStyle(
+                    color: const Color(0xff2D9CDB).withOpacity(0.8),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 2.w),
+                ...List.generate(3, (index) {
+                  return AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      final delay = index * 0.2;
+                      final value =
+                          (math.sin((_controller.value * 2 * math.pi) + delay) +
+                              1) /
+                          2;
+                      return Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2.w),
+                        width: 4.r,
+                        height: 4.r,
+                        decoration: BoxDecoration(
+                          color: const Color(
+                            0xff2D9CDB,
+                          ).withOpacity(0.3 + (value * 0.7)),
+                          shape: BoxShape.circle,
+                        ),
+                      );
+                    },
+                  );
+                }),
+              ],
             ),
           ),
         ],

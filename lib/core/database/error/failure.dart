@@ -1,7 +1,7 @@
 class Failure {
-  final String errorMessage;
-  final int statusCode;
-  Failure({required this.errorMessage, required this.statusCode});
+  final String? errorMessage;
+  final int? statusCode;
+  Failure({this.errorMessage, this.statusCode});
 
   factory Failure.fromJson(Map<String, dynamic> json) {
     String errorMessage = json['title'] ?? 'User not authenticated.';

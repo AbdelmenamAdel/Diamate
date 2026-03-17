@@ -47,7 +47,7 @@ class AuthRepoImpl extends AuthRepo {
       log(
         'ServerFailure in AuthRepoImpl.signupWithEmailAndPassword: ${e.errorModel.errorMessage}',
       );
-      return left(e.errorModel.errorMessage);
+      return left(e.errorModel.errorMessage ?? "Error message is null");
     } catch (e) {
       log(
         'Exception in AuthRepoImpl.signupWithEmailAndPassword: ${e.toString()}',

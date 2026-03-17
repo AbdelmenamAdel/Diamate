@@ -38,6 +38,7 @@ class ChatbotContent extends StatefulWidget {
 
 class _ChatbotContentState extends State<ChatbotContent> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late final RecorderController _recorderController;
   bool _isRecording = false;
   bool _hasText = false;
@@ -56,10 +57,23 @@ class _ChatbotContentState extends State<ChatbotContent> {
     });
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   @override
   void dispose() {
     _controller.dispose();
     _recorderController.dispose();
+    _scrollController.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -130,10 +144,13 @@ class _ChatbotContentState extends State<ChatbotContent> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatCubit, ChatState>(
+    return BlocConsumer<ChatCubit, ChatState>(
+      listener: (context, state) {
+        _scrollToBottom();
+      },
       builder: (context, state) {
-        final messages = state is ChatSuccess ? state.messages : [];
-        final sessions = state is ChatSuccess ? state.sessions : [];
+        final messages = context.read<ChatCubit>().messages;
+        final sessions = context.read<ChatCubit>().sessions;
         final isTyping = context.read<ChatCubit>().isTyping;
 
         return Scaffold(
@@ -198,6 +215,7 @@ class _ChatbotContentState extends State<ChatbotContent> {
                   child: messages.isEmpty
                       ? const ChatNotStarted()
                       : ListView.builder(
+                          controller: _scrollController,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           itemCount: messages.length + (isTyping ? 1 : 0),
                           itemBuilder: (context, index) {
@@ -264,7 +282,7 @@ class _ChatbotContentState extends State<ChatbotContent> {
                           fontWeight: FontWeight.w500,
                         ),
                         onSubmitted: (value) {
-                          context.read<ChatCubit>().sendMessage(value);
+                          context.read<ChatCubit>().sendMessageToChat(value);
                           _controller.clear();
                         },
                         decoration: InputDecoration(
@@ -289,9 +307,9 @@ class _ChatbotContentState extends State<ChatbotContent> {
                             child: _hasText
                                 ? IconButton(
                                     onPressed: () {
-                                      context.read<ChatCubit>().sendMessage(
-                                        _controller.text,
-                                      );
+                                      context
+                                          .read<ChatCubit>()
+                                          .sendMessageToChat(_controller.text);
                                       _controller.clear();
                                     },
                                     icon: const Icon(
