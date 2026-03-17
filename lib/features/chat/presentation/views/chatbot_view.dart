@@ -62,7 +62,7 @@ class _ChatbotContentState extends State<ChatbotContent> {
           _scrollController.hasClients &&
           _scrollController.position.maxScrollExtent -
                   _scrollController.offset >
-              300;
+              500;
       if (isScrolledUp != _showScrollToBottom) {
         setState(() {
           _showScrollToBottom = isScrolledUp;

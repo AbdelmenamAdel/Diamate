@@ -51,8 +51,9 @@ class ChatbotBackground extends StatelessWidget {
         Column(
           children: [
             SafeArea(
+              bottom: false,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: CustomAppBar(
                   title: '',
                   onTap: () {
