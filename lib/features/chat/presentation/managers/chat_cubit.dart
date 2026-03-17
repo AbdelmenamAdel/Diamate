@@ -107,6 +107,13 @@ class ChatCubit extends Cubit<ChatState> {
         question: text,
       );
       await result.fold((failure) async {
+        final errorMessage = ChatMessage(
+          text: failure,
+          type: MessageType.ai,
+        );
+        _messages.add(errorMessage);
+        _currentSession!.messages.add(errorMessage);
+        await _chatLocalService.saveSession(_currentSession!);
         emit(ChatError(failure));
       }, (responseBody) async {
         final aiMessage = ChatMessage(
@@ -119,6 +126,15 @@ class ChatCubit extends Cubit<ChatState> {
         await _chatLocalService.saveSession(_currentSession!);
       });
     } catch (e) {
+      final errorMessage = ChatMessage(
+        text: e.toString(),
+        type: MessageType.ai,
+      );
+      _messages.add(errorMessage);
+      if (_currentSession != null) {
+        _currentSession!.messages.add(errorMessage);
+        await _chatLocalService.saveSession(_currentSession!);
+      }
       emit(ChatError(e.toString()));
     }
     _isTyping = false;

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/services/services_locator.dart';
+import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 import 'package:diamate/features/chat/presentation/managers/chat_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -160,6 +161,14 @@ class _ChatbotContentState extends State<ChatbotContent> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChatCubit, ChatState>(
       listener: (context, state) {
+        if (state is ChatError) {
+          showAchievementView(
+            context: context,
+            color: Colors.red,
+            title: "Error",
+            subTitle: state.message,
+          );
+        }
         _scrollToBottom();
       },
       builder: (context, state) {
