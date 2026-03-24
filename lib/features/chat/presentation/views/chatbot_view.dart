@@ -12,6 +12,7 @@ import 'widgets/chat_not_started.dart';
 import 'widgets/chatbot_background.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/typing_indicator.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:path/path.dart' as p;
@@ -41,6 +42,9 @@ class _ChatbotContentState extends State<ChatbotContent> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   late final RecorderController _recorderController;
+  final SpeechToText _speechToText = SpeechToText();
+  String _transcribedText = '';
+  bool _isSpeechAvailable = false;
   bool _isRecording = false;
   bool _hasText = false;
   bool _showScrollToBottom = false;
@@ -51,6 +55,7 @@ class _ChatbotContentState extends State<ChatbotContent> {
   void initState() {
     super.initState();
     _recorderController = RecorderController();
+    _initSpeech();
 
     _controller.addListener(() {
       setState(() {
@@ -70,6 +75,11 @@ class _ChatbotContentState extends State<ChatbotContent> {
         });
       }
     });
+  }
+
+  Future<void> _initSpeech() async {
+    _isSpeechAvailable = await _speechToText.initialize();
+    if (mounted) setState(() {});
   }
 
   void _scrollToBottom() {
@@ -126,6 +136,18 @@ class _ChatbotContentState extends State<ChatbotContent> {
 
         await _recorderController.record(path: path);
 
+        if (_isSpeechAvailable) {
+          _transcribedText = '';
+          await _speechToText.listen(
+            onResult: (result) {
+              setState(() {
+                _transcribedText = result.recognizedWords;
+              });
+            },
+            localeId: 'en_US',
+          );
+        }
+
         setState(() {
           _isRecording = true;
           _startTimer();
@@ -141,6 +163,9 @@ class _ChatbotContentState extends State<ChatbotContent> {
   Future<void> _stopRecording() async {
     try {
       final path = await _recorderController.stop();
+      if (_isSpeechAvailable) {
+        await _speechToText.stop();
+      }
       _stopTimer();
       setState(() {
         _isRecording = false;
@@ -148,7 +173,9 @@ class _ChatbotContentState extends State<ChatbotContent> {
 
       if (path != null) {
         if (mounted) {
-          context.read<ChatCubit>().sendVoiceMessage(path);
+          context
+              .read<ChatCubit>()
+              .sendVoiceMessageToChat(path, _transcribedText);
         }
       }
     } catch (e) {

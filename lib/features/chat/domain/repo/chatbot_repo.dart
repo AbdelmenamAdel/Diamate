@@ -6,4 +6,9 @@ abstract class ChatbotRepo {
     required String sessionID,
     required String question,
   });
+
+  Future<Either<String, ChatbotQResponseModel>> sendVoiceMessage({
+    required String sessionID,
+    required String question,
+  });
 }

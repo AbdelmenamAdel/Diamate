@@ -32,6 +32,8 @@
 	<string>We need to use the camera to take food photos</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need access to the microphone to record voice messages.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We need access to speech recognition to transcribe your voice messages.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to save/select photos</string>
 	<key>UIApplicationSceneManifest</key>

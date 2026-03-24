@@ -15,14 +15,31 @@
 //   "weight": 80,
 //   "notes": "note"
 // }
+// Updated to match the API
+// {
+//   "userName": "yassinm",
+//   "password": "Yassin@05",
+//   "firstName": "Yassin",
+//   "lastName": "Mahmoud",
+//   "dateOfBirth": "2005-01-08T11:20:35.339Z",
+//   "gender": 1,
+//   "address": "momomomo",
+//   "phone": "01015621498",
+//   "homePhone": "01015621498",
+//   "email": "yassinmahmoudmostafa@gmail.com",
+//   "profileImage": "",
+//   "dateOfDiagnosis": "2026-03-15T11:20:35.339Z",
+//   "diabetesType": 5,
+//   "weight": 200,
+//   "height": 230,
+//   "notes": "string"
+// }
 import 'package:diamate/core/database/api/end_points.dart';
 
 class UserEntity {
   final String userName;
   final String password;
   final String firstName;
-  final String secondName;
-  final String thirdName;
   final String lastName;
   final String dateOfBirth;
   final int gender;
@@ -33,12 +50,16 @@ class UserEntity {
   final String profileImage;
   final int weight;
   final String? notes;
+  final int height;
+  final int diabetesType;
+  final String diagnosisDate;
   const UserEntity({
+    required this.height,
+    required this.diabetesType,
+    required this.diagnosisDate,
     required this.userName,
     required this.password,
     required this.firstName,
-    required this.secondName,
-    required this.thirdName,
     required this.lastName,
     required this.dateOfBirth,
     required this.gender,
@@ -56,8 +77,6 @@ class UserEntity {
       Apikeys.userName: userName,
       Apikeys.password: password,
       Apikeys.firstName: firstName,
-      Apikeys.secondName: secondName,
-      Apikeys.thirdName: thirdName,
       Apikeys.lastName: lastName,
       Apikeys.dateOfBirth: dateOfBirth,
       Apikeys.gender: gender,
@@ -71,23 +90,24 @@ class UserEntity {
     };
   }
 
-  factory UserEntity.fromMap(Map<String, dynamic> map) {
+  factory UserEntity.fromMap(Map<String, dynamic> json) {
     return UserEntity(
-      userName: map[Apikeys.userName] ?? '',
-      password: map[Apikeys.password] ?? '',
-      firstName: map[Apikeys.firstName] ?? '',
-      secondName: map[Apikeys.secondName] ?? '',
-      thirdName: map[Apikeys.thirdName] ?? '',
-      lastName: map[Apikeys.lastName] ?? '',
-      dateOfBirth: map[Apikeys.dateOfBirth] ?? '',
-      gender: map[Apikeys.gender] ?? 0,
-      address: map[Apikeys.address] ?? '',
-      phone: map[Apikeys.phone] ?? '',
-      homePhone: map[Apikeys.homePhone] ?? '',
-      email: map[Apikeys.email] ?? '',
-      profileImage: map[Apikeys.profileImage] ?? '',
-      weight: map[Apikeys.weight] ?? 0,
-      notes: map[Apikeys.notes] ?? '',
+      userName: json[Apikeys.userName] ?? '',
+      password: json[Apikeys.password] ?? '',
+      firstName: json[Apikeys.firstName] ?? '',
+      lastName: json[Apikeys.lastName] ?? '',
+      dateOfBirth: json[Apikeys.dateOfBirth] ?? '',
+      gender: json[Apikeys.gender] ?? 0,
+      address: json[Apikeys.address] ?? '',
+      phone: json[Apikeys.phone] ?? '',
+      homePhone: json[Apikeys.homePhone] ?? '',
+      email: json[Apikeys.email] ?? '',
+      profileImage: json[Apikeys.profileImage] ?? '',
+      weight: json[Apikeys.weight] ?? 0,
+      notes: json[Apikeys.notes] ?? '',
+      height: json[Apikeys.height] ?? 0,
+      diabetesType: json[Apikeys.diabetesType] ?? 0,
+      diagnosisDate: json[Apikeys.diagnosisDate] ?? '',
     );
   }
 }

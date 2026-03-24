@@ -128,7 +128,7 @@ class _DiaMateState extends State<DiaMate> with WidgetsBindingObserver {
                   darkTheme: themeDark(),
                   themeMode: _getThemeMode(context.watch<AppCubit>().appTheme),
                   navigatorKey: AppRoutes.navigatorKey,
-                  initialRoute: AppRoutes.chatbot,
+                  initialRoute: AppRoutes.initial,
                   onGenerateRoute: AppRoutes.onGenerateRoute,
                   debugShowCheckedModeBanner: false,
                   builder: (context, child) {

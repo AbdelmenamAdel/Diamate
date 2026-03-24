@@ -50,6 +50,16 @@ class ChatbotRepoImplementation implements ChatbotRepo {
     }
   }
 
+  @override
+  Future<Either<String, ChatbotQResponseModel>> sendVoiceMessage({
+    required String sessionID,
+    required String question,
+  }) async {
+    // Uses the same endpoint as sendMessage for now.
+    // In a future update, this can be changed to a dedicated voice endpoint.
+    return sendMessage(sessionID: sessionID, question: question);
+  }
+
   String _extractServerError(ServerFailure e) {
     // The errorModel.errorMessage defaults to "User not authenticated" 
     // because Failure.fromJson looks for 'title' key which doesn't exist

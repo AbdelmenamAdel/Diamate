@@ -1,6 +1,7 @@
 class EndPoint {
   static const String baseUrl =
-      'https://diamate-edh9dcadbffdfack.francecentral-01.azurewebsites.net/api/';
+      // 'https://diamate-edh9dcadbffdfack.francecentral-01.azurewebsites.net/api/';
+      'https://diamate-production.up.railway.app/api/';
   static const String login = 'Account/LogIn';
   static const String signUp = 'Account/RegisterNewUser';
   static const String getUserData = 'student/profile';
@@ -34,4 +35,7 @@ class Apikeys {
   static const String notes = 'notes';
   static const String sessionId = "session_id";
   static const String question = "question";
+  static const String height = "height";
+  static const String diabetesType = "diabetesType";
+  static const String diagnosisDate = "dateOfDiagnosis";
 }

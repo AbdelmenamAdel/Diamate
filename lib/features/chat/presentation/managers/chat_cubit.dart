@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:diamate/features/chat/data/models/chat_message.dart';
 import 'package:diamate/features/chat/data/models/chat_session.dart';
 import 'package:diamate/features/chat/data/services/chat_local_service.dart';
@@ -106,25 +109,25 @@ class ChatCubit extends Cubit<ChatState> {
         sessionID: _currentSession!.id.toString(),
         question: text,
       );
-      await result.fold((failure) async {
-        final errorMessage = ChatMessage(
-          text: failure,
-          type: MessageType.ai,
-        );
-        _messages.add(errorMessage);
-        _currentSession!.messages.add(errorMessage);
-        await _chatLocalService.saveSession(_currentSession!);
-        emit(ChatError(failure));
-      }, (responseBody) async {
-        final aiMessage = ChatMessage(
-          // text: _companionService.getAfterMealMessage(),
-          text: responseBody.answer ?? '',
-          type: MessageType.ai,
-        );
-        _messages.add(aiMessage);
-        _currentSession!.messages.add(aiMessage);
-        await _chatLocalService.saveSession(_currentSession!);
-      });
+      await result.fold(
+        (failure) async {
+          final errorMessage = ChatMessage(text: failure, type: MessageType.ai);
+          _messages.add(errorMessage);
+          _currentSession!.messages.add(errorMessage);
+          await _chatLocalService.saveSession(_currentSession!);
+          emit(ChatError(failure));
+        },
+        (responseBody) async {
+          final aiMessage = ChatMessage(
+            // text: _companionService.getAfterMealMessage(),
+            text: responseBody.answer ?? '',
+            type: MessageType.ai,
+          );
+          _messages.add(aiMessage);
+          _currentSession!.messages.add(aiMessage);
+          await _chatLocalService.saveSession(_currentSession!);
+        },
+      );
     } catch (e) {
       final errorMessage = ChatMessage(
         text: e.toString(),
@@ -141,7 +144,7 @@ class ChatCubit extends Cubit<ChatState> {
     _emitSuccess();
   }
 
-  Future<void> sendVoiceMessage(String path) async {
+  Future<void> sendVoiceMessageToChat(String path, String transcribedText) async {
     final userMessage = ChatMessage(
       text: "Voice message",
       type: MessageType.voice,
@@ -165,17 +168,48 @@ class ChatCubit extends Cubit<ChatState> {
     _isTyping = true;
     _emitSuccess();
 
-    // Simulate AI response
-    await Future.delayed(const Duration(seconds: 2));
+    String question = transcribedText.trim();
+    if (question.isEmpty) {
+      question = 'Voice message: $path';
+    }
+    log("Transcription received in Cubit: $question");
 
-    final aiMessage = ChatMessage(
-      text: _companionService.getAfterMealMessage(),
-      type: MessageType.ai,
-    );
-    _messages.add(aiMessage);
-    _currentSession!.messages.add(aiMessage);
-    await _chatLocalService.saveSession(_currentSession!);
-
+    //! Send the transcribed text to backend
+    try {
+      var result = await chatRepo.sendVoiceMessage(
+        sessionID: _currentSession!.id.toString(),
+        question: question,
+      );
+      await result.fold(
+        (failure) async {
+          final errorMessage = ChatMessage(text: failure, type: MessageType.ai);
+          _messages.add(errorMessage);
+          _currentSession!.messages.add(errorMessage);
+          await _chatLocalService.saveSession(_currentSession!);
+          emit(ChatError(failure));
+        },
+        (responseBody) async {
+          final aiMessage = ChatMessage(
+            text: responseBody.answer ?? '',
+            type: MessageType.ai,
+          );
+          _messages.add(aiMessage);
+          _currentSession!.messages.add(aiMessage);
+          await _chatLocalService.saveSession(_currentSession!);
+        },
+      );
+    } catch (e) {
+      final errorMessage = ChatMessage(
+        text: e.toString(),
+        type: MessageType.ai,
+      );
+      _messages.add(errorMessage);
+      if (_currentSession != null) {
+        _currentSession!.messages.add(errorMessage);
+        await _chatLocalService.saveSession(_currentSession!);
+      }
+      emit(ChatError(e.toString()));
+    }
     _isTyping = false;
     _emitSuccess();
   }

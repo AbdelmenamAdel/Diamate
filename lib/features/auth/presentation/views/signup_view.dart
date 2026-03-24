@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/database/secure_storage.dart';
@@ -111,9 +113,7 @@ class _SignupViewState extends State<SignupView> {
         final String base64Image = await assetImageToBase64(Assets.men3em);
         final user = UserEntity(
           firstName: _nameCtrl.text,
-          secondName: _lastNameCtrl.text,
-          thirdName: '',
-          lastName: '',
+          lastName: _lastNameCtrl.text,
           phone: _phoneCtrl.text,
           userName: _usernameCtrl.text,
           password: _passwordCtrl.text,
@@ -123,10 +123,13 @@ class _SignupViewState extends State<SignupView> {
           email: _emailCtrl.text,
           profileImage: base64Image,
           weight: int.parse(_weightCtrl.text),
-          // height: int.parse(_heightCtrl.text),
-          // diabetesType: _diabetes,
-          // diagnosisDate: _diagnosisDateCtrl.text,
+          height: int.parse(_heightCtrl.text),
+          diabetesType: _diabetes == "Type 1" ? 1 : 2,
+          diagnosisDate: _diagnosisDateCtrl.text,
+          notes: "",
         );
+        // {"DateOfBirth":["Value for DateOfBirth must be between 01/01/1900 00:00:00 and 01/01/2010 00:00:00"]
+        // {"Weight":["Value for Weight must be between 40 and 200."]}
         // login accout to try
         // joooo - 1234yY@
         context.read<AuthCubit>().register(user: user);

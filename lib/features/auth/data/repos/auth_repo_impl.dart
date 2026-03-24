@@ -23,8 +23,6 @@ class AuthRepoImpl extends AuthRepo {
           Apikeys.userName: user.userName,
           Apikeys.password: user.password,
           Apikeys.firstName: user.firstName,
-          Apikeys.secondName: user.secondName,
-          Apikeys.thirdName: user.thirdName,
           Apikeys.lastName: user.lastName,
           Apikeys.dateOfBirth: user.dateOfBirth,
           Apikeys.gender: user.gender,
@@ -35,6 +33,9 @@ class AuthRepoImpl extends AuthRepo {
           Apikeys.profileImage: user.profileImage,
           Apikeys.weight: user.weight,
           Apikeys.notes: user.notes,
+          Apikeys.height: user.height,
+          Apikeys.diabetesType: user.diabetesType,
+          Apikeys.diagnosisDate: user.diagnosisDate,
         },
       );
 
