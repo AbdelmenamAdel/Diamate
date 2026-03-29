@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 abstract class ApiConsumer {
   //!get
   Future<dynamic> get(
@@ -11,6 +13,7 @@ abstract class ApiConsumer {
     Object? data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
+    Options? options,
   });
   //!patch
   Future<dynamic> patch(

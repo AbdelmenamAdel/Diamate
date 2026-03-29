@@ -1,60 +1,60 @@
 name: diamate
 description: "A new Flutter project."
-publish_to: 'none' 
+publish_to: 'none'
 version: 1.0.0+1
 
 environment:
   sdk: ^3.9.2
 
 dependencies:
+  achievement_view: ^1.0.1
+  audio_waveforms: ^2.0.2
+  audioplayers: ^6.5.1
+  build_runner: ^2.4.13
+  cloud_firestore: ^6.1.2
+  connectivity_plus: ^7.0.0
+  cupertino_icons: ^1.0.8
+  dartz: ^0.10.1
+  dio: ^5.9.0
+  equatable: ^2.0.8
+  file_picker: ^10.3.10
+  firebase_core: ^4.4.0
+  firebase_messaging: ^16.1.1
+  firebase_remote_config: ^6.1.4
+  fl_chart: ^1.1.1
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.8
-  firebase_core: ^4.4.0
-  cloud_firestore: ^6.1.2
-  dio: ^5.9.0
-  image_picker: ^1.2.1
-  connectivity_plus: ^7.0.0
   flutter_bloc: ^9.1.1
-  flutter_secure_storage: ^9.2.4
-  flutter_localization: ^0.3.3
-  get_it: ^9.1.0
-  url_launcher: ^6.3.2
-  achievement_view: ^1.0.1
-  flutter_screenutil: ^5.9.3
-  flutter_svg: ^2.2.3
   flutter_launcher_icons: ^0.14.4
-  dartz: ^0.10.1
-  fl_chart: ^1.1.1
+  flutter_local_notifications: ^20.0.0
+  flutter_localization: ^0.3.3
+  flutter_screenutil: ^5.9.3
+  flutter_secure_storage: ^9.2.4
+  flutter_svg: ^2.2.3
+  font_awesome_flutter: ^10.12.0
+  get_it: ^9.1.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   hive_generator: ^2.0.1
-  build_runner: ^2.4.13
-  path_provider: ^2.1.5
-  record: ^6.2.0
-  audioplayers: ^6.5.1
-  permission_handler: ^12.0.1
-  path: ^1.9.1
-  audio_waveforms: ^2.0.2
-  firebase_messaging: ^16.1.1
-  flutter_local_notifications: ^20.0.0
-  video_player: ^2.9.2
-  file_picker: ^10.3.10
-  syncfusion_flutter_pdfviewer: ^32.2.3
+  image_picker: ^1.2.1
   intl: ^0.20.2
+  jwt_decoder: ^2.0.1
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  record: ^6.2.0
+  speech_to_text: ^7.3.0
+  syncfusion_flutter_pdfviewer: ^32.2.3
   timeago: ^3.7.1
   timezone: ^0.10.1
+  url_launcher: ^6.3.2
   uuid: ^4.5.2
-  equatable: ^2.0.8
-  font_awesome_flutter: ^10.12.0
-  firebase_remote_config: ^6.1.4
-  speech_to_text: ^7.3.0
+  video_player: ^2.9.2
 
 dev_dependencies:
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
@@ -92,4 +92,5 @@ flutter_launcher_icons:
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/logo.png"
   remove_alpha_ios: true
+
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -111,6 +111,8 @@ class _SignupViewState extends State<SignupView> {
       if (_formKey3.currentState!.validate()) {
         // Triggering registration via Cubit (as example)
         final String base64Image = await assetImageToBase64(Assets.men3em);
+        log("base64Image $base64Image");
+
         final user = UserEntity(
           firstName: _nameCtrl.text,
           lastName: _lastNameCtrl.text,
@@ -118,6 +120,7 @@ class _SignupViewState extends State<SignupView> {
           userName: _usernameCtrl.text,
           password: _passwordCtrl.text,
           dateOfBirth: _dobCtrl.text,
+          homePhone: _phoneHomeCtrl.text,
           gender: _gender == "Male" ? 0 : 1,
           address: "", // to be added later and it accept null
           email: _emailCtrl.text,

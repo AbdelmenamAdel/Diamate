@@ -17,28 +17,8 @@ class AuthRepoImpl extends AuthRepo {
     required UserEntity user,
   }) async {
     try {
-      final response = await api.post(
-        EndPoint.signUp,
-        data: {
-          Apikeys.userName: user.userName,
-          Apikeys.password: user.password,
-          Apikeys.firstName: user.firstName,
-          Apikeys.lastName: user.lastName,
-          Apikeys.dateOfBirth: user.dateOfBirth,
-          Apikeys.gender: user.gender,
-          Apikeys.address: user.address,
-          Apikeys.phone: user.phone,
-          Apikeys.homePhone: user.homePhone,
-          Apikeys.email: user.email,
-          Apikeys.profileImage: user.profileImage,
-          Apikeys.weight: user.weight,
-          Apikeys.notes: user.notes,
-          Apikeys.height: user.height,
-          Apikeys.diabetesType: user.diabetesType,
-          Apikeys.diagnosisDate: user.diagnosisDate,
-        },
-      );
-
+      final response = await api.post(EndPoint.signUp, data: user.toMap());
+      log(response.toString());
       if (response == null) {
         return left('No response from server');
       }

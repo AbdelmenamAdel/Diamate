@@ -15,6 +15,7 @@
 //   "weight": 80,
 //   "notes": "note"
 // }
+
 // Updated to match the API
 // {
 //   "userName": "yassinm",
@@ -34,6 +35,7 @@
 //   "height": 230,
 //   "notes": "string"
 // }
+
 import 'package:diamate/core/database/api/end_points.dart';
 
 class UserEntity {
@@ -45,14 +47,15 @@ class UserEntity {
   final int gender;
   final String address;
   final String phone;
-  final String? homePhone;
+  final String homePhone;
   final String email;
-  final String profileImage;
-  final int weight;
-  final String? notes;
-  final int height;
-  final int diabetesType;
+  final String? profileImage;
   final String diagnosisDate;
+  final int diabetesType;
+  final num height;
+  final num weight;
+  final String? notes;
+  final int? id;
   const UserEntity({
     required this.height,
     required this.diabetesType,
@@ -65,11 +68,12 @@ class UserEntity {
     required this.gender,
     required this.address,
     required this.phone,
-    this.homePhone,
+    required this.homePhone,
     required this.email,
-    required this.profileImage,
+    this.profileImage,
     required this.weight,
     this.notes,
+    this.id,
   });
 
   Map<String, dynamic> toMap() {
@@ -87,6 +91,9 @@ class UserEntity {
       Apikeys.profileImage: profileImage,
       Apikeys.weight: weight,
       Apikeys.notes: notes,
+      Apikeys.height: height,
+      Apikeys.diabetesType: diabetesType,
+      Apikeys.diagnosisDate: diagnosisDate,
     };
   }
 
