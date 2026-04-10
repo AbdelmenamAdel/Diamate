@@ -8,8 +8,4 @@ class LoginResponse {
       expirationDate: json['expiration'],
     );
   }
-
-  Map<String, dynamic> toMap() {
-    return {'token': token, 'expirationDate': expirationDate};
-  }
 }

@@ -25,3 +25,9 @@ final class RegisterFailure extends AuthState {
 
   RegisterFailure({required this.message});
 }
+
+final class AuthAuthenticated extends AuthState {
+  final UserEntity user;
+
+  AuthAuthenticated({required this.user});
+}

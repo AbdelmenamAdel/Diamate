@@ -3,10 +3,12 @@ import 'package:dartz/dartz.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
 import 'package:diamate/core/database/api/end_points.dart';
 import 'package:diamate/core/database/error/exception.dart';
-import 'package:diamate/core/database/error/failure.dart';
 import 'package:diamate/features/auth/data/models/login_response.dart';
 import 'package:diamate/features/auth/domain/entites/user_entity.dart';
 import 'package:diamate/features/auth/domain/repos/auth_repo.dart';
+import 'package:diamate/core/utils/id_extraction.dart';
+import 'package:diamate/core/database/secure_storage.dart';
+import 'dart:convert';
 
 class AuthRepoImpl extends AuthRepo {
   final ApiConsumer api;
@@ -50,12 +52,14 @@ class AuthRepoImpl extends AuthRepo {
       if (response == null) {
         return left("No response from server");
       }
-      log(response.toString());
       final res = LoginResponse.fromJson(response);
       if (res.token.isEmpty) {
         return left("Invalid credentials");
       }
-      return right(res);
+      // Convert response to UserEntity and add id locally
+      final userResult = await getUserData(token: res.token);
+
+      return userResult.fold((error) => left(error), (user) => right(res));
     } catch (e) {
       log(
         'Exception in AuthRepoImpl.signinWithEmailAndPassword: ${e.toString()}',
@@ -65,39 +69,39 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> getUserData({
+  Future<Either<String, UserEntity>> getUserData({
     required String token,
   }) async {
     try {
-      final userData = await api.get(
-        EndPoint.getUserData,
-        data: {'Authorization': token},
+      // Save token to SecureStorage
+      await SecureStorage.setString(key: Apikeys.accessToken, value: token);
+      // Extract PatientId from token
+      final patientId = extractId(token);
+      // Fetch patient details
+      final patientResponse = await api.get('${EndPoint.getPatient}$patientId');
+      if (patientResponse == null) {
+        return left("Failed to fetch patient data");
+      }
+
+      // Convert response to UserEntity and add id locally
+      final userMap = Map<String, dynamic>.from(patientResponse);
+      userMap[Apikeys.id] = patientId.toInt();
+      log("userMap before fromMap: ${userMap.toString()}");
+      
+      final userEntity = UserEntity.fromMap(userMap);
+      log("userEntity created: ${userEntity.firstName} ${userEntity.lastName}, id: ${userEntity.id}");
+      
+      // Save full UserEntity to SecureStorage
+      await SecureStorage.setString(
+        key: 'user_data',
+        value: jsonEncode(userEntity.toMap()),
       );
-      final user = UserEntity.fromMap(userData['data']);
-      return right(user);
+      log("user_data saved to SecureStorage");
+
+      return right(userEntity);
     } catch (e) {
       log('Exception in AuthRepoImpl.getUserData: ${e.toString()}');
-      return left(Failure(errorMessage: e.toString(), statusCode: 400));
+      return left(e.toString());
     }
-  }
-
-  @override
-  Future saveUserData({required LoginResponse response}) async {
-    // await SecureStorage.setString(
-    //   key: 'userData',
-    //   value: jsonEncode(response.toEntity().toMap()),
-    // );
-    // await SecureStorage.setString(
-    //   key: Apikeys.accessToken,
-    //   value: response.accessToken,
-    // );
-    // await SecureStorage.setString(
-    //   key: Apikeys.refreshToken,
-    //   value: response.refreshToken,
-    // );
-    // await SecureStorage.setString(
-    //   key: Apikeys.tokenType,
-    //   value: response.tokenType,
-    // );
   }
 }

@@ -14,6 +14,7 @@ import 'core/styles/theme/app_theme.dart';
 import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/services/push_notification/local_notfication_service.dart';
 import 'package:diamate/core/utils/time_ago.dart';
+import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:diamate/firebase_options.dart';
@@ -58,8 +59,11 @@ void main() async {
   );
 
   runApp(
-    BlocProvider(
-      create: (context) => sl<AppCubit>()..getSavedThemeMode(),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl<AppCubit>()..getSavedThemeMode()),
+        BlocProvider(create: (context) => sl<AuthCubit>()..loadUser()),
+      ],
       child: const DiaMate(),
     ),
   );

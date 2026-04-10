@@ -36,6 +36,8 @@
 //   "notes": "string"
 // }
 
+import 'dart:developer';
+
 import 'package:diamate/core/database/api/end_points.dart';
 
 class UserEntity {
@@ -94,10 +96,12 @@ class UserEntity {
       Apikeys.height: height,
       Apikeys.diabetesType: diabetesType,
       Apikeys.diagnosisDate: diagnosisDate,
+      Apikeys.id: id,
     };
   }
 
   factory UserEntity.fromMap(Map<String, dynamic> json) {
+    log("UserEntity.fromMap parsing: $json");
     return UserEntity(
       userName: json[Apikeys.userName] ?? '',
       password: json[Apikeys.password] ?? '',
@@ -115,6 +119,7 @@ class UserEntity {
       height: json[Apikeys.height] ?? 0,
       diabetesType: json[Apikeys.diabetesType] ?? 0,
       diagnosisDate: json[Apikeys.diagnosisDate] ?? '',
+      id: json[Apikeys.id],
     );
   }
 }

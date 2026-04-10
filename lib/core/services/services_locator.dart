@@ -129,5 +129,5 @@ Future<void> _initAuth() async {
   sl.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(api: sl<ApiConsumer>()),
   );
-  sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthRepo>()));
+  sl.registerLazySingleton<AuthCubit>(() => AuthCubit(sl<AuthRepo>()));
 }
