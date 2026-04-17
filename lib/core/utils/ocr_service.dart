@@ -43,7 +43,11 @@ class OCRService {
       }
     }
 
-    // 2. Fallback: Search for any realistic numbers if units weren't explicitly found
+    // 2. Try to find Meter Context (keywords that suggest this is a glucose meter)
+    final hasMeterContext = _isLikelyGlucoseMeter(normalizedText);
+    log('Glucose Meter Context Detected: $hasMeterContext');
+
+    // 3. Fallback: Search for any realistic numbers
     final numberMatches =
         RegExp(r'(\d{1,3}(\.\d{1,2})?)').allMatches(normalizedText);
 
@@ -54,31 +58,47 @@ class OCRService {
       if (value == null) continue;
 
       // Realistic mg/dL range (integers normally)
-      if (!valStr.contains('.') && value >= 40 && value <= 500) {
+      if (!valStr.contains('.') && value >= 30 && value <= 500) {
         // Heuristic: Avoid common time/date false positives
         bool isLikelyTime = normalizedText.contains(RegExp('$valStr\\s*[:/-]')) ||
             normalizedText.contains(RegExp('[:/-]\\s*$valStr'));
         
-        if (!isLikelyTime) {
+        // Additional check: ignore values that look like years
+        bool isLikelyYear = value > 2000 && value < 2100;
+
+        if (!isLikelyTime && !isLikelyYear) {
           candidates.add(value);
         }
       }
 
       // Realistic mmol/L range (usually has decimal)
-      if (valStr.contains('.') && value >= 2.0 && value <= 30.0) {
+      if (valStr.contains('.') && value >= 2.0 && value <= 35.0) {
         candidates.add(value * 18.0); // Convert and add as candidate
       }
     }
 
     if (candidates.isNotEmpty) {
-      // If we have candidates, return the most plausible one
-      // Usually the glucose reading is unique or the largest after filtering
-      // For now, return the first one found as it's often the main reading
+      // If we have meter context, we can be more confident in the results
+      // Sort candidates to potentially pick the most "display-like" value
+      // (Usually the largest value in the valid range is the reading)
+      candidates.sort((a, b) => b.compareTo(a)); 
+      
       log('Detected candidates: $candidates');
       return candidates.first.round();
     }
 
     return null;
+  }
+
+  /// Check if the text contains keywords common to glucose meters
+  bool _isLikelyGlucoseMeter(String normalizedText) {
+    final meterKeywords = [
+      'mg/dl', 'mmol', 'mem', 'set', 'avg', 'log', 'code', 'ctl', 'mode', 
+      'battery', 'check', 'accu', 'chek', 'onetouch', 'contour', 'freestyle',
+      'gluco', 'bioland', 'sinocare', 'bayer', 'abbott', 'roche'
+    ];
+    
+    return meterKeywords.any((keyword) => normalizedText.contains(keyword));
   }
 
   /// Dispose (Not required for vision_text_recognition as it uses static methods)
