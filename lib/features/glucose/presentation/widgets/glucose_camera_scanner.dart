@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'dart:io';
+import 'package:diamate/core/utils/ocr_service.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -56,14 +58,15 @@ class _GlucoseCameraScannerState extends State<GlucoseCameraScanner> {
     });
 
     try {
-      // TODO: Integrate with your ML model here
       await Future.delayed(const Duration(seconds: 2));
-
-      final simulatedValue = await _simulateGlucoseDetection(image);
-
-      if (simulatedValue != null) {
+      final glucoseValue = await OCRService().extractGlucoseValue(
+        File(image.path),
+      );
+      log(glucoseValue.toString());
+      // final simulatedValue = await _simulateGlucoseDetection(image);
+      if (glucoseValue != null) {
         setState(() {
-          _detectedValue = simulatedValue;
+          _detectedValue = glucoseValue.toDouble();
           _isProcessing = false;
         });
       } else {
@@ -79,12 +82,6 @@ class _GlucoseCameraScannerState extends State<GlucoseCameraScanner> {
         _isProcessing = false;
       });
     }
-  }
-
-  Future<double?> _simulateGlucoseDetection(XFile image) async {
-    // TODO: Replace with actual ML model
-    final random = DateTime.now().millisecond % 200 + 70;
-    return random.toDouble();
   }
 
   void _retake() {
@@ -142,7 +139,7 @@ class _GlucoseCameraScannerState extends State<GlucoseCameraScanner> {
                   Container(
                     padding: EdgeInsets.all(12.w),
                     decoration: BoxDecoration(
-                      color: const Color(0xff45C588).withOpacity(0.1),
+                      color: const Color(0xff45C588).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Icon(
@@ -183,7 +180,7 @@ class _GlucoseCameraScannerState extends State<GlucoseCameraScanner> {
                       Container(
                         padding: EdgeInsets.all(20.w),
                         decoration: BoxDecoration(
-                          color: const Color(0xff45C588).withOpacity(0.1),
+                          color: const Color(0xff45C588).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -330,13 +327,13 @@ class _GlucoseCameraScannerState extends State<GlucoseCameraScanner> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xff45C588).withOpacity(0.1),
-                          const Color(0xff45C588).withOpacity(0.05),
+                          const Color(0xff45C588).withValues(alpha: 0.1),
+                          const Color(0xff45C588).withValues(alpha: 0.05),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16.r),
                       border: Border.all(
-                        color: const Color(0xff45C588).withOpacity(0.3),
+                        color: const Color(0xff45C588).withValues(alpha: 0.3),
                         width: 2,
                       ),
                     ),

@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
 import 'package:diamate/core/widgets/notification_button.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
+import 'package:diamate/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -69,7 +72,7 @@ class HomeView extends StatelessWidget {
                 SizedBox(height: 12.h),
                 const DetailsCard(),
                 SizedBox(height: 24.h),
-                // ! Recommeded for you
+                // ! Recommended for you
                 Text(
                   "Recommended for you",
                   style: TextStyle(
@@ -88,12 +91,18 @@ class HomeView extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 24.h),
-                Text(
-                  "Quick Actions",
-                  style: TextStyle(
-                    fontFamily: K.sg,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                InkWell(
+                  onTap: () async {
+                    log("object");
+                    await getData();
+                  },
+                  child: Text(
+                    "Quick Actions",
+                    style: TextStyle(
+                      fontFamily: K.sg,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 SizedBox(height: 8.h),
