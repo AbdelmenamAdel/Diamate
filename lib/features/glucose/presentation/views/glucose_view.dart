@@ -5,9 +5,9 @@ import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
-import 'package:diamate/features/glucose/presentation/widgets/add_glucose_dialog.dart';
-import 'package:diamate/features/glucose/presentation/widgets/glucose_camera_scanner.dart';
-import 'package:diamate/features/glucose/presentation/widgets/glucose_graph.dart';
+import 'package:diamate/features/glucose/presentation/views/widgets/add_glucose_dialog.dart';
+import 'package:diamate/features/glucose/presentation/views/widgets/glucose_camera_scanner.dart';
+import 'package:diamate/features/glucose/presentation/views/widgets/glucose_graph.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

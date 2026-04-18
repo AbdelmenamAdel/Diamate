@@ -10,6 +10,8 @@ class EndPoint {
   static const String refreshToken = 'token/refresh';
   static const String chatBotSendMessage = 'api/v1/chat';
   static const String getPatient = 'Patients/GetPatient/';
+  static const String addGlucoseReading =
+      'BloodGlucoseReading/AddReadingForPatient';
   // deleteUser + id method in AuthRepoImpl to delete account from server side
 }
 
