@@ -23,7 +23,7 @@ class GlucoseReadingAdapter extends TypeAdapter<GlucoseReading> {
       source: fields[3] as String,
       imagePath: fields[4] as String?,
       notes: fields[5] as String?,
-      measurementType: fields[6] as String?,
+      measurementType: fields[6],
     );
   }
 

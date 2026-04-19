@@ -23,7 +23,7 @@ class GlucoseReading extends HiveObject {
   final String? notes;
 
   @HiveField(6)
-  final String? measurementType; // 'fasting', 'after_meal', 'before_sleep', 'random'
+  final dynamic measurementType; // Supports transition from String (local Hive) to int
 
   GlucoseReading({
     required this.id,
@@ -32,8 +32,10 @@ class GlucoseReading extends HiveObject {
     required this.source,
     this.imagePath,
     this.notes,
-    String? measurementType = 'random',
-  }) : measurementType = measurementType ?? 'random';
+    dynamic measurementType = 3,
+  }) : measurementType = measurementType is int
+            ? measurementType
+            : _mapStringMeasurementTypeToInt(measurementType as String?);
 
   // Get status based on value and measurement type
   String get status {
@@ -44,20 +46,19 @@ class GlucoseReading extends HiveObject {
     if (value < 70) return 'Low';
 
     // Normal ranges based on measurement type
-    if (measurementType == 'fasting') {
+    if (measurementType == 0) { // Fasting
       if (value >= 70 && value <= 99) return 'Normal';
       if (value >= 100 && value <= 125) return 'Prediabetes';
       return 'High';
-    } else if (measurementType == 'after_meal') {
+    } else if (measurementType == 1) { // BeforeMeal
+      if (value < 100) return 'Normal';
+      if (value >= 100 && value < 126) return 'Prediabetes';
+      return 'High';
+    } else if (measurementType == 2) { // AfterMeal
       if (value < 140) return 'Normal';
       if (value >= 140 && value < 200) return 'High';
       return 'Very High';
-    } else if (measurementType == 'before_sleep') {
-      if (value < 120) return 'Normal';
-      if (value >= 120 && value < 180) return 'High';
-      return 'Very High';
-    } else {
-      // Random
+    } else { // Random
       if (value >= 70 && value <= 140) return 'Normal';
       if (value > 140 && value <= 200) return 'High';
       return 'Very High';
@@ -69,19 +70,19 @@ class GlucoseReading extends HiveObject {
     if (value < 54) return '#B71C1C'; // Dark Red - Critical
     if (value < 70) return '#F25661'; // Red - Low
 
-    if (measurementType == 'fasting') {
+    if (measurementType == 0) { // Fasting
       if (value >= 70 && value <= 99) return '#45C588'; // Green
       if (value >= 100 && value <= 125) return '#F2994A'; // Orange
       return '#EB5757'; // Red
-    } else if (measurementType == 'after_meal') {
+    } else if (measurementType == 1) { // BeforeMeal
+      if (value < 100) return '#45C588'; // Green
+      if (value >= 100 && value < 126) return '#F2994A'; // Orange
+      return '#EB5757'; // Red
+    } else if (measurementType == 2) { // AfterMeal
       if (value < 140) return '#45C588'; // Green
       if (value >= 140 && value < 200) return '#F2994A'; // Orange
       return '#EB5757'; // Red
-    } else if (measurementType == 'before_sleep') {
-      if (value < 120) return '#45C588'; // Green
-      if (value >= 120 && value < 180) return '#F2994A'; // Orange
-      return '#EB5757'; // Red
-    } else {
+    } else { // Random
       if (value >= 70 && value <= 140) return '#45C588'; // Green
       if (value > 140 && value <= 200) return '#F2994A'; // Orange
       return '#EB5757'; // Red
@@ -91,12 +92,13 @@ class GlucoseReading extends HiveObject {
   // Get measurement type display name
   String get measurementTypeDisplay {
     switch (measurementType) {
-      case 'fasting':
+      case 0:
         return 'Fasting';
-      case 'after_meal':
+      case 1:
+        return 'Before Meal';
+      case 2:
         return 'After Meal';
-      case 'before_sleep':
-        return 'Before Sleep';
+      case 3:
       default:
         return 'Random';
     }
@@ -112,7 +114,7 @@ class GlucoseReading extends HiveObject {
       return '⚠️ LOW: Glucose is low. Have a snack with 15g carbs (fruit, crackers). Avoid exercise. Recheck in 15 minutes.';
     }
 
-    if (measurementType == 'fasting') {
+    if (measurementType == 0) { // Fasting
       if (value >= 70 && value <= 99) {
         return '✅ EXCELLENT: Your fasting glucose is in the normal range. Keep up the good work!';
       }
@@ -120,7 +122,15 @@ class GlucoseReading extends HiveObject {
         return '⚠️ PREDIABETES: Fasting glucose is elevated. Consider lifestyle changes: exercise, healthy diet, weight management. Consult your doctor.';
       }
       return '🚨 HIGH: Fasting glucose is too high (≥126 mg/dL). This may indicate diabetes. Consult your doctor immediately for proper diagnosis and treatment.';
-    } else if (measurementType == 'after_meal') {
+    } else if (measurementType == 1) { // BeforeMeal
+      if (value < 100) {
+        return '✅ GOOD: Your pre-meal glucose is in a healthy range. Enjoy your healthy meal!';
+      }
+      if (value >= 100 && value < 126) {
+        return '⚠️ ELEVATED: Pre-meal glucose is slightly high. Be mindful of carbohydrate portions during your meal.';
+      }
+      return '🚨 HIGH: Pre-meal glucose is high. Consider a short walk and avoid highly processed carbs.';
+    } else if (measurementType == 2) { // AfterMeal
       if (value < 140) {
         return '✅ GREAT: Post-meal glucose is normal. Your body is managing sugar well!';
       }
@@ -128,15 +138,7 @@ class GlucoseReading extends HiveObject {
         return '⚠️ ELEVATED: Post-meal glucose is high. Try smaller portions, more fiber, and a short walk after meals.';
       }
       return '🚨 VERY HIGH: Post-meal glucose is too high (≥200 mg/dL). Avoid sugary foods, stay hydrated, and consult your doctor.';
-    } else if (measurementType == 'before_sleep') {
-      if (value < 120) {
-        return '✅ GOOD: Bedtime glucose is in a safe range for sleep.';
-      }
-      if (value >= 120 && value < 180) {
-        return '⚠️ SLIGHTLY HIGH: Bedtime glucose is elevated. Avoid late-night snacks and monitor morning levels.';
-      }
-      return '🚨 TOO HIGH: Bedtime glucose is very high. Stay hydrated and consult your doctor about nighttime management.';
-    } else {
+    } else { // Random
       if (value >= 70 && value <= 140) {
         return '✅ NORMAL: Your glucose level is within the healthy range. Keep it up!';
       }
@@ -155,8 +157,24 @@ class GlucoseReading extends HiveObject {
       source: json['source'] as String,
       imagePath: json['imagePath'] as String?,
       notes: json['notes'] as String?,
-      measurementType: json['measurementType'] as String? ?? 'random',
+      measurementType: json['measurementType'] is int
+          ? json['measurementType'] as int
+          : _mapStringMeasurementTypeToInt(json['measurementType'] as String?),
     );
+  }
+
+  static int _mapStringMeasurementTypeToInt(String? type) {
+    switch (type) {
+      case 'fasting':
+        return 0;
+      case 'before_meal':
+        return 1;
+      case 'after_meal':
+        return 2;
+      case 'random':
+      default:
+        return 3;
+    }
   }
 
   Map<String, dynamic> toJson() {

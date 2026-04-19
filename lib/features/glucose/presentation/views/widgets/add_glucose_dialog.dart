@@ -23,26 +23,26 @@ class _AddGlucoseBottomSheetState extends State<AddGlucoseBottomSheet> {
   final TextEditingController _valueController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String _measurementType = 'random';
+  int _measurementType = 3;
 
-  final List<Map<String, String>> _measurementTypes = [
+  final List<Map<String, dynamic>> _measurementTypes = [
     {
-      'value': 'fasting',
+      'value': 0,
       'label': '🌅 Fasting (8+ hours)',
       'hint': 'Normal: 70-99 mg/dL',
     },
     {
-      'value': 'after_meal',
+      'value': 1,
+      'label': '🥗 Before Meal',
+      'hint': 'Normal: <100 mg/dL',
+    },
+    {
+      'value': 2,
       'label': '🍽️ After Meal (2 hours)',
       'hint': 'Normal: <140 mg/dL',
     },
     {
-      'value': 'before_sleep',
-      'label': '🌙 Before Sleep',
-      'hint': 'Normal: <120 mg/dL',
-    },
-    {
-      'value': 'random',
+      'value': 3,
       'label': '🔀 Random/Anytime',
       'hint': 'Normal: 70-140 mg/dL',
     },
@@ -133,7 +133,7 @@ class _AddGlucoseBottomSheetState extends State<AddGlucoseBottomSheet> {
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(color: Colors.grey.shade200, width: 1),
                   ),
-                  child: DropdownButtonFormField<String>(
+                  child: DropdownButtonFormField<int>(
                     value: _measurementType,
                     isExpanded: true,
                     decoration: InputDecoration(
@@ -161,8 +161,8 @@ class _AddGlucoseBottomSheetState extends State<AddGlucoseBottomSheet> {
                       }).toList();
                     },
                     items: _measurementTypes.map((type) {
-                      return DropdownMenuItem<String>(
-                        value: type['value'],
+                      return DropdownMenuItem<int>(
+                        value: type['value'] as int,
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.h),
                           child: Column(

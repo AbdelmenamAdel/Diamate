@@ -27,6 +27,8 @@ import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.
 import 'package:diamate/features/dfu_test/data/services/dfu_test_local_service.dart';
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
 import 'package:diamate/features/glucose/data/services/glucose_local_service.dart';
+import 'package:diamate/features/glucose/domain/repos/glucose_repo.dart';
+import 'package:diamate/features/glucose/data/repos/glucose_repo_impl.dart';
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 import 'package:diamate/features/medications/data/services/medication_local_service.dart';
 import 'package:diamate/features/medications/presentation/managers/medication_cubit.dart';
@@ -57,8 +59,15 @@ Future<void> _initGlucose() async {
   final glucoseService = GlucoseLocalService();
   await glucoseService.init();
   sl.registerLazySingleton<GlucoseLocalService>(() => glucoseService);
+  sl.registerLazySingleton<GlucoseRepo>(
+    () => GlucoseRepoImpl(api: sl<ApiConsumer>()),
+  );
   sl.registerLazySingleton<GlucoseCubit>(
-    () => GlucoseCubit(sl<GlucoseLocalService>()),
+    () => GlucoseCubit(
+      sl<GlucoseLocalService>(),
+      sl<GlucoseRepo>(),
+      sl<AuthCubit>(),
+    ),
   );
 }
 

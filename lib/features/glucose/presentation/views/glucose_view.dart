@@ -36,7 +36,7 @@ class _GlucoseViewContent extends StatelessWidget {
         value: result['value'] as double,
         source: 'manual',
         notes: result['notes'] as String?,
-        measurementType: result['measurementType'] as String? ?? 'random',
+        measurementType: result['measurementType'] as int? ?? 3,
       );
     }
   }
@@ -49,7 +49,7 @@ class _GlucoseViewContent extends StatelessWidget {
         value: result['value'] as double,
         source: 'camera',
         imagePath: result['imagePath'] as String?,
-        measurementType: 'random', // Camera scans default to random
+        measurementType: 3, // Camera scans default to random (3)
       );
     }
   }

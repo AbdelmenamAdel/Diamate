@@ -4,6 +4,8 @@ import 'package:diamate/core/services/push_notification/local_notfication_servic
 import 'package:diamate/core/services/services_locator.dart';
 import 'package:diamate/features/glucose/data/models/glucose_reading.dart';
 import 'package:diamate/features/glucose/data/services/glucose_local_service.dart';
+import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
+import 'package:diamate/features/glucose/domain/repos/glucose_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -12,8 +14,11 @@ part 'glucose_state.dart';
 
 class GlucoseCubit extends Cubit<GlucoseState> {
   final GlucoseLocalService _localService;
+  final GlucoseRepo _glucoseRepo;
+  final AuthCubit _authCubit;
 
-  GlucoseCubit(this._localService) : super(GlucoseInitial()) {
+  GlucoseCubit(this._localService, this._glucoseRepo, this._authCubit)
+      : super(GlucoseInitial()) {
     loadReadings();
   }
 
@@ -36,7 +41,7 @@ class GlucoseCubit extends Cubit<GlucoseState> {
     required String source,
     String? imagePath,
     String? notes,
-    String measurementType = 'random',
+    int measurementType = 3,
   }) async {
     try {
       final reading = GlucoseReading(
@@ -72,6 +77,21 @@ class GlucoseCubit extends Cubit<GlucoseState> {
       );
 
       await _localService.addReading(finalReading);
+
+      // Call Remote Repo
+      final patientId = _authCubit.user?.id;
+      if (patientId != null) {
+        final result = await _glucoseRepo.addRemoteReading(
+          reading: finalReading,
+          patientId: patientId,
+        );
+        result.fold(
+          (failure) => log("Remote reading failed: $failure"),
+          (_) => log("Remote reading success"),
+        );
+      } else {
+        log("Cannot add remote reading: patientId is null");
+      }
 
       // Show notification with advice
       _showGlucoseNotification(finalReading);
