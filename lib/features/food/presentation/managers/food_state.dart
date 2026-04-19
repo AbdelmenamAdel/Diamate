@@ -22,6 +22,18 @@ class FoodAnalysisSuccess extends FoodState {
   List<Object?> get props => [ingredients];
 }
 
+class FoodHistoryLoading extends FoodState {}
+
+class FoodHistoryLoaded extends FoodState {
+  final Map<DateTime, List<MealModel>> meals;
+  final DateTime selectedDate;
+
+  const FoodHistoryLoaded({required this.meals, required this.selectedDate});
+
+  @override
+  List<Object?> get props => [meals, selectedDate];
+}
+
 class FoodSuccess extends FoodState {
   final NutritionModel? nutrition;
 

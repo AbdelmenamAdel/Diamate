@@ -19,6 +19,7 @@ import 'package:diamate/features/medications/presentation/views/medications_view
 import 'package:diamate/features/medications/presentation/views/medications_list_view.dart';
 import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 import 'package:diamate/features/food/presentation/views/add_food_view.dart';
+import 'package:diamate/features/food/presentation/views/food_history_view.dart';
 import 'package:diamate/core/utils/mini/recomte_configure.dart';
 import 'package:diamate/core/utils/mini/lol_view.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ class AppRoutes {
   static const String medications = 'medications';
   static const String medicationList = 'medicationList';
   static const String addFood = 'addFood';
+  static const String foodHistory = 'foodHistory';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -122,6 +124,13 @@ class AppRoutes {
             child: AddFoodView(
               initialIngredients: settings.arguments as List<String>?,
             ),
+          ),
+        );
+      case foodHistory:
+        return BaseRoute(
+          page: BlocProvider<FoodCubit>.value(
+            value: sl<FoodCubit>(),
+            child: const FoodHistoryView(),
           ),
         );
       default:

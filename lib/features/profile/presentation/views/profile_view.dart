@@ -284,6 +284,13 @@ class _ProfileViewState extends State<ProfileView> {
                           context.pushNamed(AppRoutes.dfuTests);
                         },
                       ),
+                      _ProfileTile(
+                        title: "Food History",
+                        icon: Icons.restaurant_menu_rounded,
+                        onTap: () {
+                          context.pushNamed(AppRoutes.foodHistory);
+                        },
+                      ),
                     ],
                   ),
 

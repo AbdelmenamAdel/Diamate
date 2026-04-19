@@ -8,4 +8,5 @@ abstract class FoodRepo {
     required MealModel meal,
     required int patientId,
   });
+  Future<Either<String, List<MealModel>>> getMealsByDate(DateTime date);
 }
