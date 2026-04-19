@@ -11,6 +11,7 @@ import '../widgets/medication_type_selector.dart';
 import '../widgets/dosage_selector.dart';
 import '../widgets/food_relation_selector.dart';
 import '../widgets/reminder_time_selector.dart';
+import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../managers/medication_cubit.dart';
 
@@ -25,11 +26,14 @@ class _MedicationsViewState extends State<MedicationsView> {
   final TextEditingController _drugNameController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _strengthController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
 
   String _selectedType = 'Tablet';
   String _foodRelation = 'Before Food';
-  String _frequency = 'Daily';
+  String _frequency = '1'; // Times per day
   int _dosageAmount = 1;
+  DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now().add(const Duration(days: 30));
   List<TimeOfDay> _reminderTimes = [const TimeOfDay(hour: 12, minute: 0)];
 
   bool get _isFormValid => _drugNameController.text.isNotEmpty;
@@ -105,6 +109,7 @@ class _MedicationsViewState extends State<MedicationsView> {
     _drugNameController.dispose();
     _searchController.dispose();
     _strengthController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -136,66 +141,111 @@ class _MedicationsViewState extends State<MedicationsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.color.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                children: [
-                  SizedBox(height: 10.h),
-                  CustomAppBar(title: "Medications", notification: false),
-                ],
+      body: BlocListener<MedicationCubit, MedicationState>(
+        listener: (context, state) {
+          if (state is MedicationAdded) {
+            showAchievementView(
+              context: context,
+              title: "Success",
+              subTitle: "Medication added successfully",
+            );
+            Navigator.pop(context);
+          } else if (state is MedicationError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
               ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 20.h),
-                      const MedicationInfoCard(),
-                      SizedBox(height: 20.h),
-                      _buildSearchField(context),
-                      if (_searchResults.isNotEmpty)
-                        Container(
-                          margin: EdgeInsets.only(top: 5.h),
-                          decoration: BoxDecoration(
-                            color: context.color.cardColor,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              color: context.color.containerColor!,
+            );
+          }
+        },
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  children: [
+                    SizedBox(height: 10.h),
+                    CustomAppBar(title: "Medications", notification: false),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 20.h),
+                        const MedicationInfoCard(),
+                        SizedBox(height: 20.h),
+                        _buildSearchField(context),
+                        if (_searchResults.isNotEmpty)
+                          Container(
+                            margin: EdgeInsets.only(top: 5.h),
+                            decoration: BoxDecoration(
+                              color: context.color.cardColor,
+                              borderRadius: BorderRadius.circular(12.r),
+                              border: Border.all(
+                                color: context.color.containerColor!,
+                              ),
+                            ),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _searchResults.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: Image.network(
+                                    _searchResults[index]["image"]![0],
+                                    width: 30.w,
+                                    height: 30.h,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.medication),
+                                  ),
+                                  title: Text(
+                                    _searchResults[index]["name"]![0],
+                                    style: TextStyle(
+                                      color: context.color.textColor,
+                                    ),
+                                  ),
+                                  onTap: () =>
+                                      _selectDrug(_searchResults[index]),
+                                );
+                              },
                             ),
                           ),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _searchResults.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                leading: Image.network(
-                                  _searchResults[index]["image"]![0],
-                                  width: 30.w,
-                                  height: 30.h,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.medication),
-                                ),
-                                title: Text(
-                                  _searchResults[index]["name"]![0],
-                                  style: TextStyle(
-                                    color: context.color.textColor,
-                                  ),
-                                ),
-                                onTap: () => _selectDrug(_searchResults[index]),
-                              );
-                            },
+                        if (_selectedDrugData != null) ...[
+                          SizedBox(height: 20.h),
+                          Text(
+                            "Drug",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: context.color.textColor,
+                            ),
                           ),
+                          SizedBox(height: 10.h),
+                          _buildDrugSelectionField(
+                            context,
+                            _drugNameController.text.isEmpty
+                                ? "Select Drug"
+                                : _drugNameController.text,
+                          ),
+                          SizedBox(height: 15.h),
+                          _buildSelectedDrugImage(context),
+                        ],
+                        SizedBox(height: 20.h),
+                        MedicationTypeSelector(
+                          selectedType: _selectedType,
+                          onChanged: (type) =>
+                              setState(() => _selectedType = type),
                         ),
-                      if (_selectedDrugData != null) ...[
                         SizedBox(height: 20.h),
                         Text(
-                          "Drug",
+                          "Strength",
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -203,113 +253,167 @@ class _MedicationsViewState extends State<MedicationsView> {
                           ),
                         ),
                         SizedBox(height: 10.h),
-                        _buildDrugSelectionField(
-                          context,
-                          _drugNameController.text.isEmpty
-                              ? "Select Drug"
-                              : _drugNameController.text,
+                        _buildStrengthField(context),
+                        SizedBox(height: 20.h),
+                        DosageSelector(
+                          amount: _dosageAmount,
+                          onChanged: (val) =>
+                              setState(() => _dosageAmount = val),
                         ),
-                        SizedBox(height: 15.h),
-                        _buildSelectedDrugImage(context),
-                      ],
-                      SizedBox(height: 20.h),
-                      MedicationTypeSelector(
-                        selectedType: _selectedType,
-                        onChanged: (type) =>
-                            setState(() => _selectedType = type),
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        "Strength",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: context.color.textColor,
+                        SizedBox(height: 20.h),
+                        FoodRelationSelector(
+                          selectedRelation: _foodRelation,
+                          onChanged: (val) =>
+                              setState(() => _foodRelation = val),
                         ),
-                      ),
-                      SizedBox(height: 10.h),
-                      _buildStrengthField(context),
-                      SizedBox(height: 20.h),
-                      DosageSelector(
-                        amount: _dosageAmount,
-                        onChanged: (val) => setState(() => _dosageAmount = val),
-                      ),
-                      SizedBox(height: 20.h),
-                      FoodRelationSelector(
-                        selectedRelation: _foodRelation,
-                        onChanged: (val) => setState(() => _foodRelation = val),
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        "Frequency",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: context.color.textColor,
+                        SizedBox(height: 20.h),
+                        SizedBox(height: 20.h),
+                        Text(
+                          "Frequency (Times per day)",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: context.color.textColor,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10.h),
-                      _buildFrequencyDropdown(context),
-                      SizedBox(height: 20.h),
-                      ReminderTimeSelector(
-                        times: _reminderTimes,
-                        onAdd: () async {
-                          final TimeOfDay? picked = await showTimePicker(
-                            context: context,
-                            initialTime: const TimeOfDay(hour: 12, minute: 0),
-                          );
-                          if (picked != null) {
+                        SizedBox(height: 10.h),
+                        _buildFrequencyDropdown(context),
+                        SizedBox(height: 20.h),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Start Date",
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.color.textColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  _buildDateField(
+                                    context,
+                                    _startDate,
+                                    (date) => setState(() => _startDate = date),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 15.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "End Date",
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.color.textColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  _buildDateField(
+                                    context,
+                                    _endDate,
+                                    (date) => setState(() => _endDate = date),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20.h),
+                        Text(
+                          "Notes",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: context.color.textColor,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        CustomTextFormField(
+                          controller: _notesController,
+                          hint: "Additional notes...",
+                          image: Assets.medicine,
+                          nodivider: true,
+                        ),
+                        SizedBox(height: 20.h),
+                        ReminderTimeSelector(
+                          times: _reminderTimes,
+                          onAdd: () async {
+                            final TimeOfDay? picked = await showTimePicker(
+                              context: context,
+                              initialTime: const TimeOfDay(hour: 12, minute: 0),
+                            );
+                            if (picked != null) {
+                              setState(() {
+                                _reminderTimes.add(picked);
+                              });
+                            }
+                          },
+                          onRemove: (index) {
                             setState(() {
-                              _reminderTimes.add(picked);
+                              _reminderTimes.removeAt(index);
                             });
-                          }
-                        },
-                        onRemove: (index) {
-                          setState(() {
-                            _reminderTimes.removeAt(index);
-                          });
-                        },
-                      ),
-                      SizedBox(height: 30.h),
-                      CustomButton(
-                        text: "Save",
-                        onTap: _isFormValid
-                            ? () {
-                                final List<String>
-                                reminderTimes = _reminderTimes
-                                    .map(
-                                      (t) =>
-                                          "${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}",
-                                    )
-                                    .toList();
+                          },
+                        ),
+                        BlocBuilder<MedicationCubit, MedicationState>(
+                          builder: (context, state) {
+                            return CustomButton(
+                              text: "Save",
+                              isLoading: state is MedicationLoading,
+                              onTap: _isFormValid
+                                  ? () {
+                                      final List<String>
+                                      reminderTimes = _reminderTimes
+                                          .map(
+                                            (t) =>
+                                                "${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}",
+                                          )
+                                          .toList();
 
-                                context.read<MedicationCubit>().addMedication(
-                                  name: _drugNameController.text,
-                                  type: _selectedType,
-                                  strength: _strengthController.text,
-                                  dosage: _dosageAmount,
-                                  foodRelation: _foodRelation,
-                                  frequency: _frequency,
-                                  reminderTimes: reminderTimes,
-                                  images: _selectedDrugData?["image"] ?? [],
-                                );
-                                Navigator.pop(context);
-                              }
-                            : null,
-                        color: _isFormValid
-                            ? context.color.primaryColor
-                            : context.color.containerColor,
-                        textColor: _isFormValid
-                            ? Colors.white
-                            : context.color.textColor?.withOpacity(0.5),
-                      ),
-                      SizedBox(height: 20.h),
-                    ],
+                                      context
+                                          .read<MedicationCubit>()
+                                          .addMedication(
+                                            name: _drugNameController.text,
+                                            type: _selectedType,
+                                            strength: _strengthController.text,
+                                            dosage: _dosageAmount,
+                                            foodRelation: _foodRelation,
+                                            frequency: _frequency,
+                                            reminderTimes: reminderTimes,
+                                            images:
+                                                _selectedDrugData?["image"] ??
+                                                [],
+                                            startDate: _startDate
+                                                .toIso8601String(),
+                                            endDate: _endDate.toIso8601String(),
+                                            notes: _notesController.text,
+                                          );
+                                    }
+                                  : null,
+                              color: _isFormValid
+                                  ? context.color.primaryColor
+                                  : context.color.containerColor,
+                              textColor: _isFormValid
+                                  ? Colors.white
+                                  : context.color.textColor?.withOpacity(0.5),
+                            );
+                          },
+                        ),
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -457,11 +561,11 @@ class _MedicationsViewState extends State<MedicationsView> {
             Icons.keyboard_arrow_down_rounded,
             color: context.color.textColor?.withOpacity(0.5),
           ),
-          items: ["Daily", "Weekly", "Monthly"].map((String value) {
+          items: ["1", "2", "3", "4", "5", "6"].map((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(
-                value,
+                "$value times per day",
                 style: TextStyle(
                   color: context.color.textColor,
                   fontSize: 12.sp,
@@ -475,6 +579,49 @@ class _MedicationsViewState extends State<MedicationsView> {
               setState(() => _frequency = newValue);
             }
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateField(
+    BuildContext context,
+    DateTime selectedDate,
+    Function(DateTime) onDateSelected,
+  ) {
+    return GestureDetector(
+      onTap: () async {
+        final DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: selectedDate,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        if (picked != null) {
+          onDateSelected(picked);
+        }
+      },
+      child: Container(
+        height: 56.h,
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
+        decoration: BoxDecoration(
+          color: context.color.cardColor,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: const Color(0xffE4E4E4)),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.calendar_today,
+              size: 20.sp,
+              color: context.color.primaryColor,
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}",
+              style: TextStyle(color: context.color.textColor, fontSize: 12.sp),
+            ),
+          ],
         ),
       ),
     );

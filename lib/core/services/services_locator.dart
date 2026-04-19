@@ -30,6 +30,8 @@ import 'package:diamate/features/glucose/data/services/glucose_local_service.dar
 import 'package:diamate/features/glucose/domain/repos/glucose_repo.dart';
 import 'package:diamate/features/glucose/data/repos/glucose_repo_impl.dart';
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
+import 'package:diamate/features/medications/data/repos/medication_repo_impl.dart';
+import 'package:diamate/features/medications/domain/repos/medication_repo.dart';
 import 'package:diamate/features/medications/data/services/medication_local_service.dart';
 import 'package:diamate/features/medications/presentation/managers/medication_cubit.dart';
 
@@ -50,8 +52,15 @@ Future<void> _initMedications() async {
   final medicationService = MedicationLocalService();
   await medicationService.init();
   sl.registerLazySingleton<MedicationLocalService>(() => medicationService);
+  sl.registerLazySingleton<MedicationRepo>(
+    () => MedicationRepoImpl(api: sl<ApiConsumer>()),
+  );
   sl.registerLazySingleton<MedicationCubit>(
-    () => MedicationCubit(sl<MedicationLocalService>()),
+    () => MedicationCubit(
+      sl<MedicationLocalService>(),
+      sl<MedicationRepo>(),
+      sl<AuthCubit>(),
+    ),
   );
 }
 
