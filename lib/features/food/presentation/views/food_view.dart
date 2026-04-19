@@ -7,6 +7,12 @@ import 'package:diamate/features/main/presentation/views/widgets/recommeded_item
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'add_food_view.dart';
+import '../widgets/food_scanner_bottom_sheet.dart';
+import 'package:diamate/core/extensions/context_extension.dart';
+
+import 'package:diamate/core/routes/app_routes.dart';
+
 class FoodView extends StatelessWidget {
   const FoodView({super.key});
 
@@ -34,22 +40,29 @@ class FoodView extends StatelessWidget {
                 Expanded(
                   child: CustomButton(
                     radius: 8,
-                    onTap: () {},
+                    onTap: () {
+                      context.pushNamed(AppRoutes.addFood);
+                    },
                     text: "+ Add Manually",
-                    color: Color(0xff2D9CDB),
+                    color: const Color(0xff2D9CDB),
                   ),
                 ),
                 Expanded(
                   child: CustomButton(
                     radius: 8,
-                    onTap: () {},
-                    icon: Icon(
+                    onTap: () async {
+                      final result = await FoodScannerBottomSheet.show(context);
+                      if (result != null && context.mounted) {
+                        context.pushNamed(AppRoutes.addFood, arguments: result);
+                      }
+                    },
+                    icon: const Icon(
                       size: 20,
                       Icons.camera_alt_outlined,
                       color: Colors.white,
                     ),
                     text: "Scan Food",
-                    color: Color(0xff2D9CDB),
+                    color: const Color(0xff2D9CDB),
                   ),
                 ),
               ],

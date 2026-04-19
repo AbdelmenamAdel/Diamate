@@ -13,6 +13,8 @@ class EndPoint {
   static const String addGlucoseReading =
       'BloodGlucoseReading/AddReadingForPatient';
   static const String addMedicine = 'Medicine/AddNewMedicine';
+  static const String analyzeFood = 'Food/AnalyzeImage';
+  static const String addFoodMeal = 'Food/AddMeal';
   // deleteUser + id method in AuthRepoImpl to delete account from server side
 }
 

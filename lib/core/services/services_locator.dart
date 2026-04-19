@@ -28,6 +28,9 @@ import 'package:diamate/features/dfu_test/data/services/dfu_test_local_service.d
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
 import 'package:diamate/features/glucose/data/services/glucose_local_service.dart';
 import 'package:diamate/features/glucose/domain/repos/glucose_repo.dart';
+import 'package:diamate/features/food/data/repos/food_repo_impl.dart';
+import 'package:diamate/features/food/domain/repos/food_repo.dart';
+import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 import 'package:diamate/features/glucose/data/repos/glucose_repo_impl.dart';
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 import 'package:diamate/features/medications/data/repos/medication_repo_impl.dart';
@@ -46,6 +49,7 @@ Future<void> setupInjector() async {
   await _initDfuTests();
   await _initGlucose();
   await _initMedications();
+  await _initFood();
 }
 
 Future<void> _initMedications() async {
@@ -96,6 +100,11 @@ Future<void> _initLabTests() async {
   sl.registerFactory<LabTestCubit>(
     () => LabTestCubit(sl<LabTestLocalService>()),
   );
+}
+
+Future<void> _initFood() async {
+  sl.registerLazySingleton<FoodRepo>(() => FoodRepoImpl(api: sl<ApiConsumer>()));
+  sl.registerFactory<FoodCubit>(() => FoodCubit(sl<FoodRepo>(), sl<AuthCubit>()));
 }
 
 Future<void> _initNotifications() async {
