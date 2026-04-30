@@ -24,6 +24,7 @@ class FoodRepoImpl implements FoodRepo {
         data: {"file": await MultipartFile.fromFile(image.path)},
       );
 
+      log("Food analysis response: $response");
       if (response != null &&
           response is Map<String, dynamic> &&
           response['food_detected'] == true &&
@@ -35,10 +36,13 @@ class FoodRepoImpl implements FoodRepo {
             .toList();
 
         if (ingredients.isEmpty) {
+          log("No ingredients found in detected_items");
           return const Left("No specific food items identified");
         }
+        log("Detected ingredients: $ingredients");
         return Right(ingredients);
       } else {
+        log("Invalid food analysis response structure: $response");
         return const Left("No food detected or error in response");
       }
     } on ServerFailure catch (e) {

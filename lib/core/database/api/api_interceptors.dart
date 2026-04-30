@@ -11,35 +11,39 @@ class ApiInterceptors extends Interceptor {
   ApiInterceptors(this.dio);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // Read tokens asynchronously but don't mark the method `async` because
-    // Dio's interceptor expects a synchronous signature. We update headers
-    // once the futures complete and then continue the chain.
-    SecureStorage.getString(key: Apikeys.accessToken)
-        .then((accessToken) {
-          if (accessToken != null && accessToken.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $accessToken';
-          }
-        })
-        .whenComplete(() async {
-          // Try to add refresh token if available.
-          String? refreshToken = await SecureStorage.getString(
-            key: Apikeys.refreshToken,
-          );
-          if (refreshToken != null && refreshToken.isNotEmpty) {
-            options.headers['Cookie'] = 'refresh_token=$refreshToken';
-          }
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    try {
+      // Read tokens
+      final accessToken = await SecureStorage.getString(key: Apikeys.accessToken);
+      if (accessToken != null && accessToken.isNotEmpty) {
+        options.headers['Authorization'] = 'Bearer $accessToken';
+      }
 
-          // Ensure content type is set
-          options.headers['Content-Type'] = 'application/json';
+      final refreshToken = await SecureStorage.getString(
+        key: Apikeys.refreshToken,
+      );
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        options.headers['Cookie'] = 'refresh_token=$refreshToken';
+      }
 
-          handler.next(options);
-        })
-        .catchError((_) {
-          // In case of any error reading storage, still continue the request
-          options.headers['Content-Type'] = 'application/json';
-          handler.next(options);
-        });
+      // Set content type only if not already set (e.g. for FormData)
+      if (!options.headers.containsKey('Content-Type') &&
+          options.data is! FormData) {
+        options.headers['Content-Type'] = 'application/json';
+      }
+
+      handler.next(options);
+    } catch (e) {
+      // In case of any error reading storage, still continue the request
+      if (!options.headers.containsKey('Content-Type') &&
+          options.data is! FormData) {
+        options.headers['Content-Type'] = 'application/json';
+      }
+      handler.next(options);
+    }
   }
 
   @override

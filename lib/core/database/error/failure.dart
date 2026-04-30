@@ -4,7 +4,7 @@ class Failure {
   Failure({this.errorMessage, this.statusCode});
 
   factory Failure.fromJson(Map<String, dynamic> json) {
-    String errorMessage = json['title'] ?? 'User not authenticated.';
+    String errorMessage = json['title'] ?? 'An unexpected error occurred.';
     if (json.containsKey('') && json[''] is List) {
       errorMessage = (json[''] as List).join('\n');
     }
