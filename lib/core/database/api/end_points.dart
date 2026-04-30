@@ -14,6 +14,7 @@ class EndPoint {
       'BloodGlucoseReading/AddReadingForPatient';
   static const String addMedicine = 'Medicine/AddNewMedicine';
   static const String analyzeFood = 'Food/AnalyzeImage';
+  static const String detectFood = 'http://127.0.0.1:8080/detect-food';
   static const String addFoodMeal = 'Food/AddMeal';
   static const String getFoodMeals = 'Food/GetMeals';
   // deleteUser + id method in AuthRepoImpl to delete account from server side

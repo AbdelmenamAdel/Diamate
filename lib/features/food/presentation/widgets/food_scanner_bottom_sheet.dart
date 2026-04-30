@@ -58,9 +58,7 @@ class _FoodScannerBottomSheetState extends State<FoodScannerBottomSheet> {
         ),
         child: BlocConsumer<FoodCubit, FoodState>(
           listener: (context, state) {
-            if (state is FoodAnalysisSuccess) {
-              Navigator.of(context).pop(state.ingredients);
-            }
+            // We removed the immediate pop to show results in UI
           },
           builder: (context, state) {
             return SingleChildScrollView(
@@ -98,7 +96,9 @@ class _FoodScannerBottomSheetState extends State<FoodScannerBottomSheet> {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        'Scan Your Meal',
+                        state is FoodAnalysisSuccess
+                            ? 'Results'
+                            : 'Scan Your Meal',
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
@@ -133,20 +133,42 @@ class _FoodScannerBottomSheetState extends State<FoodScannerBottomSheet> {
                     ),
                   ] else ...[
                     // Preview and status
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16.r),
-                      child: Image.file(
-                        File(_image!.path),
-                        height: 240.h,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                    Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16.r),
+                          child: Image.file(
+                            File(_image!.path),
+                            height: 200.h,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        if (state is! FoodAnalysisLoading)
+                          Padding(
+                            padding: EdgeInsets.all(8.w),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: IconButton(
+                                icon: const Icon(Icons.close, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    _image = null;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                     SizedBox(height: 24.h),
                     if (state is FoodAnalysisLoading)
                       Column(
                         children: [
-                          const CircularProgressIndicator(),
+                          const CircularProgressIndicator(
+                            color: Color(0xff2D9CDB),
+                          ),
                           SizedBox(height: 16.h),
                           Text(
                             'Analyzing ingredients...',
@@ -158,16 +180,75 @@ class _FoodScannerBottomSheetState extends State<FoodScannerBottomSheet> {
                           ),
                         ],
                       )
+                    else if (state is FoodAnalysisSuccess)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Detected Ingredients:",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          Wrap(
+                            spacing: 8.w,
+                            runSpacing: 8.h,
+                            children: state.ingredients.map((ing) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w, vertical: 8.h),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xff2D9CDB).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  border: Border.all(
+                                      color: const Color(0xff2D9CDB)
+                                          .withOpacity(0.3)),
+                                ),
+                                child: Text(
+                                  ing,
+                                  style: TextStyle(
+                                    color: const Color(0xff2D9CDB),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(height: 32.h),
+                          CustomButton(
+                            onTap: () {
+                              Navigator.of(context).pop(state.ingredients);
+                            },
+                            text: 'Confirm & Add Meal',
+                            color: const Color(0xff2D9CDB),
+                            radius: 12,
+                          ),
+                        ],
+                      )
                     else if (state is FoodError)
                       Container(
                         padding: EdgeInsets.all(16.w),
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.red.shade50,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
-                        child: Text(
-                          state.message,
-                          style: TextStyle(color: Colors.red.shade700),
+                        child: Column(
+                          children: [
+                            Text(
+                              state.message,
+                              style: TextStyle(color: Colors.red.shade700),
+                              textAlign: TextAlign.center,
+                            ),
+                            TextButton(
+                              onPressed: () => _pickImage(ImageSource.gallery),
+                              child: const Text("Try another image"),
+                            ),
+                          ],
                         ),
                       ),
                   ],
