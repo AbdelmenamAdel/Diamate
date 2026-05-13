@@ -1,6 +1,7 @@
 import 'package:diamate/features/dfu_test/data/models/dfu_test_model.dart';
 import 'package:diamate/features/dfu_test/data/services/dfu_test_local_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:diamate/core/utils/file_helper.dart';
 
 part 'dfu_test_state.dart';
 
@@ -22,9 +23,10 @@ class DfuTestCubit extends Cubit<DfuTestState> {
 
   Future<void> addDfuTest(String name, List<String> imagePaths) async {
     try {
+      final persistentPaths = await FileHelper.saveFilesToAppDir(imagePaths);
       final newTest = DfuTestModel(
         name: name,
-        imagePaths: imagePaths,
+        imagePaths: persistentPaths,
         addDate: DateTime.now(),
       );
       await _localService.addDfuTest(newTest);

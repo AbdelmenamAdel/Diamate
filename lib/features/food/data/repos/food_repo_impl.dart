@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import '../../domain/repos/food_repo.dart';
 import '../models/meal_model.dart';
 import '../services/food_local_service.dart';
+import 'package:diamate/core/utils/file_helper.dart';
 
 class FoodRepoImpl implements FoodRepo {
   final ApiConsumer api;
@@ -208,10 +209,14 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
       }
 
       // Save locally
+      final persistentImagePath = await FileHelper.saveFileToAppDir(
+        meal.imagePath,
+      );
+
       final updatedMeal = MealModel(
         id: meal.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         name: meal.name,
-        imagePath: meal.imagePath,
+        imagePath: persistentImagePath,
         ingredients: meal.ingredients,
         nutrition: nutritionInfo,
         createdAt: meal.createdAt ?? DateTime.now(),

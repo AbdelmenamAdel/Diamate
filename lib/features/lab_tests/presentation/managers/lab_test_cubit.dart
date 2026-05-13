@@ -1,6 +1,7 @@
 import 'package:diamate/features/lab_tests/data/models/lab_test_model.dart';
 import 'package:diamate/features/lab_tests/data/services/lab_test_local_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:diamate/core/utils/file_helper.dart';
 
 part 'lab_test_state.dart';
 
@@ -22,9 +23,11 @@ class LabTestCubit extends Cubit<LabTestState> {
 
   Future<void> addLabTest(String name, String pdfPath) async {
     try {
+      final persistentPath =
+          await FileHelper.saveFileToAppDir(pdfPath) ?? pdfPath;
       final newTest = LabTestModel(
         name: name,
-        pdfPath: pdfPath,
+        pdfPath: persistentPath,
         addDate: DateTime.now(),
       );
       await _localService.addLabTest(newTest);
