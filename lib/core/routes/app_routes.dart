@@ -17,7 +17,6 @@ import 'package:diamate/features/profile/presentation/views/about_developers_vie
 import 'package:diamate/features/medications/presentation/managers/medication_cubit.dart';
 import 'package:diamate/features/medications/presentation/views/medications_view.dart';
 import 'package:diamate/features/medications/presentation/views/medications_list_view.dart';
-import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 import 'package:diamate/features/food/presentation/views/add_food_view.dart';
 import 'package:diamate/features/food/presentation/views/food_history_view.dart';
 import 'package:diamate/features/food/presentation/views/saved_meals_view.dart';

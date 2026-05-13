@@ -380,29 +380,108 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
           // Description in Arabic
           final descAr = _areaDescriptionAr[area] ?? 'وجبة صحية شهية';
 
-          meals.add(
-            RecommendedMealModel(
-              id: 'mdb_$mealId',
-              title: detail['strMeal']?.toString() ?? 'Healthy Meal',
-              calories: nut['cal']!,
-              protein: nut['pro']!,
-              carbs: nut['carb']!,
-              fats: nut['fat']!,
-              description: '$descAr — غنية بالمواد الغذائية ومناسبة لمرضى السكر.',
-              preparationSteps: steps.isNotEmpty
-                  ? steps
-                  : ['اتبع الطريقة التقليدية في تحضير هذه الوجبة.'],
-              ingredients: ingredients,
-              imageUrl: detail['strMealThumb']?.toString(),
-              imageUrls: _buildImageUrls(detail),
-            ),
+          final baseMeal = RecommendedMealModel(
+            id: 'mdb_$mealId',
+            title: detail['strMeal']?.toString() ?? 'Healthy Meal',
+            calories: nut['cal']!,
+            protein: nut['pro']!,
+            carbs: nut['carb']!,
+            fats: nut['fat']!,
+            description: '$descAr — غنية بالمواد الغذائية ومناسبة لمرضى السكر.',
+            preparationSteps: steps.isNotEmpty
+                ? steps
+                : ['اتبع الطريقة التقليدية في تحضير هذه الوجبة.'],
+            ingredients: ingredients,
+            imageUrl: detail['strMealThumb']?.toString(),
+            imageUrls: _buildImageUrls(detail),
           );
+
+          meals.add(baseMeal);
         }
       } catch (e) {
         log('Error fetching area $area from MealDB: $e');
       }
     }
+
+    // ── Translate all fetched meals to Arabic using Gemini in parallel ──
+    if (meals.isNotEmpty) {
+      log('Translating ${meals.length} meals to Arabic via Gemini...');
+      final translatedMeals = await Future.wait(
+        meals.map((m) => _translateMealWithGemini(m, dio)),
+      );
+      return translatedMeals;
+    }
+
     return meals;
+  }
+
+  /// Helper to translate a single meal's title, ingredients, and steps to Arabic via Gemini
+  Future<RecommendedMealModel> _translateMealWithGemini(
+    RecommendedMealModel meal,
+    Dio dio,
+  ) async {
+    try {
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
+
+      final prompt = '''
+Translate the following meal details into simple, appealing Egyptian Arabic suitable for a cooking/health app.
+Keep the nutritional intent clear. Return ONLY a valid JSON object with the exact keys below, without markdown formatting or extra text:
+
+Original Title: "${meal.title}"
+Original Ingredients: ${jsonEncode(meal.ingredients)}
+Original Steps: ${jsonEncode(meal.preparationSteps)}
+
+Target JSON Output Structure:
+{
+  "title": "اسم الوجبة بالمصري",
+  "ingredients": ["المكون الأول بالعربي", "المكون الثاني بالعربي"],
+  "preparationSteps": ["الخطوة الأولى بالعربي", "الخطوة الثانية بالعربي"]
+}
+''';
+
+      final response = await dio.post(
+        url,
+        data: {
+          "contents": [
+            {
+              "parts": [
+                {"text": prompt},
+              ],
+            },
+          ],
+          "generationConfig": {
+            "temperature": 0.3,
+            "responseMimeType": "application/json",
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final text =
+            response.data['candidates'][0]['content']['parts'][0]['text'];
+        final resJson = jsonDecode(text) as Map<String, dynamic>;
+
+        final tTitle = resJson['title']?.toString() ?? meal.title;
+        final tIngs = (resJson['ingredients'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            meal.ingredients;
+        final tSteps = (resJson['preparationSteps'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            meal.preparationSteps;
+
+        return meal.copyWith(
+          title: tTitle.isNotEmpty ? tTitle : meal.title,
+          ingredients: tIngs.isNotEmpty ? tIngs : meal.ingredients,
+          preparationSteps: tSteps.isNotEmpty ? tSteps : meal.preparationSteps,
+        );
+      }
+    } catch (e) {
+      log('Failed to translate meal ${meal.id} with Gemini: $e');
+    }
+    return meal; // Return original if translation fails
   }
 
   @override
