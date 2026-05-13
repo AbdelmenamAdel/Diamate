@@ -1,132 +1,183 @@
-# 🍏 DiaMate — Advanced Diabetic & Nutrition Companion
-
 <div align="center">
-  <img src="assets/images/app_logo.png" alt="DiaMate Logo" width="120" onerror="this.style.display='none'"/>
-  <h3>Empowering healthier lifestyles through Real-Time Nutrition Tracking, Cultural Relevance, and AI-Powered Assistance.</h3>
+
+# 🍏 DiaMate — Advanced Diabetic & Nutrition Companion
+### State-of-the-art Flutter app empowering smarter lifestyles with real-time macro tracking, cultural recipe adaptation, and instantaneous AI localization.
+
+[![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+[![Gemini AI](https://img.shields.io/badge/Gemini%20AI-%238E75B2.svg?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Hive Cache](https://img.shields.io/badge/Hive_Cache-Fast_NoSQL-orange?style=for-the-badge)](https://pub.dev/packages/hive)
+[![State: Bloc/Cubit](https://img.shields.io/badge/State-Bloc%20%2F%20Cubit-blue?style=for-the-badge)](https://bloclibrary.dev)
+
+<img src="assets/images/app_logo.png" alt="DiaMate Icon" width="120" onerror="this.style.display='none'"/>
+
+---
+
+| 🌙 **Dark Aesthetic** | ☀️ **Light Aesthetic** | 🇪🇬 **Adaptive Arabic UI** |
+|:---:|:---:|:---:|
+| <img src="assets/images/preview_dark.png" width="220" alt="Dark Mode" onerror="this.src='https://placehold.co/220x450/1e1e1e/white?text=Dark+Theme'"/> | <img src="assets/images/preview_light.png" width="220" alt="Light Mode" onerror="this.src='https://placehold.co/220x450/f5f5f5/black?text=Light+Theme'"/> | <img src="assets/images/preview_arabic.png" width="220" alt="Arabic Mode" onerror="this.src='https://placehold.co/220x450/2d9cdb/white?text=Arabic+Locale'"/> |
+
 </div>
 
 ---
 
-## 🌟 Project Overview
-
-**DiaMate** is a state-of-the-art mobile application engineered specifically for proactive diabetes management and comprehensive nutritional tracking. Built using **Flutter**, the app bridges the gap between generic diet tracking and culturally tailored health monitoring. 
-
-By integrating rich, real-world culinary datasets with state-of-the-art **Artificial Intelligence (Gemini AI)**, DiaMate automatically translates, adapts, and localizes meal recommendations to resonate perfectly with regional tastes (focusing on Egyptian, Lebanese, and Moroccan cuisines) while seamlessly switching between adaptive native layouts.
-
----
-
-## ✨ Key Highlights & Core Features
-
-### 🍽️ 1. API-Driven Cultural Recommendations
-* **Real-World Recipes:** Integrates robustly with **TheMealDB API** to deliver fresh, verified recipes complete with rich macroscopic breakdowns, exact preparation instructions, and authentic ingredient arrays.
-* **Regional Targeting:** Programmatically filtered to emphasize culturally accessible diets natively suitable for localized health regimes.
-
-### 🧠 2. Adaptive Dual-Language AI Localization Engine
-* **Instantaneous UI Toggle:** Fully adaptive UI automatically maps English and Arabic configurations based on user preference or native OS locale switching—**zero hot-reloads required**.
-* **Smart Gemini AI Hook:** Intercepts external database feeds and employs customized prompt engineering via the `Gemini API` to translate abstract JSON payloads into friendly, Egyptian-flavored Arabic.
-* **Dual-Payload Model Architecture:** Data properties cleanly maintain parallel states (`title` vs. `titleAr`, `ingredients` vs. `ingredientsAr`) ensuring complete historical caching safety.
-
-### 🎨 3. Premium Aesthetics & Dynamic UI/UX
-* **Glassmorphic Settings:** Visually breathtaking user profile controls leveraging semi-transparent bottom sheets with custom backdrop blurs.
-* **Fluid Image Carousels:** Details views embedded with responsive `PageView` controls paired with animated dot indicators.
-* **Precision Grid Layouts:** Card widgets configured with rigid vertical bounding boxes (`SizedBox(height: 235)`) and flexible internal containers to completely eliminate overflow exceptions across variable aspect ratios.
-
-### 🔒 4. Bulletproof Permissions & System Architecture
-* **State-of-the-Art State Management:** Strict adherence to the **Bloc/Cubit** pattern separating view render logic from data serialization layers.
-* **Robust Native Permissions:** Features a dedicated module handling real-time runtime access (`PermissionsBottomSheet`) compatible with highly restricted platform security environments (Android 13+ Media permissions, iOS Limited Status).
+## 📑 Table of Contents
+- [Core Philosophy & Vision](#-core-philosophy--vision)
+- [Key Features & Superpowers](#-key-features--superpowers)
+- [Adaptive AI Localization Engine](#-adaptive-ai-localization-engine)
+- [Premium Visual Interface (UI/UX)](#-premium-visual-interface-uiux)
+- [System Architecture & Lifecycle](#-system-architecture--lifecycle)
+- [Local Storage & Cache Strategy](#-local-storage--cache-strategy)
+- [Getting Started Locally](#-getting-started-locally)
+- [Project Architecture Tree](#-project-architecture-tree)
 
 ---
 
-## 🏗️ System Architecture & Lifecycle Integration
+## 💡 Core Philosophy & Vision
+
+**DiaMate** is engineered from the ground up to support proactive health monitoring, catering seamlessly to diabetic lifestyles. Unlike generic health platforms, DiaMate infuses live cloud recipe databases with regional and cultural nuances. 
+
+By running autonomous natural language logic over remote API structures, the app intelligently renders complex nutritional structures into regional formats suitable for daily living.
+
+---
+
+## ✨ Key Features & Superpowers
+
+### 🥗 Comprehensive Nutrition Monitoring
+* **Intelligent Macros Dashboard:** Visually clean indicators detailing instant protein, carbohydrate, fat, and calorie progress against personalized baseline targets.
+* **Camera-Assisted Food Logging:** Launch custom scanning pipelines (`FoodScannerBottomSheet`) enabling fluid automated or manual logging workflows directly into localized storage modules.
+
+### 🌐 Culturally Bound Recipes
+* **Live Network Feeds:** Direct REST queries directly accessing **TheMealDB API** delivering certified world recipes dynamically filtered for localized accessibility.
+* **Regional Tagging:** Emphasizing accessibility for Middle Eastern, North African, and Mediterranean culinary preferences natively matching lifestyle familiarity.
+
+---
+
+## 🤖 Adaptive AI Localization Engine
+
+DiaMate embeds a highly decoupled language mapping architecture allowing native translation triggers to instantly hydrate layout text without performance penalties.
 
 ```mermaid
-graph TD
-    A[User Profile UI] -->|Update Locale Stream| B(AppCubit State)
-    B -->|Broadcast Locale| C[MaterialApp Lifecycle]
+sequenceDiagram
+    autonumber
+    actor User
+    participant View as FoodView / UI
+    participant Repo as FoodRepoImpl
+    participant API as TheMealDB API
+    participant AI as Gemini AI Engine
+    participant Cache as Hive Local Cache
+
+    User->>View: Pull to Refresh / Load
+    View->>Repo: request Recommendations()
+    Repo->>API: fetch 10 regional meals
+    API-->>Repo: return JSON string arrays
     
-    D[FoodView UI] -->|Trigger Load/Refresh| E(RecommendedFoodCubit)
-    E -->|Check Validity| F{Cache Valid & Complete?}
+    critical Dual Payload Translation
+        Repo->>AI: intercept & inject custom instruction prompt
+        AI-->>Repo: return concise markdown-stripped localized keys
+        Repo->>Repo: parse & copy dual localized model variants
+    end
     
-    F -->|Yes: Render Instantly| G[Hive Local Storage]
-    F -->|No: Purge Memory| H[FoodRepoImpl]
-    
-    H -->|Fetch 10 Records| I[TheMealDB API]
-    I -->|JSON Response Payload| J[Gemini AI Translating Hook]
-    J -->|Merge Dual Structure| G
+    Repo->>Cache: persist dual objects safely
+    Cache-->>View: emit populated reactive views instantly
+```
+
+### Key Highlights:
+- **Instant Reactive Switch:** Toggling localized settings directly binds memory arrays to active UI structures (`title` vs. `titleAr`) globally via `AppCubit` streams.
+- **Resilient Fallback Protection:** Network layer actively isolates formatting discrepancies. If remote translation limits intercept payload execution, the system gracefully overrides default local fallbacks ensuring non-stop operations.
+
+---
+
+## 🎨 Premium Visual Interface (UI/UX)
+
+* **Glassmorphic Settings Menus:** Custom bottom sheet interactions equipped with backdrop visual filter matrices enabling premium fluid navigation controls.
+* **Absolute Grid Constraints:** Custom item views heavily wrapped in protected view components (`SizedBox(height: 235)`) cleanly neutralizing underlying expanded child exception errors inside unconstrained view grids.
+* **Interactive Media Carousels:** Detail headers rendered using native page controls synchronized perfectly to subtle animated sliding indicator dots.
+
+---
+
+## 🏗️ System Architecture & Lifecycle
+
+DiaMate implements the industry-standard **Feature-First Architecture** utilizing clean separation guidelines powered by the **Bloc/Cubit** standard.
+
+```text
+       ┌────────────────────────────────────────────────────────┐
+       │                   Presentation Layer                   │
+       │       (Custom Widgets, Views, ViewModels, Cubits)      │
+       └───────────────────────────┬────────────────────────────┘
+                                   │  Emits State / Actions
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                      Domain Layer                      │
+       │           (Abstract Repositories, Contracts)           │
+       └───────────────────────────┬────────────────────────────┘
+                                   │  Defines API rules
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                      Data Layer                        │
+       │  (Repo Implementations, API Clients, Hive Data Boxes)  │
+       └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📦 Persistence & Legacy Auto-Invalidation Strategy
+## 📦 Local Storage & Cache Strategy
 
-To maintain a frictionless user journey while continuously upgrading backend structures, DiaMate incorporates a highly responsive offline caching layer powered by **Hive** and **SecureStorage**:
-
-1. **Reactive Auto-Invalidation:** The application monitors object compliance on payload mounting. If cached legacy items lack newer required localized structures (such as `titleAr`), memory spaces are purged actively to trigger fresh API bindings.
-2. **Sequential Translation Throttling:** Gemini API invocation calls execute sequentially with micro-delays (`350ms`) to securely respect free-tier provider limits, with absolute fallback fallthroughs preserving non-translated records gracefully if rate limits hit.
-3. **Reactive Saved Syncing:** Bookmarked items (`saved_recommended_meals_box`) are evaluated synchronously against incoming network calls to render live favorite toggles instantaneously.
+- **Zero-Friction Rebuilds:** Background logic actively inspects local item models. Legacy database objects detected without newer required payload mappings (`titleAr`) trigger instant dynamic network re-synchronization.
+- **Synchronized Bookmarking:** Global collections map user bookmark operations synchronously against both persistent local storage boxes and active repository list caches.
 
 ---
 
-## 📁 Core Codebase Structure
+## 🚀 Getting Started Locally
+
+### Requirements
+- Flutter SDK `3.20+`
+- Dart SDK `3.3+`
+- Valid API keys assigned to runtime environment arguments.
+
+### Quick Setup
+
+```bash
+# 1. Clone target code base
+git clone https://github.com/AbdelmenamAdel/Diamate.git
+
+# 2. Enter workspace root directory
+cd diamate
+
+# 3. Resolve internal library dependencies
+flutter pub get
+
+# 4. Compile layout dictionary tokens natively
+flutter gen-l10n
+
+# 5. Launch native application builds
+flutter run
+```
+
+---
+
+## 📁 Project Architecture Tree
 
 ```text
 lib/
 ├── core/
-│   ├── app/                 # Application Core Setup & Global Providers (AppCubit)
-│   ├── extensions/          # Utility BuildContext extensions (context.push/pop)
-│   ├── language/            # AppLocalizations implementation & JSON dictionaries
-│   ├── routes/              # Global Named Routing configurations
-│   └── services/            # Base hardware and persistence singletons (HiveService)
+│   ├── app/                 # Root initialization blocks & settings Cubits
+│   ├── extensions/          # Clean Context-driven navigation shortcuts
+│   ├── generated/           # Native asset keys mapping configurations
+│   ├── language/            # App localization parsing bindings
+│   ├── routes/              # Centralized navigation mapping paths
+│   └── services/            # Base singletons targeting Hive & secure storage
 │
 ├── features/
-│   ├── food/
-│   │   ├── data/            # Models, API Service Clients, and Repository Implementations
-│   │   ├── domain/          # Abstract contracts and business entities
-│   │   └── presentation/    # Food View grids, Details views, and Cubit managers
-│   │
-│   ├── main/                # Root Dashboard, Shell views, and Quick Action items
-│   └── profile/             # Settings interfaces, Language/Theme sheets, and Permissions
+│   ├── food/                # Primary macro items, database integrations & AI hooks
+│   ├── main/                # Root navigation layout shells
+│   └── profile/             # Modular interactive sheets targeting settings & themes
 │
-└── main.dart                # Entrypoint bootstrapping responsive themes and language streams
+└── main.dart                # Global execution layer injecting active state listeners
 ```
 
 ---
 
-## 🚀 Getting Started & Local Execution
-
-### Prerequisites
-- **Flutter SDK:** Version `3.20.0` or higher.
-- **Dart SDK:** Version `3.3.0` or higher.
-- **API Keys:** Ensure environment configurations support local active keys for `Gemini API`.
-
-### Installation Steps
-
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/AbdelmenamAdel/Diamate.git
-   cd diamate
-   ```
-
-2. **Fetch Packages:**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Generate Core Assets/Locales (if missing):**
-   ```bash
-   flutter gen-l10n
-   ```
-
-4. **Run the Application:**
-   ```bash
-   flutter run
-   ```
-
-> [!TIP]
-> **Testing Localized Refreshing:** To see the automated Gemini translation pipeline in action, tap the **Refresh Icon** inside the `FoodView` screen. The UI will instantly display localized Arabic fields dynamically mapping live without losing active favorites.
-
----
-
 <div align="center">
-  <p>Crafted with premium engineering precision for superior performance and absolute UI excellence.</p>
+  <p>Engineered for maximum scale, performance, and aesthetic satisfaction.</p>
 </div>
