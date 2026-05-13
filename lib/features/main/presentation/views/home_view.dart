@@ -14,6 +14,7 @@ import '../views/widgets/details_card.dart';
 import '../views/widgets/recommeded_item.dart';
 import '../views/widgets/quick_action_section.dart';
 import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
+import 'package:diamate/features/food/presentation/managers/recommended_food_cubit.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -115,12 +116,50 @@ class HomeView extends StatelessWidget {
                 ),
                 SizedBox(height: 12.h),
 
-                Row(
-                  children: [
-                    const Expanded(child: RecommededItem()),
-                    SizedBox(width: 8.w),
-                    const Expanded(child: RecommededItem()),
-                  ],
+                BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
+                  builder: (context, rState) {
+                    if (rState is RecommendedFoodLoading) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 140.h,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: Container(
+                              height: 140.h,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    List<dynamic> recs = [];
+                    if (rState is RecommendedFoodLoaded) {
+                      recs = rState.recommendations;
+                    }
+
+                    final first = recs.isNotEmpty ? recs[0] : null;
+                    final second = recs.length > 1 ? recs[1] : null;
+
+                    return Row(
+                      children: [
+                        Expanded(child: RecommededItem(meal: first)),
+                        SizedBox(width: 8.w),
+                        Expanded(child: RecommededItem(meal: second)),
+                      ],
+                    );
+                  },
                 ),
                 SizedBox(height: 24.h),
                 InkWell(

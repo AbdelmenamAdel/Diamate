@@ -15,6 +15,8 @@ import 'package:diamate/core/database/secure_storage.dart';
 import 'package:diamate/core/services/push_notification/local_notfication_service.dart';
 import 'package:diamate/core/utils/time_ago.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
+import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
+import 'package:diamate/features/food/presentation/managers/recommended_food_cubit.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:diamate/firebase_options.dart';
@@ -63,6 +65,8 @@ void main() async {
       providers: [
         BlocProvider(create: (context) => sl<AppCubit>()..getSavedThemeMode()),
         BlocProvider(create: (context) => sl<AuthCubit>()..loadUser()),
+        BlocProvider(create: (context) => sl<RecommendedFoodCubit>()..loadWeeklyData()),
+        BlocProvider(create: (context) => sl<FoodCubit>()),
       ],
       child: const DiaMate(),
     ),

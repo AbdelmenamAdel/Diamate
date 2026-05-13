@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import '../../data/models/meal_model.dart';
 
+import '../../data/models/recommended_meal_model.dart';
+
 abstract class FoodRepo {
   Future<Either<String, List<String>>> analyzeFoodImage(File image);
   Future<Either<String, NutritionModel>> addFoodMeal({
@@ -9,4 +11,5 @@ abstract class FoodRepo {
     required int patientId,
   });
   Future<Either<String, List<MealModel>>> getMealsByDate(DateTime date);
+  Future<Either<String, List<RecommendedMealModel>>> getWeeklyRecommendations();
 }

@@ -5,10 +5,10 @@ import 'package:diamate/constant.dart';
 import 'package:dartz/dartz.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
 import 'package:diamate/core/database/api/end_points.dart';
-import 'package:diamate/core/database/error/exception.dart';
 import 'package:dio/dio.dart';
 import '../../domain/repos/food_repo.dart';
 import '../models/meal_model.dart';
+import '../models/recommended_meal_model.dart';
 import '../services/food_local_service.dart';
 import 'package:diamate/core/utils/file_helper.dart';
 
@@ -245,6 +245,155 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     } catch (e) {
       log("Exception in FoodRepoImpl.getMealsByDate: ${e.toString()}");
       return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, List<RecommendedMealModel>>>
+  getWeeklyRecommendations() async {
+    try {
+      final now = DateTime.now();
+      final startOfYear = DateTime(now.year, 1, 1);
+      final dayOfYear = now.difference(startOfYear).inDays + 1;
+      final weekNumber = (dayOfYear / 7).ceil();
+      final weekKey = "${now.year}_W$weekNumber";
+
+      log("Fetching weekly recommendations for key: $weekKey");
+
+      // Check cache
+      final cached = await localService.getCachedRecommendations(weekKey);
+      if (cached != null && cached.isNotEmpty) {
+        log("Returning cached weekly recommendations");
+        final savedMeals = await localService.getSavedRecommendedMeals();
+        final savedIds = savedMeals.map((e) => e.id).toSet();
+        final synced = cached
+            .map((m) => m.copyWith(isSaved: savedIds.contains(m.id)))
+            .toList();
+        return Right(synced);
+      }
+
+      log("Cache empty for week $weekKey. Prompting Gemini API...");
+
+      final dio = Dio();
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
+
+      final prompt = '''
+Generate a list of 10 delicious, highly nutritious, healthy diabetic-friendly meals for this week.
+Each meal must have low glycemic impact, balanced macros, an appealing short description in simple Arabic or Egyptian Arabic, detailed ingredients, and clear step-by-step preparation instructions in simple Arabic.
+Return ONLY a valid JSON array matching exactly this structure with no markdown formatting or extra text:
+[
+  {
+    "id": "meal_1",
+    "title": "سلطة دجاج مشوي بالكينوا",
+    "calories": 320.0,
+    "protein": 35.0,
+    "carbs": 20.0,
+    "fats": 12.0,
+    "description": "وجبة مشبعة وغنية بالألياف تساعد على استقرار السكر في الدم لفترات طويلة.",
+    "preparationSteps": [
+      "اشوي صدور الدجاج المتبلة بزيت الزيتون والليمون.",
+      "اسلق الكينوا واتركها تبرد.",
+      "اخلط الدجاج والكينوا مع الخضار الورقية وقدمها."
+    ],
+    "ingredients": [
+      "صدور دجاج (150 جم)",
+      "كينوا مطبوخة (50 جم)",
+      "خس وخيار وطماطم"
+    ]
+  }
+]
+''';
+
+      final response = await dio.post(
+        url,
+        data: {
+          "contents": [
+            {
+              "parts": [
+                {"text": prompt},
+              ],
+            },
+          ],
+          "generationConfig": {
+            "temperature": 0.4,
+            "responseMimeType": "application/json",
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final text =
+            response.data['candidates'][0]['content']['parts'][0]['text'];
+        final List<dynamic> jsonList = jsonDecode(text);
+        final List<RecommendedMealModel> meals = jsonList.map((e) {
+          final mMap = Map<String, dynamic>.from(e as Map);
+          // Simple consistent key per week
+          final baseId =
+              mMap['id']?.toString() ??
+              DateTime.now().microsecondsSinceEpoch.toString();
+          mMap['id'] = "${weekKey}_$baseId";
+          return RecommendedMealModel.fromJson(mMap);
+        }).toList();
+
+        // Save cache
+        await localService.saveCachedRecommendations(weekKey, meals);
+
+        final savedMeals = await localService.getSavedRecommendedMeals();
+        final savedIds = savedMeals.map((e) => e.id).toSet();
+        final synced = meals
+            .map((m) => m.copyWith(isSaved: savedIds.contains(m.id)))
+            .toList();
+
+        return Right(synced);
+      } else {
+        return const Left("Failed to generate recommendations from Gemini");
+      }
+    } catch (e) {
+      log("Exception in getWeeklyRecommendations: $e");
+      final mockMeals = [
+        const RecommendedMealModel(
+          id: "mock_1",
+          title: "سلطة دجاج مشوي بالكينوا",
+          calories: 320,
+          protein: 35,
+          carbs: 20,
+          fats: 12,
+          description:
+              "وجبة مشبعة وغنية بالألياف تساعد على استقرار السكر في الدم لفترات طويلة.",
+          preparationSteps: [
+            "اشوي صدور الدجاج المتبلة بزيت الزيتون والليمون.",
+            "اسلق الكينوا واتركها تبرد.",
+            "اخلط الدجاج والكينوا مع الخضار الورقية وقدمها.",
+          ],
+          ingredients: [
+            "صدور دجاج (150 جم)",
+            "كينوا مطبوخة (50 جم)",
+            "خس وخيار وطماطم",
+          ],
+        ),
+        const RecommendedMealModel(
+          id: "mock_2",
+          title: "سالمون مشوي مع البروكلي",
+          calories: 380,
+          protein: 40,
+          carbs: 10,
+          fats: 18,
+          description:
+              "غنية بأحماض أوميجا 3 المفيدة للقلب ولا ترفع سكر الدم بشكل مفاجئ.",
+          preparationSteps: [
+            "تبل شريحة السالمون بالثوم والشبت وزيت الزيتون.",
+            "اشوي السالمون في الفرن لمدة 15 دقيقة.",
+            "قدمه مع زهور البروكلي المطهوة على البخار.",
+          ],
+          ingredients: [
+            "شريحة سالمون (180 جم)",
+            "بروكلي (100 جم)",
+            "زيت زيتون وثوم",
+          ],
+        ),
+      ];
+      return Right(mockMeals);
     }
   }
 }

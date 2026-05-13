@@ -20,6 +20,7 @@ import 'package:diamate/features/medications/presentation/views/medications_list
 import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 import 'package:diamate/features/food/presentation/views/add_food_view.dart';
 import 'package:diamate/features/food/presentation/views/food_history_view.dart';
+import 'package:diamate/features/food/presentation/views/saved_meals_view.dart';
 import 'package:diamate/core/utils/mini/recomte_configure.dart';
 import 'package:diamate/core/utils/mini/lol_view.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,7 @@ class AppRoutes {
   static const String medicationList = 'medicationList';
   static const String addFood = 'addFood';
   static const String foodHistory = 'foodHistory';
+  static const String savedMeals = 'savedMeals';
 
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -65,7 +67,6 @@ class AppRoutes {
             providers: [
               BlocProvider<MedicationCubit>.value(value: sl<MedicationCubit>()),
               BlocProvider<GlucoseCubit>.value(value: sl<GlucoseCubit>()),
-              BlocProvider<FoodCubit>.value(value: sl<FoodCubit>()),
             ],
             child: const MainView(),
           ),
@@ -119,20 +120,16 @@ class AppRoutes {
         );
       case addFood:
         return BaseRoute(
-          page: BlocProvider<FoodCubit>.value(
-            value: sl<FoodCubit>(),
-            child: AddFoodView(
-              initialIngredients: settings.arguments as List<String>?,
-            ),
+          page: AddFoodView(
+            initialIngredients: settings.arguments as List<String>?,
           ),
         );
       case foodHistory:
         return BaseRoute(
-          page: BlocProvider<FoodCubit>.value(
-            value: sl<FoodCubit>(),
-            child: const FoodHistoryView(),
-          ),
+          page: const FoodHistoryView(),
         );
+      case savedMeals:
+        return BaseRoute(page: const SavedMealsView());
       default:
         return BaseRoute(
           page: const Scaffold(body: Center(child: Text('Page not found'))),

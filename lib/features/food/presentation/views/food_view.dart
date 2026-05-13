@@ -5,7 +5,9 @@ import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
 import 'package:diamate/features/main/presentation/views/widgets/recommeded_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:diamate/features/food/presentation/managers/recommended_food_cubit.dart';
 
 import '../widgets/food_scanner_bottom_sheet.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
@@ -85,16 +87,32 @@ class FoodView extends StatelessWidget {
                     ),
                   ),
                 ),
-                SliverGrid.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.96 / 3,
-                    crossAxisSpacing: 8.w,
-                    mainAxisSpacing: 8.h,
-                  ),
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return RecommededItem();
+                BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
+                  builder: (context, rState) {
+                    if (rState is RecommendedFoodLoading) {
+                      return const SliverToBoxAdapter(
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    List<dynamic> recs = [];
+                    if (rState is RecommendedFoodLoaded) {
+                      recs = rState.recommendations;
+                    }
+
+                    return SliverGrid.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.96 / 3,
+                        crossAxisSpacing: 8.w,
+                        mainAxisSpacing: 8.h,
+                      ),
+                      itemCount: recs.isNotEmpty ? recs.length : 2,
+                      itemBuilder: (context, index) {
+                        final meal = recs.isNotEmpty ? recs[index] : null;
+                        return RecommededItem(meal: meal);
+                      },
+                    );
                   },
                 ),
               ],

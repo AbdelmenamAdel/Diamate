@@ -291,6 +291,13 @@ class _ProfileViewState extends State<ProfileView> {
                           context.pushNamed(AppRoutes.foodHistory);
                         },
                       ),
+                      _ProfileTile(
+                        title: "Saved Meals",
+                        icon: Icons.bookmark_rounded,
+                        onTap: () {
+                          context.pushNamed(AppRoutes.savedMeals);
+                        },
+                      ),
                     ],
                   ),
 
@@ -560,7 +567,6 @@ class _ProfileTile extends StatelessWidget {
   final Widget? trailing;
 
   const _ProfileTile({
-    super.key,
     required this.title,
     required this.icon,
     required this.onTap,
