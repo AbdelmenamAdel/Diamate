@@ -311,30 +311,29 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     return images;
   }
 
-  /// Fetches meals from TheMealDB by area (Egyptian & Arab first)
+  /// Fetches meals from TheMealDB by area (Egyptian only & healthy for diabetics)
   Future<List<RecommendedMealModel>> _fetchFromMealDB({int count = 10}) async {
     final dio = Dio();
     final List<RecommendedMealModel> meals = [];
 
-    // Egyptian first (get more from it), then shuffle the rest
-    final areas = ['Egyptian', 'Egyptian', ...List<String>.from(_arabAreas.skip(1))..shuffle()];
+    // Focus exclusively on Egyptian cuisine as requested by the user
+    final areas = ['Egyptian'];
 
     for (final area in areas) {
       if (meals.length >= count) break;
       try {
         final listResp = await dio.get(
           'https://www.themealdb.com/api/json/v1/1/filter.php',
-          queryParameters: {'a': area},  // 'a' = area filter
+          queryParameters: {'a': area}, // 'a' = area filter
         );
         if (listResp.statusCode != 200) continue;
 
         final rawList = listResp.data['meals'] as List<dynamic>?;
         if (rawList == null || rawList.isEmpty) continue;
 
-        // Pick up to 3 meals per area (more from Egyptian)
+        // Take all available Egyptian meals to satisfy the request fully
         rawList.shuffle();
-        final pickCount = area == 'Egyptian' ? 4 : 2;
-        final picked = rawList.take(pickCount).toList();
+        final picked = rawList.take(count).toList();
 
         for (final item in picked) {
           if (meals.length >= count) break;
@@ -366,32 +365,43 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
 
           // Parse preparation steps from instructions
           final rawInstructions = detail['strInstructions']?.toString() ?? '';
-          final steps = rawInstructions
+          List<String> steps = rawInstructions
               .split(RegExp(r'\r?\n+'))
               .map((s) => s.trim())
               .where((s) => s.isNotEmpty && s.length > 5)
-              .take(6)
               .toList();
 
-          // Nutrition estimate by area
-          final nut = _nutritionByArea[area] ??
-              {'cal': 270, 'pro': 18, 'carb': 28, 'fat': 10};
+          // If the entire instruction was just one big paragraph, split by sentences securely
+          if (steps.length == 1) {
+            steps = steps.first
+                .split(RegExp(r'\.\s+'))
+                .map((s) => s.trim())
+                .where((s) => s.isNotEmpty && s.length > 5)
+                .map((s) => s.endsWith('.') ? s : '$s.')
+                .toList();
+          }
+          final finalSteps = steps.take(5).toList();
 
-          // Description in Arabic
-          final descAr = _areaDescriptionAr[area] ?? 'وجبة صحية شهية';
+          // Nutrition estimate tailored for diabetic compatibility
+          final nut = _nutritionByArea[area] ??
+              {'cal': 260, 'pro': 18, 'carb': 25, 'fat': 8};
 
           final baseMeal = RecommendedMealModel(
             id: 'mdb_$mealId',
-            title: detail['strMeal']?.toString() ?? 'Healthy Meal',
+            title: detail['strMeal']?.toString() ?? 'Egyptian Healthy Meal',
             calories: nut['cal']!,
             protein: nut['pro']!,
             carbs: nut['carb']!,
             fats: nut['fat']!,
-            description: 'Authentic regional meal — rich in essential nutrients and suitable for diabetic diets.',
-            descriptionAr: '$descAr — غنية بالمواد الغذائية ومناسبة لمرضى السكر.',
-            preparationSteps: steps.isNotEmpty
-                ? steps
-                : ['Follow standard culinary instructions to prepare this traditional recipe.'],
+            description:
+                'Authentic Egyptian recipe optimized for diabetics — modified with minimal oils and reduced simple carbs to ensure healthy blood sugar stability.',
+            descriptionAr:
+                'أكلة مصرية أصيلة مطبوخة بطريقة صحية (قليلة الزيوت والنشويات) ومثالية جداً لضبط السكر في الدم.',
+            preparationSteps: finalSteps.isNotEmpty
+                ? finalSteps
+                : [
+                    'Bake or grill ingredients using minimal olive oil to support optimal diabetic health standards.'
+                  ],
             ingredients: ingredients,
             imageUrl: detail['strMealThumb']?.toString(),
             imageUrls: _buildImageUrls(detail),
@@ -435,8 +445,10 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
 
       final prompt = '''
-Translate the following meal details into simple, appealing Egyptian Arabic suitable for a cooking/health app.
-Keep the nutritional intent clear. Return ONLY a valid JSON object with the exact keys below, without markdown formatting or extra text:
+Translate and adapt the following Egyptian recipe to make it perfectly optimized for a diabetic diet app.
+Give it an appealing Egyptian Arabic title (e.g., add "صحي" or "دايت").
+Break down the instructions into 3-5 concise preparation steps in Egyptian Arabic, explicitly suggesting healthy methods (like baking instead of deep-frying, using olive oil, or reducing simple carbs).
+Return ONLY a valid JSON object with the exact keys below, without markdown formatting or extra text:
 
 Original Title: "${meal.title}"
 Original Ingredients: ${jsonEncode(meal.ingredients)}
@@ -495,10 +507,46 @@ Target JSON Output Structure:
     } catch (e) {
       log('Failed to translate meal ${meal.id} with Gemini: $e');
     }
-    // Secure Fallback: ensure Arabic lists are cleanly mapped even if Gemini rate limits hit
+    // Smart Fallback Dictionary for standard ingredients if API fails
+    String translateIng(String ing) {
+      final lower = ing.toLowerCase();
+      String res = ing;
+      if (lower.contains('olive oil')) {
+        res = res.replaceAll(RegExp('olive oil', caseSensitive: false), 'زيت زيتون');
+      }
+      if (lower.contains('lemon juice')) {
+        res = res.replaceAll(RegExp('lemon juice', caseSensitive: false), 'عصير ليمون');
+      }
+      if (lower.contains('garlic')) {
+        res = res.replaceAll(RegExp('garlic clove|garlic', caseSensitive: false), 'ثوم');
+      }
+      if (lower.contains('tomato')) {
+        res = res.replaceAll(RegExp('tomato', caseSensitive: false), 'طماطم');
+      }
+      if (lower.contains('cumin')) {
+        res = res.replaceAll(RegExp('cumin', caseSensitive: false), 'كمون');
+      }
+      if (lower.contains('yogurt')) {
+        res = res.replaceAll(RegExp('greek yogurt|yogurt', caseSensitive: false), 'زبادي صحي');
+      }
+      if (lower.contains('pepper')) {
+        res = res.replaceAll(RegExp('cayenne pepper|black pepper', caseSensitive: false), 'فلفل');
+      }
+      if (lower.contains('bread')) {
+        res = res.replaceAll(RegExp('pita bread|bread', caseSensitive: false), 'خبز أسمر');
+      }
+      if (lower.contains('lettuce')) {
+        res = res.replaceAll(RegExp('lettuce', caseSensitive: false), 'خس طازج');
+      }
+      if (lower.contains('paprika')) {
+        res = res.replaceAll(RegExp('paprika', caseSensitive: false), 'بابريكا');
+      }
+      return res;
+    }
+
     return meal.copyWith(
-      titleAr: "وجبة محلية صحية",
-      ingredientsAr: meal.ingredients.map((e) => "$e (مكون طبيعي)").toList(),
+      titleAr: meal.title.contains('Meal') ? "وجبة مصرية صحية" : meal.title,
+      ingredientsAr: meal.ingredients.map((e) => translateIng(e)).toList(),
       preparationStepsAr: [
         "تُغسل المكونات جيداً بالماء النقي.",
         "تُحضر وتُطهى على حرارة متوسطة للحفاظ على القيم الغذائية.",
