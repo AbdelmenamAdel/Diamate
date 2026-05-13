@@ -208,7 +208,7 @@ Target JSON Output Structure:
               "parts": [
                 {
                   "text":
-                      "Analyze this digital display of a glucose meter. Ensure it's a real device and extract the primary integer reading in mg/dL. Return ONLY a valid JSON object: {\"reading\": 102}"
+                      "Carefully analyze this image. If it depicts a real digital glucose meter displaying a blood sugar measurement reading, extract the primary integer reading in mg/dL and return ONLY a JSON object: {\"reading\": 120}. If the image does NOT contain a glucose meter display, return ONLY: {\"reading\": null}."
                 },
                 {
                   "inlineData": {

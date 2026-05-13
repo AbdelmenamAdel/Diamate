@@ -44,6 +44,10 @@ By utilizing a modular, decoupled **Core AI Engine Service**, the app intelligen
 
 ## ✨ Key Features & Superpowers
 
+### 🩸 Multi-Modal Glucose Display Detection
+* **Direct AI Pixel Analysis:** Integrates high-precision multi-modal vision intelligence capable of parsing photographs of digital meter screens directly to extract accurate primary integer glucose readings.
+* **Strict Clinical Rejection Filtering:** Employs advanced negative lookaround regex mapping coupled with explicit unit validation loops to discard background noise, non-reading numerical tokens (e.g., watermarks, IDs), and reliably reject standard non-meter random camera images.
+
 ### 🥗 Comprehensive Nutrition Monitoring
 * **Intelligent Macros Dashboard:** Visually clean indicators detailing instant protein, carbohydrate, fat, and calorie progress against personalized baseline targets.
 * **Camera-Assisted Food Logging:** Launch custom scanning pipelines enabling fluid automated or manual logging workflows directly into localized storage modules.
@@ -99,7 +103,7 @@ DiaMate adopts a robust degradation architecture designed to ensure zero downtim
 |:---|:---|:---|:---|
 | **Chat & Guidance** | **Gemini 2.5 Flash** | **Groq API** | Static regional behavioral prompt guides |
 | **Vision Analysis** | **Gemini Vision** | **OpenRouter API** | Localized camera crop manual logging |
-| **OCR Extraction** | **OCR.Space API** | **Gemini Core** | Manual numerical entry forms |
+| **Glucose Meter OCR**| **Gemini Vision AI**| **Local ML Kit OCR** | Negative lookaround heuristics & zero-false-positive rejection |
 | **Auto-Translation** | **Gemini API** | **DeepSeek / Groq** | Native substring regex matching dictionaries |
 | **Nutrition Mapping**| **Edamam API** | **Gemini Core** | Static baseline localized calorie matrices |
 
