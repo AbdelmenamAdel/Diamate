@@ -92,7 +92,16 @@ class RecommendedFoodCubit extends Cubit<RecommendedFoodState> {
     emit(RecommendedFoodLoading());
     final result = await _repo.refreshMealsFromWeb();
     result.fold(
-      (failure) => emit(RecommendedFoodError(failure)),
+      (failure) {
+        emit(RecommendedFoodError(failure));
+        // Gracefully restore previous loaded items so grids don't appear empty
+        emit(
+          RecommendedFoodLoaded(
+            recommendations: _cachedRecommendations,
+            savedMeals: _cachedSavedMeals,
+          ),
+        );
+      },
       (meals) {
         _cachedRecommendations = meals;
         emit(

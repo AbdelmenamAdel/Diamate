@@ -152,12 +152,15 @@ class HomeView extends StatelessWidget {
                     final first = recs.isNotEmpty ? recs[0] : null;
                     final second = recs.length > 1 ? recs[1] : null;
 
-                    return Row(
-                      children: [
-                        Expanded(child: RecommededItem(meal: first)),
-                        SizedBox(width: 8.w),
-                        Expanded(child: RecommededItem(meal: second)),
-                      ],
+                    return SizedBox(
+                      height: 235,
+                      child: Row(
+                        children: [
+                          Expanded(child: RecommededItem(meal: first)),
+                          SizedBox(width: 8.w),
+                          Expanded(child: RecommededItem(meal: second)),
+                        ],
+                      ),
                     );
                   },
                 ),

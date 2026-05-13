@@ -22,6 +22,7 @@ class ThemeChangeModeState extends AppState {
   ThemeChangeModeState({required this.appTheme});
 }
 
-// class ChangeLangLoading extends AppState {}
-
-// class ChangeLangSuccess extends AppState {}
+class LanguageChangeModeState extends AppState {
+  final LanguageEnum appLanguage;
+  LanguageChangeModeState({required this.appLanguage});
+}

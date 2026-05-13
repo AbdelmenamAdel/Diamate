@@ -403,12 +403,21 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
       }
     }
 
-    // ── Translate all fetched meals to Arabic using Gemini in parallel ──
+    // ── Translate all fetched meals to Arabic using Gemini sequentially ──
     if (meals.isNotEmpty) {
-      log('Translating ${meals.length} meals to Arabic via Gemini...');
-      final translatedMeals = await Future.wait(
-        meals.map((m) => _translateMealWithGemini(m, dio)),
-      );
+      log('Translating ${meals.length} meals to Arabic via Gemini sequentially...');
+      final translatedMeals = <RecommendedMealModel>[];
+      for (final m in meals) {
+        try {
+          final tm = await _translateMealWithGemini(m, dio);
+          translatedMeals.add(tm);
+          // tiny delay to respect free tier rate limits
+          await Future.delayed(const Duration(milliseconds: 350));
+        } catch (e) {
+          log("Skipping translation for meal ${m.id} due to error: $e");
+          translatedMeals.add(m); // Keep original English version safely
+        }
+      }
       return translatedMeals;
     }
 

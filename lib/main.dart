@@ -63,7 +63,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => sl<AppCubit>()..getSavedThemeMode()),
+        BlocProvider(create: (context) => sl<AppCubit>()..getSavedThemeMode()..getSavedLanguageMode()),
         BlocProvider(create: (context) => sl<AuthCubit>()..loadUser()),
         BlocProvider(create: (context) => sl<RecommendedFoodCubit>()..loadWeeklyData()),
         BlocProvider(create: (context) => sl<FoodCubit>()),
@@ -131,7 +131,8 @@ class _DiaMateState extends State<DiaMate> with WidgetsBindingObserver {
                   localizationsDelegates:
                       AppLocalizationsSetup.localizationsDelegates,
                   supportedLocales: AppLocalizationsSetup.supportedLocales,
-                  locale: AppLocalizationsSetup.supportedLocales.last,
+                  locale: _getLocale(context.watch<AppCubit>().appLanguage),
+                  localeResolutionCallback: AppLocalizationsSetup.localeResolutionCallback,
                   theme: themeLight(),
                   darkTheme: themeDark(),
                   themeMode: _getThemeMode(context.watch<AppCubit>().appTheme),
@@ -225,6 +226,17 @@ class _DiaMateState extends State<DiaMate> with WidgetsBindingObserver {
         return ThemeMode.dark;
       case ThemeEnum.system:
         return ThemeMode.system;
+    }
+  }
+
+  Locale? _getLocale(LanguageEnum lang) {
+    switch (lang) {
+      case LanguageEnum.ar:
+        return const Locale('ar', 'EG');
+      case LanguageEnum.en:
+        return const Locale('en', 'US');
+      case LanguageEnum.system:
+        return null; // delegates resolution to localeResolutionCallback
     }
   }
 }

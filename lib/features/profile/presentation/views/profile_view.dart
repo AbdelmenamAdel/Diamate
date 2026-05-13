@@ -6,6 +6,8 @@ import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
 import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
 import 'package:diamate/features/profile/presentation/widgets/theme_bottom_sheet.dart';
+import 'package:diamate/features/profile/presentation/widgets/language_bottom_sheet.dart';
+import 'package:diamate/core/app/app_cubit/app_cubit.dart';
 import 'package:diamate/features/medications/presentation/managers/medication_cubit.dart';
 import 'package:diamate/features/glucose/presentation/managers/glucose_cubit.dart';
 import 'package:flutter/material.dart';
@@ -145,9 +147,8 @@ class _ProfileViewState extends State<ProfileView> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: context.color.primaryColor!.withOpacity(
-                                    0.1,
-                                  ),
+                                  color: context.color.primaryColor!
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -203,7 +204,9 @@ class _ProfileViewState extends State<ProfileView> {
                                 Icon(
                                   Icons.arrow_forward_ios_rounded,
                                   size: 16,
-                                  color: context.color.hintColor?.withOpacity(0.5),
+                                  color: context.color.hintColor?.withOpacity(
+                                    0.5,
+                                  ),
                                 ),
                               ],
                             ),
@@ -221,7 +224,8 @@ class _ProfileViewState extends State<ProfileView> {
                             context: context,
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            builder: (context) => const PermissionsBottomSheet(),
+                            builder: (context) =>
+                                const PermissionsBottomSheet(),
                           );
                         },
                       ),
@@ -260,7 +264,9 @@ class _ProfileViewState extends State<ProfileView> {
                                 Icon(
                                   Icons.arrow_forward_ios_rounded,
                                   size: 16,
-                                  color: context.color.hintColor?.withOpacity(0.5),
+                                  color: context.color.hintColor?.withOpacity(
+                                    0.5,
+                                  ),
                                 ),
                               ],
                             ),
@@ -308,29 +314,6 @@ class _ProfileViewState extends State<ProfileView> {
                     title: "App Settings",
                     children: [
                       _ProfileTile(
-                        title: "Language",
-                        icon: Icons.language_outlined,
-                        onTap: () {},
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "English",
-                              style: TextStyle(
-                                color: context.color.hintColor,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 16,
-                              color: context.color.hintColor?.withOpacity(0.5),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _ProfileTile(
                         title: "Notifications",
                         icon: Icons.notifications_outlined,
                         onTap: () {
@@ -338,7 +321,8 @@ class _ProfileViewState extends State<ProfileView> {
                             context: context,
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            builder: (context) => const PermissionsBottomSheet(),
+                            builder: (context) =>
+                                const PermissionsBottomSheet(),
                           ).then((_) => _checkNotificationStatus());
                         },
                         trailing: Switch.adaptive(
@@ -383,6 +367,37 @@ class _ProfileViewState extends State<ProfileView> {
                               Theme.of(context).brightness == Brightness.dark
                                   ? "Dark"
                                   : "Light",
+                              style: TextStyle(
+                                color: context.color.hintColor,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                              color: context.color.hintColor?.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _ProfileTile(
+                        title: "Language",
+                        icon: Icons.language_rounded,
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => const LanguageBottomSheet(),
+                          );
+                        },
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _getLanguageLabel(
+                                context.watch<AppCubit>().appLanguage,
+                              ),
                               style: TextStyle(
                                 color: context.color.hintColor,
                                 fontSize: 14,
@@ -446,7 +461,10 @@ class _ProfileViewState extends State<ProfileView> {
                           foregroundColor: Colors.red,
                         ),
                         onPressed: () {
-                          SecureStorage.setBoolean(key: K.isLogged, value: false);
+                          SecureStorage.setBoolean(
+                            key: K.isLogged,
+                            value: false,
+                          );
                           SecureStorage.setBoolean(
                             key: 'has_welcome_v1',
                             value: false,
@@ -486,6 +504,17 @@ class _ProfileViewState extends State<ProfileView> {
         );
       },
     );
+  }
+
+  String _getLanguageLabel(LanguageEnum lang) {
+    switch (lang) {
+      case LanguageEnum.ar:
+        return "العربية";
+      case LanguageEnum.en:
+        return "English";
+      case LanguageEnum.system:
+        return "System";
+    }
   }
 }
 

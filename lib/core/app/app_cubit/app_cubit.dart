@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'app_state.dart';
 
 enum ThemeEnum { light, dark, system }
+enum LanguageEnum { ar, en, system }
 
 class AppCubit extends Cubit<AppState> {
   AppCubit() : super(InitialState());
@@ -48,21 +49,27 @@ class AppCubit extends Cubit<AppState> {
     emit(ThemeChangeModeState(appTheme: appTheme));
   }
 
-  String langCode = 'en';
+  LanguageEnum appLanguage = LanguageEnum.system;
 
-  // //! get lang and set it in sharedPrefrances
-  // void updateLang(String code) {
-  //   emit(ChangeLangLoading());
-  //   langCode = code;
-  //   sl<LocalStorage>().changLanguage(code);
-  //   emit(ChangeLangSuccess());
-  // }
+  // Language Mode
+  Future<void> changeAppLanguageMode({required LanguageEnum selectedLanguage}) async {
+    appLanguage = selectedLanguage;
+    await SecureStorage.setString(key: 'appLanguage', value: appLanguage.name);
+    log("App language changed to: ${appLanguage.name}");
+    emit(LanguageChangeModeState(appLanguage: appLanguage));
+  }
 
-  // //! update langauge and use it while starting app
-  // void getLang() {
-  //   emit(ChangeLangLoading());
-  //   final cachedLang = sl<LocalStorage>().getCachedLanguage();
-  //   langCode = cachedLang;
-  //   emit(ChangeLangSuccess());
-  // }
+  Future<void> getSavedLanguageMode() async {
+    final cachedLang = await SecureStorage.getString(key: 'appLanguage');
+    log("Cached language mode: $cachedLang");
+    if (cachedLang != null) {
+      appLanguage = LanguageEnum.values.firstWhere(
+        (e) => e.name == cachedLang,
+        orElse: () => LanguageEnum.system,
+      );
+    } else {
+      appLanguage = LanguageEnum.system;
+    }
+    emit(LanguageChangeModeState(appLanguage: appLanguage));
+  }
 }
