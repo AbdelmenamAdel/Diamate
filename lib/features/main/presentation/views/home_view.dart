@@ -1,7 +1,7 @@
 import 'dart:developer';
-
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/generated/app_assets.dart';
+import 'package:diamate/core/language/app_Localizations.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
 import 'package:diamate/core/widgets/notification_button.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
@@ -107,7 +107,7 @@ class HomeView extends StatelessWidget {
                 SizedBox(height: 24.h),
                 // ! Recommended for you
                 Text(
-                  "Recommended for you",
+                  AppLocalizations.of(context)?.translate('recommended_for_you') ?? 'Recommended for you',
                   style: TextStyle(
                     fontFamily: K.sg,
                     fontSize: 14,

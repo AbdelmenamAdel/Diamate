@@ -354,13 +354,12 @@ Return ONLY a valid JSON array matching exactly this structure with no markdown 
       final mockMeals = [
         const RecommendedMealModel(
           id: "mock_1",
-          title: "سلطة دجاج مشوي بالكينوا",
+          title: "سلطة دجاج مشوي بالكينوا\nGrilled Chicken & Quinoa Salad",
           calories: 320,
           protein: 35,
           carbs: 20,
           fats: 12,
-          description:
-              "وجبة مشبعة وغنية بالألياف تساعد على استقرار السكر في الدم لفترات طويلة.",
+          description: "وجبة مشبعة وغنية بالألياف تساعد على استقرار السكر في الدم لفترات طويلة.",
           preparationSteps: [
             "اشوي صدور الدجاج المتبلة بزيت الزيتون والليمون.",
             "اسلق الكينوا واتركها تبرد.",
@@ -374,13 +373,12 @@ Return ONLY a valid JSON array matching exactly this structure with no markdown 
         ),
         const RecommendedMealModel(
           id: "mock_2",
-          title: "سالمون مشوي مع البروكلي",
+          title: "سالمون مشوي مع البروكلي\nBaked Salmon & Broccoli",
           calories: 380,
           protein: 40,
           carbs: 10,
           fats: 18,
-          description:
-              "غنية بأحماض أوميجا 3 المفيدة للقلب ولا ترفع سكر الدم بشكل مفاجئ.",
+          description: "غنية بأحماض أوميجا 3 المفيدة للقلب ولا ترفع سكر الدم بشكل مفاجئ.",
           preparationSteps: [
             "تبل شريحة السالمون بالثوم والشبت وزيت الزيتون.",
             "اشوي السالمون في الفرن لمدة 15 دقيقة.",
@@ -390,6 +388,82 @@ Return ONLY a valid JSON array matching exactly this structure with no markdown 
             "شريحة سالمون (180 جم)",
             "بروكلي (100 جم)",
             "زيت زيتون وثوم",
+          ],
+        ),
+        const RecommendedMealModel(
+          id: "mock_3",
+          title: "بيض مسلوق مع الأفوكادو\nBoiled Eggs & Avocado",
+          calories: 270,
+          protein: 14,
+          carbs: 6,
+          fats: 22,
+          description: "وجبة خفيفة ومغذية غنية بالدهون الصحية والبروتين.",
+          preparationSteps: [
+            "اسلق البيض لمدة 7 دقائق.",
+            "اقطع الأفوكادو وارشيه بالليمون والملح.",
+            "قدم البيض مع الأفوكادو وبعض بذور السمسم.",
+          ],
+          ingredients: [
+            "بيض (2 حبة)",
+            "أفوكادو (نص حبة)",
+            "ليمون وبذور السمسم",
+          ],
+        ),
+        const RecommendedMealModel(
+          id: "mock_4",
+          title: "عدس مع السبانخ\nLentil & Spinach Soup",
+          calories: 290,
+          protein: 18,
+          carbs: 38,
+          fats: 5,
+          description: "وجبة نباتية دافئة غنية بالحديد والألياف وصديقة للسكر.",
+          preparationSteps: [
+            "اغلي العدس حتى ينضج تماماً.",
+            "أضف السبانخ الطازجة والبصل المقلي.",
+            "اتبل بالكمون والكركم وقدمه ساخناً.",
+          ],
+          ingredients: [
+            "عدس أحمر (100 جم)",
+            "سبانخ طازجة (80 جم)",
+            "بصل وزيت زيتون وتوابل",
+          ],
+        ),
+        const RecommendedMealModel(
+          id: "mock_5",
+          title: "صدر دجاج بالخضار المشوية\nGrilled Chicken & Veggies",
+          calories: 310,
+          protein: 38,
+          carbs: 15,
+          fats: 9,
+          description: "وجبة عالية البروتين ومنخفضة الكربوهيدرات مناسبة لمرضى السكر.",
+          preparationSteps: [
+            "تبل صدر الدجاج بالثوم والأعشاب.",
+            "اشوي الدجاج على الجريل لمدة 20 دقيقة.",
+            "قدمه مع فلفل وكوسا وطماطم مشوية.",
+          ],
+          ingredients: [
+            "صدر دجاج (200 جم)",
+            "فلفل ملون وكوسا (150 جم)",
+            "زيت زيتون وأعشاب",
+          ],
+        ),
+        const RecommendedMealModel(
+          id: "mock_6",
+          title: "زبادي يوناني مع المكسرات\nGreek Yogurt & Nuts",
+          calories: 220,
+          protein: 15,
+          carbs: 12,
+          fats: 12,
+          description: "وجبة خفيفة مثالية تجمع البروبيوتيك والدهون الصحية والبروتين.",
+          preparationSteps: [
+            "ضع الزبادي اليوناني في طبق.",
+            "أضف جوز الهند أو الجوز والبندق.",
+            "رشيه بقليل من القرفة وقدمه بارداً.",
+          ],
+          ingredients: [
+            "زبادي يوناني قليل الدسم (150 جم)",
+            "مكسرات مشكلة (30 جم)",
+            "قرفة",
           ],
         ),
       ];

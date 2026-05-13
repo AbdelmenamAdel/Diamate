@@ -1,5 +1,9 @@
 {
     "": "Welcome to DiaMate App",
     "app_name": "DiaMate",
-    "login": "Login"
+    "login": "Login",
+    "recommended_for_you": "Recommended for you",
+    "food_log": "Food Log",
+    "add_manually": "+ Add Manually",
+    "scan_food": "Scan Food"
 }

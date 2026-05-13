@@ -23,11 +23,30 @@ class RecommendedFoodCubit extends Cubit<RecommendedFoodState> {
     _cachedSavedMeals = await _localService.getSavedRecommendedMeals();
     final savedIds = _cachedSavedMeals.map((e) => e.id).toSet();
 
-    // Fetch recommendations
+    // Fetch recommendations (repo handles weekly cache key internally)
     final result = await _repo.getWeeklyRecommendations();
     result.fold(
       (failure) => emit(RecommendedFoodError(failure)),
-      (recommendations) {
+      (recommendations) async {
+        // If cached data is stale (< 6 meals from old prompt), force re-fetch
+        if (recommendations.length < 6) {
+          await _localService.clearAllCachedRecommendations();
+          final freshResult = await _repo.getWeeklyRecommendations();
+          freshResult.fold(
+            (failure) => emit(RecommendedFoodError(failure)),
+            (freshRecs) {
+              _cachedRecommendations = freshRecs.map((m) {
+                return m.copyWith(isSaved: savedIds.contains(m.id));
+              }).toList();
+              emit(RecommendedFoodLoaded(
+                recommendations: _cachedRecommendations,
+                savedMeals: _cachedSavedMeals,
+              ));
+            },
+          );
+          return;
+        }
+
         // Sync saved flag
         _cachedRecommendations = recommendations.map((m) {
           return m.copyWith(isSaved: savedIds.contains(m.id));

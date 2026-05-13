@@ -105,4 +105,10 @@ class FoodLocalService {
       );
     }).toList();
   }
+
+  /// Clears all cached weekly recommendations (used to force a fresh API call)
+  Future<void> clearAllCachedRecommendations() async {
+    final box = await _getRecommendationsBox();
+    await box.clear();
+  }
 }

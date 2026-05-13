@@ -1,5 +1,6 @@
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/generated/app_assets.dart';
+import 'package:diamate/core/language/app_Localizations.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
@@ -25,7 +26,10 @@ class FoodView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 12.h,
         children: [
-          CustomAppBar(back: false, title: 'Food Log'),
+          CustomAppBar(
+            back: false,
+            title: AppLocalizations.of(context)?.translate('food_log') ?? 'Food Log',
+          ),
 
           CustomTextFormField(
             hint: 'Search',
@@ -44,7 +48,7 @@ class FoodView extends StatelessWidget {
                     onTap: () {
                       context.pushNamed(AppRoutes.addFood);
                     },
-                    text: "+ Add Manually",
+                    text: AppLocalizations.of(context)?.translate('add_manually') ?? '+ Add Manually',
                     color: const Color(0xff2D9CDB),
                   ),
                 ),
@@ -62,7 +66,7 @@ class FoodView extends StatelessWidget {
                       Icons.camera_alt_outlined,
                       color: Colors.white,
                     ),
-                    text: "Scan Food",
+                    text: AppLocalizations.of(context)?.translate('scan_food') ?? 'Scan Food',
                     color: const Color(0xff2D9CDB),
                   ),
                 ),
@@ -77,7 +81,7 @@ class FoodView extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 12.0.h),
                     child: Text(
-                      "Recommended for you",
+                      AppLocalizations.of(context)?.translate('recommended_for_you') ?? 'Recommended for you',
                       style: TextStyle(
                         fontFamily: K.sg,
                         fontSize: 14,
