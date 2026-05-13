@@ -14,6 +14,12 @@ class RecommendedMealModel extends Equatable {
   final String? imageUrl;        // primary image (for cards)
   final List<String> imageUrls; // all images (for details view carousel)
 
+  // ── Localized Arabic Fields (Optional) ──
+  final String? titleAr;
+  final String? descriptionAr;
+  final List<String>? preparationStepsAr;
+  final List<String>? ingredientsAr;
+
   const RecommendedMealModel({
     required this.id,
     required this.title,
@@ -27,6 +33,10 @@ class RecommendedMealModel extends Equatable {
     this.isSaved = false,
     this.imageUrl,
     this.imageUrls = const [],
+    this.titleAr,
+    this.descriptionAr,
+    this.preparationStepsAr,
+    this.ingredientsAr,
   });
 
   RecommendedMealModel copyWith({
@@ -42,6 +52,10 @@ class RecommendedMealModel extends Equatable {
     bool? isSaved,
     String? imageUrl,
     List<String>? imageUrls,
+    String? titleAr,
+    String? descriptionAr,
+    List<String>? preparationStepsAr,
+    List<String>? ingredientsAr,
   }) {
     return RecommendedMealModel(
       id: id ?? this.id,
@@ -56,6 +70,10 @@ class RecommendedMealModel extends Equatable {
       isSaved: isSaved ?? this.isSaved,
       imageUrl: imageUrl ?? this.imageUrl,
       imageUrls: imageUrls ?? this.imageUrls,
+      titleAr: titleAr ?? this.titleAr,
+      descriptionAr: descriptionAr ?? this.descriptionAr,
+      preparationStepsAr: preparationStepsAr ?? this.preparationStepsAr,
+      ingredientsAr: ingredientsAr ?? this.ingredientsAr,
     );
   }
 
@@ -73,6 +91,10 @@ class RecommendedMealModel extends Equatable {
       'isSaved': isSaved,
       'imageUrl': imageUrl,
       'imageUrls': imageUrls,
+      'titleAr': titleAr,
+      'descriptionAr': descriptionAr,
+      'preparationStepsAr': preparationStepsAr,
+      'ingredientsAr': ingredientsAr,
     };
   }
 
@@ -99,6 +121,14 @@ class RecommendedMealModel extends Equatable {
               ?.map((e) => e.toString())
               .toList() ??
           [],
+      titleAr: json['titleAr'] as String?,
+      descriptionAr: json['descriptionAr'] as String?,
+      preparationStepsAr: (json['preparationStepsAr'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
+      ingredientsAr: (json['ingredientsAr'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
     );
   }
 
@@ -116,5 +146,22 @@ class RecommendedMealModel extends Equatable {
         isSaved,
         imageUrl,
         imageUrls,
+        titleAr,
+        descriptionAr,
+        preparationStepsAr,
+        ingredientsAr,
       ];
+
+  // ── Helper Getters for instant UI dynamic toggle ──
+  String displayTitle(bool isArabic) =>
+      isArabic ? (titleAr ?? title) : title;
+
+  String displayDescription(bool isArabic) =>
+      isArabic ? (descriptionAr ?? description) : description;
+
+  List<String> displayIngredients(bool isArabic) =>
+      isArabic ? (ingredientsAr ?? ingredients) : ingredients;
+
+  List<String> displaySteps(bool isArabic) =>
+      isArabic ? (preparationStepsAr ?? preparationSteps) : preparationSteps;
 }

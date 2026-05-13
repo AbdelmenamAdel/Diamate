@@ -28,13 +28,13 @@ class RecommendedFoodCubit extends Cubit<RecommendedFoodState> {
     result.fold(
       (failure) => emit(RecommendedFoodError(failure)),
       (recommendations) async {
-        // If cached data is stale (< 6 meals, or old Gemini meals without images),
+        // If cached data is stale (< 6 meals, legacy meals missing titleAr localized fields),
         // force a fresh fetch from TheMealDB
         final isStale = recommendations.length < 6 ||
-            recommendations.every((m) => m.imageUrl == null || m.imageUrl!.isEmpty);
+            recommendations.any((m) => m.titleAr == null || m.titleAr!.isEmpty);
         if (isStale) {
           await _localService.clearAllCachedRecommendations();
-          final freshResult = await _repo.getWeeklyRecommendations();
+          final freshResult = await _repo.refreshMealsFromWeb();
           freshResult.fold(
             (failure) => emit(RecommendedFoodError(failure)),
             (freshRecs) {
@@ -90,17 +90,12 @@ class RecommendedFoodCubit extends Cubit<RecommendedFoodState> {
 
   Future<void> refreshMeals() async {
     emit(RecommendedFoodLoading());
+    // Actively purge memory to guarantee absolute state rebuild
+    _cachedRecommendations = [];
     final result = await _repo.refreshMealsFromWeb();
     result.fold(
       (failure) {
         emit(RecommendedFoodError(failure));
-        // Gracefully restore previous loaded items so grids don't appear empty
-        emit(
-          RecommendedFoodLoaded(
-            recommendations: _cachedRecommendations,
-            savedMeals: _cachedSavedMeals,
-          ),
-        );
       },
       (meals) {
         _cachedRecommendations = meals;

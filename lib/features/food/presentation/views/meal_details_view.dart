@@ -39,6 +39,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: context.color.scaffoldBackgroundColor,
@@ -47,7 +48,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: CustomAppBar(back: true, title: 'Meal Details'),
+              child: CustomAppBar(back: true, title: isArabic ? 'تفاصيل الوجبة' : 'Meal Details'),
             ),
             Expanded(
               child: BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
@@ -99,7 +100,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                           children: [
                             Expanded(
                               child: Text(
-                                meal.title,
+                                meal.displayTitle(isArabic),
                                 style: TextStyle(
                                   fontFamily: K.sg,
                                   fontSize: 20.sp,
@@ -120,7 +121,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
                               child: Text(
-                                "${meal.calories.toInt()} Kcal",
+                                "${meal.calories.toInt()} ${isArabic ? 'سعر' : 'Kcal'}",
                                 style: TextStyle(
                                   fontFamily: K.sg,
                                   fontSize: 14.sp,
@@ -133,9 +134,9 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                         ),
                         SizedBox(height: 8.h),
 
-                        if (meal.description.isNotEmpty)
+                        if (meal.displayDescription(isArabic).isNotEmpty)
                           Text(
-                            meal.description,
+                            meal.displayDescription(isArabic),
                             style: TextStyle(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w400,
@@ -151,21 +152,21 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                           children: [
                             _macroCard(
                               context,
-                              "Protein",
+                              isArabic ? "بروتين" : "Protein",
                               "${meal.protein.toInt()}g",
                               const Color(0xFFE57373),
                             ),
                             SizedBox(width: 8.w),
                             _macroCard(
                               context,
-                              "Carbs",
+                              isArabic ? "كربوهيدرات" : "Carbs",
                               "${meal.carbs.toInt()}g",
                               const Color(0xFF64B5F6),
                             ),
                             SizedBox(width: 8.w),
                             _macroCard(
                               context,
-                              "Fats",
+                              isArabic ? "دهون" : "Fats",
                               "${meal.fats.toInt()}g",
                               const Color(0xFFFFB74D),
                             ),
@@ -175,9 +176,10 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                         SizedBox(height: 24.h),
 
                         // Ingredients Section
-                        if (meal.ingredients.isNotEmpty) ...[
+                        // Ingredients Section
+                        if (meal.displayIngredients(isArabic).isNotEmpty) ...[
                           Text(
-                            "المكونات",
+                            isArabic ? "المكونات" : "Ingredients",
                             style: TextStyle(
                               fontFamily: K.sg,
                               fontSize: 16.sp,
@@ -189,7 +191,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                           Wrap(
                             spacing: 8.w,
                             runSpacing: 8.h,
-                            children: meal.ingredients.map((ing) {
+                            children: meal.displayIngredients(isArabic).map((ing) {
                               return Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 12.w,
@@ -217,9 +219,9 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                         ],
 
                         // Preparation Steps Section
-                        if (meal.preparationSteps.isNotEmpty) ...[
+                        if (meal.displaySteps(isArabic).isNotEmpty) ...[
                           Text(
-                            "طريقة التحضير",
+                            isArabic ? "طريقة التحضير" : "Preparation Steps",
                             style: TextStyle(
                               fontFamily: K.sg,
                               fontSize: 16.sp,
@@ -231,7 +233,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: meal.preparationSteps.length,
+                            itemCount: meal.displaySteps(isArabic).length,
                             itemBuilder: (context, idx) {
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 12.h),
@@ -256,7 +258,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                                     SizedBox(width: 10.w),
                                     Expanded(
                                       child: Text(
-                                        meal.preparationSteps[idx],
+                                        meal.displaySteps(isArabic)[idx],
                                         style: TextStyle(
                                           fontSize: 13.sp,
                                           fontWeight: FontWeight.w400,
@@ -353,9 +355,11 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                           listener: (context, fState) {
                             if (fState is FoodSuccess) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text(
-                                    "تم تسجيل الوجبة بنجاح في يومك!",
+                                    isArabic
+                                        ? "تم تسجيل الوجبة بنجاح في يومك!"
+                                        : "Meal successfully logged for today!",
                                   ),
                                   backgroundColor: Colors.green,
                                 ),
@@ -377,7 +381,7 @@ class _MealDetailsViewState extends State<MealDetailsView> {
                             final isLoading = fState is FoodLoading;
                             return CustomButton(
                               radius: 12,
-                              text: "أكلت دي النهاردة",
+                              text: isArabic ? "أكلت دي النهاردة" : "I Ate This Today",
                               isLoading: isLoading,
                               color: const Color(0xff2D9CDB),
                               onTap: isLoading

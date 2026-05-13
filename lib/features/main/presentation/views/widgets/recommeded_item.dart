@@ -14,11 +14,16 @@ class RecommededItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final title = meal?.title ?? "Grilled Chicken Salad";
-    final cal = meal != null ? "${meal!.calories.toInt()} Cal" : "150 Cal";
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    final title = meal?.displayTitle(isArabic) ??
+        (isArabic ? "سلطة دجاج صحية" : "Grilled Chicken Salad");
+    final cal = meal != null
+        ? "${meal!.calories.toInt()} ${isArabic ? 'سعر' : 'Cal'}"
+        : (isArabic ? "150 سعر" : "150 Cal");
     final macros = meal != null
-        ? "${meal!.protein.toInt()}g protein · ${meal!.carbs.toInt()}g carbs"
-        : "31g protein · 50g carbs";
+        ? "${meal!.protein.toInt()}${isArabic ? 'جم بروتين' : 'g protein'} · ${meal!.carbs.toInt()}${isArabic ? 'جم كربوهيدرات' : 'g carbs'}"
+        : (isArabic ? "31جم بروتين · 50جم كربوهيدرات" : "31g protein · 50g carbs");
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -131,7 +136,7 @@ class RecommededItem extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Text(
-                "View Details",
+                isArabic ? "عرض التفاصيل" : "View Details",
                 style: TextStyle(
                   fontFamily: K.sg,
                   fontSize: 10.5,

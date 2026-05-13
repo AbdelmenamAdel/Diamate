@@ -387,10 +387,11 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
             protein: nut['pro']!,
             carbs: nut['carb']!,
             fats: nut['fat']!,
-            description: '$descAr — غنية بالمواد الغذائية ومناسبة لمرضى السكر.',
+            description: 'Authentic regional meal — rich in essential nutrients and suitable for diabetic diets.',
+            descriptionAr: '$descAr — غنية بالمواد الغذائية ومناسبة لمرضى السكر.',
             preparationSteps: steps.isNotEmpty
                 ? steps
-                : ['اتبع الطريقة التقليدية في تحضير هذه الوجبة.'],
+                : ['Follow standard culinary instructions to prepare this traditional recipe.'],
             ingredients: ingredients,
             imageUrl: detail['strMealThumb']?.toString(),
             imageUrls: _buildImageUrls(detail),
@@ -482,9 +483,9 @@ Target JSON Output Structure:
             meal.preparationSteps;
 
         return meal.copyWith(
-          title: tTitle.isNotEmpty ? tTitle : meal.title,
-          ingredients: tIngs.isNotEmpty ? tIngs : meal.ingredients,
-          preparationSteps: tSteps.isNotEmpty ? tSteps : meal.preparationSteps,
+          titleAr: tTitle.isNotEmpty ? tTitle : meal.title,
+          ingredientsAr: tIngs.isNotEmpty ? tIngs : meal.ingredients,
+          preparationStepsAr: tSteps.isNotEmpty ? tSteps : meal.preparationSteps,
         );
       }
     } catch (e) {
