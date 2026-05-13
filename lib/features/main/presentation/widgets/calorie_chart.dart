@@ -26,7 +26,9 @@ class CalorieChart extends StatelessWidget {
           ),
           PieChartSectionData(
             value: remaining.toDouble(),
-            color: color.withOpacity(0.35),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.withOpacity(0.2)
+                : const Color(0xFFE2E7EA),
             title: '',
             radius: 13,
           ),
