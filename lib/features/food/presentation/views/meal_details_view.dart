@@ -25,7 +25,10 @@ class MealDetailsView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            CustomAppBar(back: true, title: 'Meal Details'),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: CustomAppBar(back: true, title: 'Meal Details'),
+            ),
             Expanded(
               child: BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
                 builder: (context, state) {
@@ -55,7 +58,7 @@ class MealDetailsView extends StatelessWidget {
                         // Main Visual Header
                         Center(
                           child: Container(
-                            height: 180.h,
+                            height: 220.h,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: isDark
@@ -65,10 +68,31 @@ class MealDetailsView extends StatelessWidget {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20.r),
-                              child: Image.asset(
-                                Assets.testFood,
-                                fit: BoxFit.contain,
-                              ),
+                              child: meal.imageUrl != null &&
+                                      meal.imageUrl!.isNotEmpty
+                                  ? Image.network(
+                                      meal.imageUrl!,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      loadingBuilder:
+                                          (context, child, progress) {
+                                        if (progress == null) return child;
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: context.color.primaryColor,
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder: (_, __, ___) => Image.asset(
+                                        Assets.testFood,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    )
+                                  : Image.asset(
+                                      Assets.testFood,
+                                      fit: BoxFit.contain,
+                                    ),
                             ),
                           ),
                         ),
@@ -95,8 +119,9 @@ class MealDetailsView extends StatelessWidget {
                                 vertical: 6.h,
                               ),
                               decoration: BoxDecoration(
-                                color: context.color.primaryColor
-                                    ?.withOpacity(0.1),
+                                color: context.color.primaryColor?.withOpacity(
+                                  0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
                               child: Text(
@@ -169,30 +194,29 @@ class MealDetailsView extends StatelessWidget {
                           Wrap(
                             spacing: 8.w,
                             runSpacing: 8.h,
-                            children:
-                                meal.ingredients.map((ing) {
-                                  return Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                      vertical: 6.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: context.color.containerColor,
-                                      borderRadius: BorderRadius.circular(8.r),
-                                      border: Border.all(
-                                        color: Colors.grey.withOpacity(0.15),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      ing,
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: context.color.textColor,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
+                            children: meal.ingredients.map((ing) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 6.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.color.containerColor,
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  border: Border.all(
+                                    color: Colors.grey.withOpacity(0.15),
+                                  ),
+                                ),
+                                child: Text(
+                                  ing,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: context.color.textColor,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                           SizedBox(height: 24.h),
                         ],
@@ -361,32 +385,31 @@ class MealDetailsView extends StatelessWidget {
                               text: "أكلت دي النهاردة",
                               isLoading: isLoading,
                               color: const Color(0xff2D9CDB),
-                              onTap:
-                                  isLoading
-                                      ? () {}
-                                      : () {
-                                          final ingModels =
-                                              targetMeal.ingredients.isEmpty
-                                                  ? [
-                                                      IngredientModel(
-                                                        name: targetMeal.title,
-                                                        quantityGrams: 100,
-                                                      ),
-                                                    ]
-                                                  : targetMeal.ingredients
-                                                      .map(
-                                                        (s) => IngredientModel(
-                                                          name: s,
-                                                          quantityGrams: 100,
-                                                        ),
-                                                      )
-                                                      .toList();
+                              onTap: isLoading
+                                  ? () {}
+                                  : () {
+                                      final ingModels =
+                                          targetMeal.ingredients.isEmpty
+                                          ? [
+                                              IngredientModel(
+                                                name: targetMeal.title,
+                                                quantityGrams: 100,
+                                              ),
+                                            ]
+                                          : targetMeal.ingredients
+                                                .map(
+                                                  (s) => IngredientModel(
+                                                    name: s,
+                                                    quantityGrams: 100,
+                                                  ),
+                                                )
+                                                .toList();
 
-                                          context.read<FoodCubit>().addMeal(
-                                            name: targetMeal.title,
-                                            ingredients: ingModels,
-                                          );
-                                        },
+                                      context.read<FoodCubit>().addMeal(
+                                        name: targetMeal.title,
+                                        ingredients: ingModels,
+                                      );
+                                    },
                             );
                           },
                         ),

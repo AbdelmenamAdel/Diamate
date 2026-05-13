@@ -77,25 +77,98 @@ class FoodView extends StatelessWidget {
           Expanded(
             child: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.0.h),
-                    child: Text(
-                      AppLocalizations.of(context)?.translate('recommended_for_you') ?? 'Recommended for you',
-                      style: TextStyle(
-                        fontFamily: K.sg,
-                        fontSize: 14,
-                        height: .5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
                 BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
                   builder: (context, rState) {
+                    // --- Header row with refresh button ---
+                    final header = SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12.0.h),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                AppLocalizations.of(context)?.translate('recommended_for_you') ?? 'Recommended for you',
+                                style: TextStyle(
+                                  fontFamily: K.sg,
+                                  fontSize: 14,
+                                  height: .5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: rState is RecommendedFoodLoading
+                                  ? null
+                                  : () => context.read<RecommendedFoodCubit>().refreshMeals(),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: rState is RecommendedFoodLoading
+                                    ? SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: context.color.primaryColor,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.refresh_rounded,
+                                        size: 20,
+                                        color: context.color.primaryColor,
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+
                     if (rState is RecommendedFoodLoading) {
-                      return const SliverToBoxAdapter(
-                        child: Center(child: CircularProgressIndicator()),
+                      return SliverMainAxisGroup(
+                        slivers: [
+                          header,
+                          const SliverToBoxAdapter(
+                            child: Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 48),
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    if (rState is RecommendedFoodError) {
+                      return SliverMainAxisGroup(
+                        slivers: [
+                          header,
+                          SliverToBoxAdapter(
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 32),
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.wifi_off_rounded, size: 40, color: Colors.grey),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      rState.message,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontFamily: K.sg, fontSize: 12, color: Colors.grey),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextButton.icon(
+                                      onPressed: () => context.read<RecommendedFoodCubit>().refreshMeals(),
+                                      icon: const Icon(Icons.refresh_rounded),
+                                      label: const Text("Try Again"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     }
 
@@ -104,18 +177,23 @@ class FoodView extends StatelessWidget {
                       recs = rState.recommendations;
                     }
 
-                    return SliverGrid.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.96 / 3,
-                        crossAxisSpacing: 8.w,
-                        mainAxisSpacing: 8.h,
-                      ),
-                      itemCount: recs.isNotEmpty ? recs.length : 2,
-                      itemBuilder: (context, index) {
-                        final meal = recs.isNotEmpty ? recs[index] : null;
-                        return RecommededItem(meal: meal);
-                      },
+                    return SliverMainAxisGroup(
+                      slivers: [
+                        header,
+                        SliverGrid.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.72,
+                            crossAxisSpacing: 8.w,
+                            mainAxisSpacing: 8.h,
+                          ),
+                          itemCount: recs.isNotEmpty ? recs.length : 4,
+                          itemBuilder: (context, index) {
+                            final meal = recs.isNotEmpty ? recs[index] : null;
+                            return RecommededItem(meal: meal);
+                          },
+                        ),
+                      ],
                     );
                   },
                 ),

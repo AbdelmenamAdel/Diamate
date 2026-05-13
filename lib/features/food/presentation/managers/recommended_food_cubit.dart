@@ -84,4 +84,21 @@ class RecommendedFoodCubit extends Cubit<RecommendedFoodState> {
       ),
     );
   }
+
+  Future<void> refreshMeals() async {
+    emit(RecommendedFoodLoading());
+    final result = await _repo.refreshMealsFromWeb();
+    result.fold(
+      (failure) => emit(RecommendedFoodError(failure)),
+      (meals) {
+        _cachedRecommendations = meals;
+        emit(
+          RecommendedFoodLoaded(
+            recommendations: _cachedRecommendations,
+            savedMeals: _cachedSavedMeals,
+          ),
+        );
+      },
+    );
+  }
 }

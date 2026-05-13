@@ -12,4 +12,5 @@ abstract class FoodRepo {
   });
   Future<Either<String, List<MealModel>>> getMealsByDate(DateTime date);
   Future<Either<String, List<RecommendedMealModel>>> getWeeklyRecommendations();
+  Future<Either<String, List<RecommendedMealModel>>> refreshMealsFromWeb();
 }

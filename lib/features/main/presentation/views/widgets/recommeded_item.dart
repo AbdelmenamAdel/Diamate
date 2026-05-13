@@ -18,8 +18,8 @@ class RecommededItem extends StatelessWidget {
     final cal = meal != null ? "${meal!.calories.toInt()} Cal" : "150 Cal";
     final macros =
         meal != null
-            ? "${meal!.protein.toInt()} protein .${meal!.carbs.toInt()} Carbs"
-            : "31 protien .50 Carbs";
+            ? "${meal!.protein.toInt()}g protein · ${meal!.carbs.toInt()}g carbs"
+            : "31g protein · 50g carbs";
 
     return InkWell(
       borderRadius: BorderRadius.circular(12),
@@ -32,61 +32,72 @@ class RecommededItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.07)
+                : Colors.black.withValues(alpha: 0.06),
+            width: 1,
+          ),
         ),
         child: Column(
-          spacing: 8,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                color: isDark
-                    ? context.color.cardColor
-                    : Colors.black.withOpacity(0.05),
+            // ---- Meal Image ----
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(11),
+                topRight: Radius.circular(11),
               ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                child: Image.asset(
-                  Assets.testFood,
-                  height: 90,
-                  fit: BoxFit.contain,
-                ),
-              ),
+              child: meal?.imageUrl != null && meal!.imageUrl!.isNotEmpty
+                  ? Image.network(
+                      meal!.imageUrl!,
+                      height: 110,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Container(
+                          height: 110,
+                          color: isDark
+                              ? context.color.cardColor
+                              : Colors.grey.withValues(alpha: 0.12),
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      },
+                      errorBuilder: (_, __, ___) => _fallbackImage(isDark, context),
+                    )
+                  : _fallbackImage(isDark, context),
             ),
 
+            // ---- Text Info ----
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
                 children: [
                   Text(
                     title,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 10,
-                      height: 2,
+                      height: 1.4,
                       fontFamily: K.sg,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: context.color.textColor,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     cal,
                     style: TextStyle(
                       fontSize: 10,
                       fontFamily: K.sg,
                       fontWeight: FontWeight.w600,
-                      color: context.color.textColor,
+                      color: context.color.primaryColor,
                     ),
                   ),
                   Text(
@@ -94,30 +105,32 @@ class RecommededItem extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       fontFamily: K.sg,
                       fontWeight: FontWeight.w400,
-                      color: context.color.textColor?.withOpacity(0.7),
+                      color: context.color.textColor?.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
               ),
             ),
+
+            // ---- More Button ----
             Container(
-              height: 32,
+              height: 30,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: isDark
-                    ? context.color.primaryColor?.withOpacity(0.2)
-                    : context.color.primaryColor?.withOpacity(0.1),
+                    ? context.color.primaryColor?.withValues(alpha: 0.2)
+                    : context.color.primaryColor?.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
+                  bottomLeft: Radius.circular(11),
+                  bottomRight: Radius.circular(11),
                 ),
               ),
               child: Center(
                 child: Text(
-                  "More",
+                  "View Details",
                   style: TextStyle(
                     fontFamily: K.sg,
                     fontSize: 10,
@@ -129,6 +142,20 @@ class RecommededItem extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _fallbackImage(bool isDark, BuildContext context) {
+    return Container(
+      height: 110,
+      width: double.infinity,
+      color: isDark
+          ? context.color.cardColor
+          : Colors.grey.withValues(alpha: 0.12),
+      child: Image.asset(
+        Assets.testFood,
+        fit: BoxFit.contain,
       ),
     );
   }
