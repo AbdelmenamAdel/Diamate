@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:diamate/constant.dart';
 import 'package:dartz/dartz.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
 import 'package:diamate/core/database/api/end_points.dart';
@@ -15,47 +17,154 @@ class FoodRepoImpl implements FoodRepo {
 
   FoodRepoImpl({required this.api, required this.localService});
 
+  Future<List<String>?> _getIngredientsFromGemini(File image) async {
+    try {
+      final dio = Dio();
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
+
+      final imageBytes = await image.readAsBytes();
+      final base64Image = base64Encode(imageBytes);
+
+      final ext = image.path.split('.').last.toLowerCase();
+      final mimeType = ext == 'png' ? 'image/png' : 'image/jpeg';
+
+      final prompt = '''
+Analyze this food image and list the main visible ingredients.
+Return ONLY a valid JSON array of strings, for example: ["Chicken", "Rice", "Tomato"].
+Do not include any other text or markdown formatting.
+''';
+
+      log("Calling Gemini API for image analysis...");
+      final response = await dio.post(
+        url,
+        data: {
+          "contents": [
+            {
+              "parts": [
+                {"text": prompt},
+                {
+                  "inlineData": {"mimeType": mimeType, "data": base64Image},
+                },
+              ],
+            },
+          ],
+          "generationConfig": {
+            "temperature": 0.4,
+            "responseMimeType": "application/json",
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final text =
+            response.data['candidates'][0]['content']['parts'][0]['text'];
+        final List<dynamic> jsonList = jsonDecode(text);
+        return jsonList.map((e) => e.toString()).toList();
+      }
+    } catch (e) {
+      log("Gemini image analysis failed: $e");
+    }
+    return null;
+  }
+
   @override
   Future<Either<String, List<String>>> analyzeFoodImage(File image) async {
     try {
       log("Analyzing food image: ${image.path}");
 
-      final response = await api.post(
-        EndPoint.detectFood,
-        isFormData: true,
-        data: {"file": await MultipartFile.fromFile(image.path)},
-      );
+      List<String>? ingredients;
 
-      log("Food analysis response: $response");
-      if (response != null &&
-          response is Map<String, dynamic> &&
-          response['food_detected'] == true &&
-          response['detected_items'] != null) {
-        final List<dynamic> items = response['detected_items'];
-        final ingredients = items
-            .where((item) => item != null && item['class_name'] != null)
-            .map((item) => item['class_name'] as String)
-            .toList();
+      try {
+        final response = await api.post(
+          EndPoint.detectFood,
+          isFormData: true,
+          data: {"file": await MultipartFile.fromFile(image.path)},
+        );
 
-        if (ingredients.isEmpty) {
-          log("No ingredients found in detected_items");
-          return const Left("No specific food items identified");
+        log("Food analysis response: $response");
+        if (response != null &&
+            response is Map<String, dynamic> &&
+            response['food_detected'] == true &&
+            response['detected_items'] != null) {
+          final List<dynamic> items = response['detected_items'];
+          ingredients = items
+              .where((item) => item != null && item['class_name'] != null)
+              .map((item) => item['class_name'] as String)
+              .toList();
         }
+      } catch (e) {
+        log("Server endpoint failed, falling back to Gemini API. Error: $e");
+      }
+
+      if (ingredients == null || ingredients.isEmpty) {
+        ingredients = await _getIngredientsFromGemini(image);
+      }
+
+      if (ingredients != null && ingredients.isNotEmpty) {
         log("Detected ingredients: $ingredients");
         return Right(ingredients);
       } else {
-        log("Invalid food analysis response structure: $response");
-        return const Left("No food detected or error in response");
+        return const Left("No specific food items identified or server error");
       }
-    } on ServerFailure catch (e) {
-      log(
-        "ServerFailure in FoodRepoImpl.analyzeFoodImage: ${e.errorModel.errorMessage}",
-      );
-      return Left(e.errorModel.errorMessage ?? "Server error occurred");
     } catch (e) {
       log("Exception in FoodRepoImpl.analyzeFoodImage: ${e.toString()}");
       return Left(e.toString());
     }
+  }
+
+  Future<NutritionModel?> _getNutritionFromGemini(
+    List<IngredientModel> ingredients,
+  ) async {
+    try {
+      final dio = Dio();
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
+
+      final prompt =
+          '''
+Analyze the following meal ingredients and estimate the total nutritional values. 
+Also, provide a short, friendly advice message in Egyptian Arabic (e.g. "خد بالك يا نجم السعرات دي كتير على العشا", or "عاش يا بطل وجبة متكاملة") based on the macros and the fact that the meal is being added now.
+Return ONLY a valid JSON object matching exactly this structure with no markdown formatting or extra text:
+{
+  "calories": 0.0,
+  "protein": 0.0,
+  "fat": 0.0,
+  "carbs": 0.0,
+  "advice": "your advice here"
+}
+Ingredients:
+${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
+''';
+
+      log("Calling Gemini API for nutrition...");
+      final response = await dio.post(
+        url,
+        data: {
+          "contents": [
+            {
+              "parts": [
+                {"text": prompt},
+              ],
+            },
+          ],
+          "generationConfig": {
+            "temperature": 0.1,
+            "responseMimeType": "application/json",
+          },
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final text =
+            response.data['candidates'][0]['content']['parts'][0]['text'];
+        final jsonResponse = jsonDecode(text);
+        return NutritionModel.fromJson(jsonResponse);
+      }
+    } catch (e) {
+      log("Gemini calculation failed: $e");
+    }
+    return null;
   }
 
   @override
@@ -83,17 +192,20 @@ class FoodRepoImpl implements FoodRepo {
           );
         }
       } catch (e) {
-        log("Server endpoint failed, falling back to local storage. Error: $e");
-        // Fallback to local storage only if it fails (which user said happens)
+        log("Server endpoint failed, falling back to Gemini API. Error: $e");
       }
 
-      // Generate mock nutrition if server failed
-      nutritionInfo ??= const NutritionModel(
-        calories: 300,
-        protein: 15,
-        fat: 10,
-        carbs: 40,
-      );
+      // Generate nutrition from Gemini if server failed
+      if (nutritionInfo == null) {
+        nutritionInfo = await _getNutritionFromGemini(meal.ingredients);
+        // Fallback to mock if Gemini also fails
+        nutritionInfo ??= const NutritionModel(
+          calories: 300,
+          protein: 15,
+          fat: 10,
+          carbs: 40,
+        );
+      }
 
       // Save locally
       final updatedMeal = MealModel(

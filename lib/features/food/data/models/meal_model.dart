@@ -84,12 +84,14 @@ class NutritionModel extends Equatable {
   final double protein;
   final double fat;
   final double carbs;
+  final String? advice;
 
   const NutritionModel({
     required this.calories,
     required this.protein,
     required this.fat,
     required this.carbs,
+    this.advice,
   });
 
   factory NutritionModel.fromJson(Map<String, dynamic> json) {
@@ -98,6 +100,7 @@ class NutritionModel extends Equatable {
       protein: (json['protein'] as num).toDouble(),
       fat: (json['fat'] as num).toDouble(),
       carbs: (json['carbs'] as num).toDouble(),
+      advice: json['advice'] as String?,
     );
   }
 
@@ -107,9 +110,10 @@ class NutritionModel extends Equatable {
       'protein': protein,
       'fat': fat,
       'carbs': carbs,
+      if (advice != null) 'advice': advice,
     };
   }
 
   @override
-  List<Object?> get props => [calories, protein, fat, carbs];
+  List<Object?> get props => [calories, protein, fat, carbs, advice];
 }

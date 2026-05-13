@@ -13,6 +13,7 @@ import '../views/widgets/daily_calory_card.dart';
 import '../views/widgets/details_card.dart';
 import '../views/widgets/recommeded_item.dart';
 import '../views/widgets/quick_action_section.dart';
+import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -67,10 +68,41 @@ class HomeView extends StatelessWidget {
                 SizedBox(height: 16.h),
 
                 // ! Daily Calory Section
-                const DailyCaloryCard(),
-                // ! End of Daily Calory Section
-                SizedBox(height: 12.h),
-                const DetailsCard(),
+                BlocBuilder<FoodCubit, FoodState>(
+                  builder: (context, state) {
+                    double totalCalories = 0;
+                    double totalProtein = 0;
+                    double totalCarbs = 0;
+                    double totalFats = 0;
+
+                    if (state is FoodHistoryLoaded) {
+                      final now = DateTime.now();
+                      final todayMeals =
+                          state.meals[DateTime(now.year, now.month, now.day)] ??
+                          [];
+                      for (var meal in todayMeals) {
+                        if (meal.nutrition != null) {
+                          totalCalories += meal.nutrition!.calories;
+                          totalProtein += meal.nutrition!.protein;
+                          totalCarbs += meal.nutrition!.carbs;
+                          totalFats += meal.nutrition!.fat;
+                        }
+                      }
+                    }
+
+                    return Column(
+                      children: [
+                        DailyCaloryCard(consumed: totalCalories),
+                        SizedBox(height: 12.h),
+                        DetailsCard(
+                          protein: totalProtein,
+                          carbs: totalCarbs,
+                          fats: totalFats,
+                        ),
+                      ],
+                    );
+                  },
+                ),
                 SizedBox(height: 24.h),
                 // ! Recommended for you
                 Text(

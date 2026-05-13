@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DailyCaloryCard extends StatelessWidget {
-  const DailyCaloryCard({super.key});
+  final double consumed;
+  const DailyCaloryCard({super.key, required this.consumed});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class DailyCaloryCard extends StatelessWidget {
               SizedBox(
                 height: 100.h,
                 child: CalorieChart(
-                  consumed: 1420,
+                  consumed: consumed.toInt(),
                   goal: 1800,
                   color: Color(0xff2D9CDB),
                 ),
@@ -48,7 +49,7 @@ class DailyCaloryCard extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                    "1420",
+                    consumed.toInt().toString(),
                     style: TextStyle(
                       fontFamily: K.sg,
                       fontSize: 12,

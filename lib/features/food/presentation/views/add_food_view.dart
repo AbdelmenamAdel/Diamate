@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import '../managers/food_cubit.dart';
+import 'package:diamate/constant.dart';
 import 'package:diamate/core/widgets/custom_achievement_notification.dart';
 
 class AddFoodView extends StatefulWidget {
@@ -83,14 +84,54 @@ class _AddFoodViewState extends State<AddFoodView> {
     return Scaffold(
       backgroundColor: context.color.scaffoldBackgroundColor,
       body: BlocListener<FoodCubit, FoodState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is FoodSuccess) {
-            showAchievementView(
-              context: context,
-              title: "Success",
-              subTitle: "Meal added successfully",
-            );
-            Navigator.pop(context);
+            if (state.nutrition?.advice != null &&
+                state.nutrition!.advice!.isNotEmpty) {
+              await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: context.color.cardColor,
+                  title: Text(
+                    'نصيحة جيميناي 🤖',
+                    style: TextStyle(
+                      fontFamily: K.sg,
+                      color: context.color.textColor,
+                    ),
+                  ),
+                  content: Text(
+                    state.nutrition!.advice!,
+                    style: TextStyle(
+                      fontFamily: K.sg,
+                      color: context.color.textColor,
+                      height: 1.5,
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'تمام',
+                        style: TextStyle(
+                          fontFamily: K.sg,
+                          color: context.color.primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              showAchievementView(
+                context: context,
+                title: "Success",
+                subTitle: "Meal added successfully",
+              );
+            }
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           } else if (state is FoodError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

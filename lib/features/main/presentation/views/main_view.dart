@@ -7,8 +7,10 @@ import 'package:diamate/features/glucose/presentation/views/glucose_view.dart';
 import 'package:diamate/features/main/presentation/views/home_view.dart';
 import 'package:diamate/features/profile/presentation/views/profile_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -36,6 +38,9 @@ class _MainViewState extends State<MainView> {
     //   overlays: [SystemUiOverlay.top],
     // );
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FoodCubit>().loadMealsForDate(DateTime.now());
+    });
   }
 
   void _navigateToChatbot() async {

@@ -1,5 +1,4 @@
 import 'package:diamate/core/extensions/context_extension.dart';
-import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/features/food/data/models/meal_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

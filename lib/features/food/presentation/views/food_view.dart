@@ -7,7 +7,6 @@ import 'package:diamate/features/main/presentation/views/widgets/recommeded_item
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'add_food_view.dart';
 import '../widgets/food_scanner_bottom_sheet.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 

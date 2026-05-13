@@ -5,7 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DetailsCard extends StatelessWidget {
-  const DetailsCard({super.key});
+  final double protein;
+  final double fats;
+  final double carbs;
+
+  const DetailsCard({
+    super.key,
+    required this.protein,
+    required this.fats,
+    required this.carbs,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +39,7 @@ class DetailsCard extends StatelessWidget {
               SizedBox(
                 height: 100,
                 width: 100,
-                child: MacroChart(protein: 30, fats: 10, carbs: 60),
+                child: MacroChart(protein: protein, fats: fats, carbs: carbs),
               ),
               Text(
                 'Details',
@@ -50,17 +59,17 @@ class DetailsCard extends StatelessWidget {
             children: [
               _detailRowWidget(
                 context,
-                text: "%60 Carbs",
+                text: "${carbs.toInt()}g Carbs",
                 color: Color(0xff291564),
               ),
               _detailRowWidget(
                 context,
-                text: "%30 Proteins",
+                text: "${protein.toInt()}g Proteins",
                 color: Color(0xff043120),
               ),
               _detailRowWidget(
                 context,
-                text: "%10 Fats",
+                text: "${fats.toInt()}g Fats",
                 color: Color(0xff80381E),
               ),
             ],
