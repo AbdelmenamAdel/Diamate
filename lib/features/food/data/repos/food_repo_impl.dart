@@ -5,12 +5,14 @@ import 'package:diamate/constant.dart';
 import 'package:dartz/dartz.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
 import 'package:diamate/core/database/api/end_points.dart';
+import 'package:diamate/core/services/ai_engine_service.dart';
 import 'package:dio/dio.dart';
 import '../../domain/repos/food_repo.dart';
 import '../models/meal_model.dart';
 import '../models/recommended_meal_model.dart';
 import '../services/food_local_service.dart';
 import 'package:diamate/core/utils/file_helper.dart';
+import 'package:diamate/core/services/ai_engine_service.dart';
 
 class FoodRepoImpl implements FoodRepo {
   final ApiConsumer api;
@@ -257,32 +259,32 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     'Tunisian',
     'Turkish',
     'Lebanese',
-    'Greek',       // Mediterranean — close to Egyptian cuisine
-    'Indian',      // popular healthy dishes
-    'Malaysian',   // spiced healthy dishes
+    'Greek', // Mediterranean — close to Egyptian cuisine
+    'Indian', // popular healthy dishes
+    'Malaysian', // spiced healthy dishes
   ];
 
   /// Estimated nutrition per meal by cuisine area (single serving ~300g)
   static const Map<String, Map<String, double>> _nutritionByArea = {
-    'Egyptian':  {'cal': 280, 'pro': 18, 'carb': 32, 'fat': 9},
-    'Moroccan':  {'cal': 310, 'pro': 22, 'carb': 28, 'fat': 11},
-    'Tunisian':  {'cal': 290, 'pro': 20, 'carb': 30, 'fat': 10},
-    'Turkish':   {'cal': 320, 'pro': 24, 'carb': 25, 'fat': 13},
-    'Lebanese':  {'cal': 260, 'pro': 16, 'carb': 28, 'fat': 9},
-    'Greek':     {'cal': 270, 'pro': 18, 'carb': 22, 'fat': 12},
-    'Indian':    {'cal': 240, 'pro': 14, 'carb': 30, 'fat': 8},
+    'Egyptian': {'cal': 280, 'pro': 18, 'carb': 32, 'fat': 9},
+    'Moroccan': {'cal': 310, 'pro': 22, 'carb': 28, 'fat': 11},
+    'Tunisian': {'cal': 290, 'pro': 20, 'carb': 30, 'fat': 10},
+    'Turkish': {'cal': 320, 'pro': 24, 'carb': 25, 'fat': 13},
+    'Lebanese': {'cal': 260, 'pro': 16, 'carb': 28, 'fat': 9},
+    'Greek': {'cal': 270, 'pro': 18, 'carb': 22, 'fat': 12},
+    'Indian': {'cal': 240, 'pro': 14, 'carb': 30, 'fat': 8},
     'Malaysian': {'cal': 260, 'pro': 16, 'carb': 28, 'fat': 9},
   };
 
   /// Friendly Arabic description by area
   static const Map<String, String> _areaDescriptionAr = {
-    'Egyptian':  'أكلة مصرية أصيلة',
-    'Moroccan':  'أكلة مغربية شهية',
-    'Tunisian':  'أكلة تونسية مميزة',
-    'Turkish':   'أكلة تركية تقليدية',
-    'Lebanese':  'أكلة لبنانية طازجة',
-    'Greek':     'أكلة إغريقية متوسطية',
-    'Indian':    'أكلة هندية غنية بالبهارات',
+    'Egyptian': 'أكلة مصرية أصيلة',
+    'Moroccan': 'أكلة مغربية شهية',
+    'Tunisian': 'أكلة تونسية مميزة',
+    'Turkish': 'أكلة تركية تقليدية',
+    'Lebanese': 'أكلة لبنانية طازجة',
+    'Greek': 'أكلة إغريقية متوسطية',
+    'Indian': 'أكلة هندية غنية بالبهارات',
     'Malaysian': 'أكلة آسيوية صحية',
   };
 
@@ -383,7 +385,8 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
           final finalSteps = steps.take(5).toList();
 
           // Nutrition estimate tailored for diabetic compatibility
-          final nut = _nutritionByArea[area] ??
+          final nut =
+              _nutritionByArea[area] ??
               {'cal': 260, 'pro': 18, 'carb': 25, 'fat': 8};
 
           final baseMeal = RecommendedMealModel(
@@ -400,7 +403,7 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
             preparationSteps: finalSteps.isNotEmpty
                 ? finalSteps
                 : [
-                    'Bake or grill ingredients using minimal olive oil to support optimal diabetic health standards.'
+                    'Bake or grill ingredients using minimal olive oil to support optimal diabetic health standards.',
                   ],
             ingredients: ingredients,
             imageUrl: detail['strMealThumb']?.toString(),
@@ -416,7 +419,9 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
 
     // ── Translate all fetched meals to Arabic using Gemini sequentially ──
     if (meals.isNotEmpty) {
-      log('Translating ${meals.length} meals to Arabic via Gemini sequentially...');
+      log(
+        'Translating ${meals.length} meals to Arabic via Gemini sequentially...',
+      );
       final translatedMeals = <RecommendedMealModel>[];
       for (final m in meals) {
         try {
@@ -435,124 +440,12 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     return meals;
   }
 
-  /// Helper to translate a single meal's title, ingredients, and steps to Arabic via Gemini
+  /// Helper delegating AI functionality to decoupled Core AiEngineService module
   Future<RecommendedMealModel> _translateMealWithGemini(
     RecommendedMealModel meal,
     Dio dio,
   ) async {
-    try {
-      final url =
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
-
-      final prompt = '''
-Translate and adapt the following Egyptian recipe to make it perfectly optimized for a diabetic diet app.
-Give it an appealing Egyptian Arabic title (e.g., add "صحي" or "دايت").
-Break down the instructions into 3-5 concise preparation steps in Egyptian Arabic, explicitly suggesting healthy methods (like baking instead of deep-frying, using olive oil, or reducing simple carbs).
-Return ONLY a valid JSON object with the exact keys below, without markdown formatting or extra text:
-
-Original Title: "${meal.title}"
-Original Ingredients: ${jsonEncode(meal.ingredients)}
-Original Steps: ${jsonEncode(meal.preparationSteps)}
-
-Target JSON Output Structure:
-{
-  "title": "اسم الوجبة بالمصري",
-  "ingredients": ["المكون الأول بالعربي", "المكون الثاني بالعربي"],
-  "preparationSteps": ["الخطوة الأولى بالعربي", "الخطوة الثانية بالعربي"]
-}
-''';
-
-      final response = await dio.post(
-        url,
-        data: {
-          "contents": [
-            {
-              "parts": [
-                {"text": prompt},
-              ],
-            },
-          ],
-          "generationConfig": {
-            "temperature": 0.3,
-            "responseMimeType": "application/json",
-          },
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final text =
-            response.data['candidates'][0]['content']['parts'][0]['text'];
-        // Strip markdown blocks if Gemini formats payload wrapper
-        final cleanText =
-            text.replaceAll('```json', '').replaceAll('```', '').trim();
-        final resJson = jsonDecode(cleanText) as Map<String, dynamic>;
-
-        final tTitle = resJson['title']?.toString() ?? meal.title;
-        final tIngs = (resJson['ingredients'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            meal.ingredients;
-        final tSteps = (resJson['preparationSteps'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            meal.preparationSteps;
-
-        return meal.copyWith(
-          titleAr: tTitle.isNotEmpty ? tTitle : meal.title,
-          ingredientsAr: tIngs.isNotEmpty ? tIngs : meal.ingredients,
-          preparationStepsAr:
-              tSteps.isNotEmpty ? tSteps : meal.preparationSteps,
-        );
-      }
-    } catch (e) {
-      log('Failed to translate meal ${meal.id} with Gemini: $e');
-    }
-    // Smart Fallback Dictionary for standard ingredients if API fails
-    String translateIng(String ing) {
-      final lower = ing.toLowerCase();
-      String res = ing;
-      if (lower.contains('olive oil')) {
-        res = res.replaceAll(RegExp('olive oil', caseSensitive: false), 'زيت زيتون');
-      }
-      if (lower.contains('lemon juice')) {
-        res = res.replaceAll(RegExp('lemon juice', caseSensitive: false), 'عصير ليمون');
-      }
-      if (lower.contains('garlic')) {
-        res = res.replaceAll(RegExp('garlic clove|garlic', caseSensitive: false), 'ثوم');
-      }
-      if (lower.contains('tomato')) {
-        res = res.replaceAll(RegExp('tomato', caseSensitive: false), 'طماطم');
-      }
-      if (lower.contains('cumin')) {
-        res = res.replaceAll(RegExp('cumin', caseSensitive: false), 'كمون');
-      }
-      if (lower.contains('yogurt')) {
-        res = res.replaceAll(RegExp('greek yogurt|yogurt', caseSensitive: false), 'زبادي صحي');
-      }
-      if (lower.contains('pepper')) {
-        res = res.replaceAll(RegExp('cayenne pepper|black pepper', caseSensitive: false), 'فلفل');
-      }
-      if (lower.contains('bread')) {
-        res = res.replaceAll(RegExp('pita bread|bread', caseSensitive: false), 'خبز أسمر');
-      }
-      if (lower.contains('lettuce')) {
-        res = res.replaceAll(RegExp('lettuce', caseSensitive: false), 'خس طازج');
-      }
-      if (lower.contains('paprika')) {
-        res = res.replaceAll(RegExp('paprika', caseSensitive: false), 'بابريكا');
-      }
-      return res;
-    }
-
-    return meal.copyWith(
-      titleAr: meal.title.contains('Meal') ? "وجبة مصرية صحية" : meal.title,
-      ingredientsAr: meal.ingredients.map((e) => translateIng(e)).toList(),
-      preparationStepsAr: [
-        "تُغسل المكونات جيداً بالماء النقي.",
-        "تُحضر وتُطهى على حرارة متوسطة للحفاظ على القيم الغذائية.",
-        "تُقدم دافئة ومناسبة تماماً للنظام الغذائي لمرضى السكري."
-      ],
-    );
+    return await AiEngineService.translateMeal(meal, dio);
   }
 
   @override
