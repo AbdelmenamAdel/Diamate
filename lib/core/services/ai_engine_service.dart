@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:diamate/constant.dart';
 import 'package:diamate/features/food/data/models/recommended_meal_model.dart';
@@ -185,5 +186,55 @@ Target JSON Output Structure:
         "تُقدم دافئة ومناسبة تماماً للنظام الغذائي لمرضى السكري."
       ],
     );
+  }
+
+  /// Multi-Modal Vision analysis to read glucose meter values directly from image pixels
+  static Future<Map<String, dynamic>?> analyzeGlucoseImage(
+    File imageFile,
+  ) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final dio = Dio();
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
+
+      final res = await dio.post(
+        url,
+        data: {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text":
+                      "Analyze this digital display of a glucose meter. Ensure it's a real device and extract the primary integer reading in mg/dL. Return ONLY a valid JSON object: {\"reading\": 102}"
+                },
+                {
+                  "inlineData": {
+                    "mimeType": "image/jpeg",
+                    "data": base64Image,
+                  }
+                }
+              ]
+            }
+          ],
+          "generationConfig": {
+            "temperature": 0.1,
+            "responseMimeType": "application/json",
+          },
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final text = res.data['candidates'][0]['content']['parts'][0]['text'];
+        final clean =
+            text.replaceAll('```json', '').replaceAll('```', '').trim();
+        return jsonDecode(clean) as Map<String, dynamic>;
+      }
+    } catch (e) {
+      log("Gemini Vision image analysis warning: $e");
+    }
+    return null;
   }
 }
