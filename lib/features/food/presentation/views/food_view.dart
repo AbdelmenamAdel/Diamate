@@ -183,9 +183,9 @@ class FoodView extends StatelessWidget {
                         SliverGrid.builder(
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            childAspectRatio: 0.72,
-                            crossAxisSpacing: 8.w,
-                            mainAxisSpacing: 8.h,
+                            childAspectRatio: 0.78,
+                            crossAxisSpacing: 10.w,
+                            mainAxisSpacing: 10.h,
                           ),
                           itemCount: recs.isNotEmpty ? recs.length : 4,
                           itemBuilder: (context, index) {

@@ -28,8 +28,11 @@ class RecommendedFoodCubit extends Cubit<RecommendedFoodState> {
     result.fold(
       (failure) => emit(RecommendedFoodError(failure)),
       (recommendations) async {
-        // If cached data is stale (< 6 meals from old prompt), force re-fetch
-        if (recommendations.length < 6) {
+        // If cached data is stale (< 6 meals, or old Gemini meals without images),
+        // force a fresh fetch from TheMealDB
+        final isStale = recommendations.length < 6 ||
+            recommendations.every((m) => m.imageUrl == null || m.imageUrl!.isEmpty);
+        if (isStale) {
           await _localService.clearAllCachedRecommendations();
           final freshResult = await _repo.getWeeklyRecommendations();
           freshResult.fold(

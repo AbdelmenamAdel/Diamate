@@ -11,10 +11,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class MealDetailsView extends StatelessWidget {
+class MealDetailsView extends StatefulWidget {
   final RecommendedMealModel initialMeal;
 
   const MealDetailsView({super.key, required this.initialMeal});
+
+  @override
+  State<MealDetailsView> createState() => _MealDetailsViewState();
+}
+
+class _MealDetailsViewState extends State<MealDetailsView> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,19 +53,26 @@ class MealDetailsView extends StatelessWidget {
               child: BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
                 builder: (context, state) {
                   // Find latest version of meal to ensure reactive save icon toggle
-                  RecommendedMealModel meal = initialMeal;
+                  RecommendedMealModel meal = widget.initialMeal;
                   if (state is RecommendedFoodLoaded) {
                     final allAvailable = [
                       ...state.recommendations,
                       ...state.savedMeals,
                     ];
                     final match = allAvailable.where(
-                      (m) => m.id == initialMeal.id,
+                      (m) => m.id == widget.initialMeal.id,
                     );
                     if (match.isNotEmpty) {
                       meal = match.first;
                     }
                   }
+
+                  // Build image list — prefer imageUrls, fallback to imageUrl
+                  final List<String> images = meal.imageUrls.isNotEmpty
+                      ? meal.imageUrls
+                      : (meal.imageUrl != null && meal.imageUrl!.isNotEmpty
+                          ? [meal.imageUrl!]
+                          : []);
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
@@ -55,46 +82,14 @@ class MealDetailsView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Main Visual Header
-                        Center(
-                          child: Container(
-                            height: 220.h,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? context.color.cardColor
-                                  : Colors.black.withOpacity(0.03),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.r),
-                              child: meal.imageUrl != null &&
-                                      meal.imageUrl!.isNotEmpty
-                                  ? Image.network(
-                                      meal.imageUrl!,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      loadingBuilder:
-                                          (context, child, progress) {
-                                        if (progress == null) return child;
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: context.color.primaryColor,
-                                          ),
-                                        );
-                                      },
-                                      errorBuilder: (_, __, ___) => Image.asset(
-                                        Assets.testFood,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    )
-                                  : Image.asset(
-                                      Assets.testFood,
-                                      fit: BoxFit.contain,
-                                    ),
-                            ),
-                          ),
+                        // ── Image Carousel ──────────────────────────
+                        _ImageCarousel(
+                          images: images,
+                          isDark: isDark,
+                          pageController: _pageController,
+                          currentPage: _currentPage,
+                          onPageChanged: (i) =>
+                              setState(() => _currentPage = i),
                         ),
                         SizedBox(height: 16.h),
 
@@ -287,15 +282,15 @@ class MealDetailsView extends StatelessWidget {
             BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
               builder: (context, recState) {
                 // Determine latest saved status
-                bool isSaved = initialMeal.isSaved;
-                RecommendedMealModel targetMeal = initialMeal;
+                bool isSaved = widget.initialMeal.isSaved;
+                RecommendedMealModel targetMeal = widget.initialMeal;
                 if (recState is RecommendedFoodLoaded) {
                   final allAvailable = [
                     ...recState.recommendations,
                     ...recState.savedMeals,
                   ];
                   final match = allAvailable.where(
-                    (m) => m.id == initialMeal.id,
+                    (m) => m.id == widget.initialMeal.id,
                   );
                   if (match.isNotEmpty) {
                     targetMeal = match.first;
@@ -462,6 +457,137 @@ class MealDetailsView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Image Carousel with PageView + animated dot indicators
+// ═══════════════════════════════════════════════════════════════
+class _ImageCarousel extends StatelessWidget {
+  final List<String> images;
+  final bool isDark;
+  final PageController pageController;
+  final int currentPage;
+  final ValueChanged<int> onPageChanged;
+
+  const _ImageCarousel({
+    required this.images,
+    required this.isDark,
+    required this.pageController,
+    required this.currentPage,
+    required this.onPageChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImages = images.isNotEmpty;
+    final showDots = images.length > 1;
+
+    return Column(
+      children: [
+        // ── PageView ──────────────────────────────────────────
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20.r),
+          child: SizedBox(
+            height: 230.h,
+            width: double.infinity,
+            child: hasImages
+                ? PageView.builder(
+                    controller: pageController,
+                    onPageChanged: onPageChanged,
+                    itemCount: images.length,
+                    itemBuilder: (context, index) {
+                      return _NetImage(
+                        url: images[index],
+                        isDark: isDark,
+                        context: context,
+                      );
+                    },
+                  )
+                : _FallbackImage(isDark: isDark),
+          ),
+        ),
+
+        // ── Dots indicator (only if multiple images) ──────────
+        if (showDots) ...[
+          SizedBox(height: 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(images.length, (i) {
+              final isActive = i == currentPage;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 280),
+                curve: Curves.easeInOut,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: isActive ? 24 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? context.color.primaryColor
+                      : context.color.primaryColor?.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _NetImage extends StatelessWidget {
+  final String url;
+  final bool isDark;
+  final BuildContext context;
+
+  const _NetImage({
+    required this.url,
+    required this.isDark,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      loadingBuilder: (_, child, progress) {
+        if (progress == null) return child;
+        return Container(
+          color: isDark
+              ? ctx.color.cardColor
+              : Colors.grey.withValues(alpha: 0.08),
+          child: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: ctx.color.primaryColor,
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded /
+                      progress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
+      errorBuilder: (_, __, ___) => _FallbackImage(isDark: isDark),
+    );
+  }
+}
+
+class _FallbackImage extends StatelessWidget {
+  final bool isDark;
+  const _FallbackImage({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: isDark
+          ? context.color.cardColor
+          : Colors.grey.withValues(alpha: 0.08),
+      child: Image.asset(Assets.testFood, fit: BoxFit.contain),
     );
   }
 }

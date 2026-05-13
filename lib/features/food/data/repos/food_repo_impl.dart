@@ -249,58 +249,100 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
   }
 
   // ============================================================
-  // TheMealDB categories to fetch healthy meals from
+  // Arab & Middle Eastern areas — Egyptian first, then neighbors
   // ============================================================
-  static const List<String> _healthyCategories = [
-    'Chicken',
-    'Seafood',
-    'Vegetarian',
-    'Beef',
-    'Lamb',
-    'Pasta',
-    'Vegan',
-    'Breakfast',
+  static const List<String> _arabAreas = [
+    'Egyptian',
+    'Moroccan',
+    'Tunisian',
+    'Turkish',
+    'Lebanese',
+    'Greek',       // Mediterranean — close to Egyptian cuisine
+    'Indian',      // popular healthy dishes
+    'Malaysian',   // spiced healthy dishes
   ];
 
-  /// Estimated nutrition per 100g by category (reasonable healthy portions)
-  static const Map<String, Map<String, double>> _nutritionByCategory = {
-    'Chicken': {'cal': 215, 'pro': 25, 'carb': 0, 'fat': 12},
-    'Seafood': {'cal': 180, 'pro': 28, 'carb': 0, 'fat': 7},
-    'Vegetarian': {'cal': 160, 'pro': 8, 'carb': 22, 'fat': 5},
-    'Beef': {'cal': 250, 'pro': 26, 'carb': 2, 'fat': 15},
-    'Lamb': {'cal': 290, 'pro': 25, 'carb': 0, 'fat': 20},
-    'Pasta': {'cal': 220, 'pro': 9, 'carb': 38, 'fat': 5},
-    'Vegan': {'cal': 140, 'pro': 6, 'carb': 20, 'fat': 4},
-    'Breakfast': {'cal': 200, 'pro': 12, 'carb': 18, 'fat': 9},
+  /// Estimated nutrition per meal by cuisine area (single serving ~300g)
+  static const Map<String, Map<String, double>> _nutritionByArea = {
+    'Egyptian':  {'cal': 280, 'pro': 18, 'carb': 32, 'fat': 9},
+    'Moroccan':  {'cal': 310, 'pro': 22, 'carb': 28, 'fat': 11},
+    'Tunisian':  {'cal': 290, 'pro': 20, 'carb': 30, 'fat': 10},
+    'Turkish':   {'cal': 320, 'pro': 24, 'carb': 25, 'fat': 13},
+    'Lebanese':  {'cal': 260, 'pro': 16, 'carb': 28, 'fat': 9},
+    'Greek':     {'cal': 270, 'pro': 18, 'carb': 22, 'fat': 12},
+    'Indian':    {'cal': 240, 'pro': 14, 'carb': 30, 'fat': 8},
+    'Malaysian': {'cal': 260, 'pro': 16, 'carb': 28, 'fat': 9},
   };
 
-  /// Fetches meals from TheMealDB API and converts to RecommendedMealModel
+  /// Friendly Arabic description by area
+  static const Map<String, String> _areaDescriptionAr = {
+    'Egyptian':  'أكلة مصرية أصيلة',
+    'Moroccan':  'أكلة مغربية شهية',
+    'Tunisian':  'أكلة تونسية مميزة',
+    'Turkish':   'أكلة تركية تقليدية',
+    'Lebanese':  'أكلة لبنانية طازجة',
+    'Greek':     'أكلة إغريقية متوسطية',
+    'Indian':    'أكلة هندية غنية بالبهارات',
+    'Malaysian': 'أكلة آسيوية صحية',
+  };
+
+  /// Builds a list of image URLs for the meal carousel:
+  /// 1. Main meal thumbnail (always included)
+  /// 2. YouTube video thumbnail (if strYoutube is available)
+  static List<String> _buildImageUrls(Map<String, dynamic> detail) {
+    final images = <String>[];
+
+    // 1) Primary meal image
+    final thumb = detail['strMealThumb']?.toString();
+    if (thumb != null && thumb.isNotEmpty) {
+      images.add(thumb);
+    }
+
+    // 2) YouTube thumbnail as a second image
+    final ytUrl = detail['strYoutube']?.toString() ?? '';
+    if (ytUrl.isNotEmpty) {
+      final uri = Uri.tryParse(ytUrl);
+      final videoId = uri?.queryParameters['v'];
+      if (videoId != null && videoId.isNotEmpty) {
+        images.add('https://img.youtube.com/vi/$videoId/maxresdefault.jpg');
+      }
+    }
+
+    return images;
+  }
+
+  /// Fetches meals from TheMealDB by area (Egyptian & Arab first)
   Future<List<RecommendedMealModel>> _fetchFromMealDB({int count = 10}) async {
     final dio = Dio();
     final List<RecommendedMealModel> meals = [];
-    final shuffledCats = List<String>.from(_healthyCategories)..shuffle();
 
-    // Fetch meals across categories until we have [count]
-    for (final category in shuffledCats) {
+    // Egyptian first (get more from it), then shuffle the rest
+    final areas = ['Egyptian', 'Egyptian', ...List<String>.from(_arabAreas.skip(1))..shuffle()];
+
+    for (final area in areas) {
       if (meals.length >= count) break;
       try {
         final listResp = await dio.get(
           'https://www.themealdb.com/api/json/v1/1/filter.php',
-          queryParameters: {'c': category},
+          queryParameters: {'a': area},  // 'a' = area filter
         );
         if (listResp.statusCode != 200) continue;
 
         final rawList = listResp.data['meals'] as List<dynamic>?;
         if (rawList == null || rawList.isEmpty) continue;
 
-        // Pick up to 2 random meals from this category
+        // Pick up to 3 meals per area (more from Egyptian)
         rawList.shuffle();
-        final picked = rawList.take(2).toList();
+        final pickCount = area == 'Egyptian' ? 4 : 2;
+        final picked = rawList.take(pickCount).toList();
 
         for (final item in picked) {
           if (meals.length >= count) break;
           final mealId = item['idMeal']?.toString() ?? '';
           if (mealId.isEmpty) continue;
+
+          // Avoid duplicates
+          if (meals.any((m) => m.id == 'mdb_$mealId')) continue;
 
           // Fetch full details
           final detailResp = await dio.get(
@@ -312,17 +354,17 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
           final detail = (detailResp.data['meals'] as List?)?.first;
           if (detail == null) continue;
 
-          // Extract ingredients
+          // Extract ingredients list
           final ingredients = <String>[];
           for (int i = 1; i <= 20; i++) {
             final ing = detail['strIngredient$i']?.toString().trim() ?? '';
             final measure = detail['strMeasure$i']?.toString().trim() ?? '';
-            if (ing.isNotEmpty && ing != 'null') {
+            if (ing.isNotEmpty && ing.toLowerCase() != 'null') {
               ingredients.add(measure.isNotEmpty ? '$ing ($measure)' : ing);
             }
           }
 
-          // Parse instructions into steps
+          // Parse preparation steps from instructions
           final rawInstructions = detail['strInstructions']?.toString() ?? '';
           final steps = rawInstructions
               .split(RegExp(r'\r?\n+'))
@@ -331,31 +373,33 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
               .take(6)
               .toList();
 
-          // Nutrition estimate based on category
-          final nut =
-              _nutritionByCategory[category] ??
-              {'cal': 200, 'pro': 15, 'carb': 20, 'fat': 8};
+          // Nutrition estimate by area
+          final nut = _nutritionByArea[area] ??
+              {'cal': 270, 'pro': 18, 'carb': 28, 'fat': 10};
+
+          // Description in Arabic
+          final descAr = _areaDescriptionAr[area] ?? 'وجبة صحية شهية';
 
           meals.add(
             RecommendedMealModel(
-              id: 'mdb_${mealId}',
+              id: 'mdb_$mealId',
               title: detail['strMeal']?.toString() ?? 'Healthy Meal',
               calories: nut['cal']!,
               protein: nut['pro']!,
               carbs: nut['carb']!,
               fats: nut['fat']!,
-              description:
-                  '${detail['strArea'] ?? ''} • ${category} dish — rich in nutrients, great for blood sugar balance.',
+              description: '$descAr — غنية بالمواد الغذائية ومناسبة لمرضى السكر.',
               preparationSteps: steps.isNotEmpty
                   ? steps
-                  : ['Follow the standard preparation method for this dish.'],
+                  : ['اتبع الطريقة التقليدية في تحضير هذه الوجبة.'],
               ingredients: ingredients,
               imageUrl: detail['strMealThumb']?.toString(),
+              imageUrls: _buildImageUrls(detail),
             ),
           );
         }
       } catch (e) {
-        log('Error fetching category $category from MealDB: $e');
+        log('Error fetching area $area from MealDB: $e');
       }
     }
     return meals;

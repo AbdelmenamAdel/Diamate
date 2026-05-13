@@ -11,7 +11,8 @@ class RecommendedMealModel extends Equatable {
   final List<String> preparationSteps;
   final List<String> ingredients;
   final bool isSaved;
-  final String? imageUrl; // Real meal image from TheMealDB
+  final String? imageUrl;        // primary image (for cards)
+  final List<String> imageUrls; // all images (for details view carousel)
 
   const RecommendedMealModel({
     required this.id,
@@ -25,6 +26,7 @@ class RecommendedMealModel extends Equatable {
     required this.ingredients,
     this.isSaved = false,
     this.imageUrl,
+    this.imageUrls = const [],
   });
 
   RecommendedMealModel copyWith({
@@ -39,6 +41,7 @@ class RecommendedMealModel extends Equatable {
     List<String>? ingredients,
     bool? isSaved,
     String? imageUrl,
+    List<String>? imageUrls,
   }) {
     return RecommendedMealModel(
       id: id ?? this.id,
@@ -52,6 +55,7 @@ class RecommendedMealModel extends Equatable {
       ingredients: ingredients ?? this.ingredients,
       isSaved: isSaved ?? this.isSaved,
       imageUrl: imageUrl ?? this.imageUrl,
+      imageUrls: imageUrls ?? this.imageUrls,
     );
   }
 
@@ -68,6 +72,7 @@ class RecommendedMealModel extends Equatable {
       'ingredients': ingredients,
       'isSaved': isSaved,
       'imageUrl': imageUrl,
+      'imageUrls': imageUrls,
     };
   }
 
@@ -90,6 +95,10 @@ class RecommendedMealModel extends Equatable {
           [],
       isSaved: json['isSaved'] as bool? ?? false,
       imageUrl: json['imageUrl'] as String?,
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 
@@ -106,5 +115,6 @@ class RecommendedMealModel extends Equatable {
         ingredients,
         isSaved,
         imageUrl,
+        imageUrls,
       ];
 }
