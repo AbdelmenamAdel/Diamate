@@ -89,7 +89,11 @@ class DailyNutritionSummary extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMacroItem("Protein", "${totalProtein.toInt()}g", Icons.fitness_center),
+              _buildMacroItem(
+                "Protein",
+                "${totalProtein.toInt()}g",
+                Icons.fitness_center,
+              ),
               _buildMacroItem("Carbs", "${totalCarbs.toInt()}g", Icons.grain),
               _buildMacroItem("Fats", "${totalFat.toInt()}g", Icons.water_drop),
             ],
@@ -114,10 +118,7 @@ class DailyNutritionSummary extends StatelessWidget {
         ),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 12.sp,
-          ),
+          style: TextStyle(color: Colors.white70, fontSize: 12.sp),
         ),
       ],
     );

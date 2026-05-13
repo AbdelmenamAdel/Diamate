@@ -25,7 +25,8 @@ class MealHistoryCard extends StatelessWidget {
           ),
         ],
         border: Border.all(
-          color: context.color.hintColor?.withOpacity(0.1) ?? Colors.grey.shade200,
+          color:
+              context.color.hintColor?.withOpacity(0.1) ?? Colors.grey.shade200,
         ),
       ),
       child: Column(
@@ -43,7 +44,8 @@ class MealHistoryCard extends StatelessWidget {
                         width: 70.w,
                         height: 70.w,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _buildPlaceholder(context),
+                        errorBuilder: (_, __, ___) =>
+                            _buildPlaceholder(context),
                       )
                     : _buildPlaceholder(context),
               ),
@@ -83,10 +85,30 @@ class MealHistoryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMacroChip(context, "Calories", "${meal.nutrition?.calories.toInt() ?? 0} kcal", Colors.orange),
-              _buildMacroChip(context, "Carbs", "${meal.nutrition?.carbs.toInt() ?? 0}g", Colors.blue),
-              _buildMacroChip(context, "Protein", "${meal.nutrition?.protein.toInt() ?? 0}g", Colors.green),
-              _buildMacroChip(context, "Fat", "${meal.nutrition?.fat.toInt() ?? 0}g", Colors.red),
+              _buildMacroChip(
+                context,
+                "Calories",
+                "${meal.nutrition?.calories.toInt() ?? 0} kcal",
+                Colors.orange,
+              ),
+              _buildMacroChip(
+                context,
+                "Carbs",
+                "${meal.nutrition?.carbs.toInt() ?? 0}g",
+                Colors.blue,
+              ),
+              _buildMacroChip(
+                context,
+                "Protein",
+                "${meal.nutrition?.protein.toInt() ?? 0}g",
+                Colors.green,
+              ),
+              _buildMacroChip(
+                context,
+                "Fat",
+                "${meal.nutrition?.fat.toInt() ?? 0}g",
+                Colors.red,
+              ),
             ],
           ),
         ],
@@ -110,7 +132,12 @@ class MealHistoryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMacroChip(BuildContext context, String label, String value, Color color) {
+  Widget _buildMacroChip(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+  ) {
     return Column(
       children: [
         Text(

@@ -4,16 +4,10 @@ class IngredientModel extends Equatable {
   final String name;
   final double quantityGrams;
 
-  const IngredientModel({
-    required this.name,
-    required this.quantityGrams,
-  });
+  const IngredientModel({required this.name, required this.quantityGrams});
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'quantityGrams': quantityGrams,
-    };
+    return {'name': name, 'quantityGrams': quantityGrams};
   }
 
   factory IngredientModel.fromJson(Map<String, dynamic> json) {
@@ -46,9 +40,12 @@ class MealModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'imagePath': imagePath,
       'ingredients': ingredients.map((i) => i.toJson()).toList(),
+      if (nutrition != null) 'nutrition': nutrition!.toJson(),
+      if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
     };
   }
 
@@ -57,7 +54,8 @@ class MealModel extends Equatable {
       id: json['id']?.toString(),
       name: json['name'] as String,
       imagePath: json['imagePath'] as String?,
-      ingredients: (json['ingredients'] as List<dynamic>?)
+      ingredients:
+          (json['ingredients'] as List<dynamic>?)
               ?.map((i) => IngredientModel.fromJson(i as Map<String, dynamic>))
               .toList() ??
           [],
@@ -71,7 +69,14 @@ class MealModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, name, imagePath, ingredients, nutrition, createdAt];
+  List<Object?> get props => [
+    id,
+    name,
+    imagePath,
+    ingredients,
+    nutrition,
+    createdAt,
+  ];
 }
 
 class NutritionModel extends Equatable {
@@ -94,6 +99,15 @@ class NutritionModel extends Equatable {
       fat: (json['fat'] as num).toDouble(),
       carbs: (json['carbs'] as num).toDouble(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'calories': calories,
+      'protein': protein,
+      'fat': fat,
+      'carbs': carbs,
+    };
   }
 
   @override

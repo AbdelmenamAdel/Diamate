@@ -29,6 +29,7 @@ import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.d
 import 'package:diamate/features/glucose/data/services/glucose_local_service.dart';
 import 'package:diamate/features/glucose/domain/repos/glucose_repo.dart';
 import 'package:diamate/features/food/data/repos/food_repo_impl.dart';
+import 'package:diamate/features/food/data/services/food_local_service.dart';
 import 'package:diamate/features/food/domain/repos/food_repo.dart';
 import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
 import 'package:diamate/features/glucose/data/repos/glucose_repo_impl.dart';
@@ -103,7 +104,8 @@ Future<void> _initLabTests() async {
 }
 
 Future<void> _initFood() async {
-  sl.registerLazySingleton<FoodRepo>(() => FoodRepoImpl(api: sl<ApiConsumer>()));
+  sl.registerLazySingleton<FoodLocalService>(() => FoodLocalService());
+  sl.registerLazySingleton<FoodRepo>(() => FoodRepoImpl(api: sl<ApiConsumer>(), localService: sl<FoodLocalService>()));
   sl.registerFactory<FoodCubit>(() => FoodCubit(sl<FoodRepo>(), sl<AuthCubit>()));
 }
 

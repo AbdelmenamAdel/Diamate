@@ -16,26 +16,34 @@ class FoodCubit extends Cubit<FoodState> {
   final Map<DateTime, List<MealModel>> _mealsCache = {};
   DateTime _selectedDate = DateTime.now();
 
-  DateTime _normalizeDate(DateTime date) => DateTime(date.year, date.month, date.day);
+  DateTime _normalizeDate(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   Future<void> loadMealsForDate(DateTime date) async {
     final normalizedDate = _normalizeDate(date);
     _selectedDate = normalizedDate;
 
     if (_mealsCache.containsKey(normalizedDate)) {
-      emit(FoodHistoryLoaded(meals: Map.from(_mealsCache), selectedDate: _selectedDate));
+      emit(
+        FoodHistoryLoaded(
+          meals: Map.from(_mealsCache),
+          selectedDate: _selectedDate,
+        ),
+      );
       return;
     }
 
     emit(FoodHistoryLoading());
     final result = await _foodRepo.getMealsByDate(normalizedDate);
-    result.fold(
-      (failure) => emit(FoodError(message: failure)),
-      (meals) {
-        _mealsCache[normalizedDate] = meals;
-        emit(FoodHistoryLoaded(meals: Map.from(_mealsCache), selectedDate: _selectedDate));
-      },
-    );
+    result.fold((failure) => emit(FoodError(message: failure)), (meals) {
+      _mealsCache[normalizedDate] = meals;
+      emit(
+        FoodHistoryLoaded(
+          meals: Map.from(_mealsCache),
+          selectedDate: _selectedDate,
+        ),
+      );
+    });
   }
 
   Future<void> analyzeImage(File image) async {
@@ -58,7 +66,7 @@ class FoodCubit extends Cubit<FoodState> {
     }
 
     emit(FoodLoading());
-    
+
     final meal = MealModel(
       name: name,
       ingredients: ingredients,

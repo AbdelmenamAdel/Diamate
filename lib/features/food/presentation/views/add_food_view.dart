@@ -93,7 +93,10 @@ class _AddFoodViewState extends State<AddFoodView> {
             Navigator.pop(context);
           } else if (state is FoodError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
@@ -131,8 +134,10 @@ class _AddFoodViewState extends State<AddFoodView> {
                           Text("Ingredients", style: _headerStyle),
                           IconButton(
                             onPressed: () => _addIngredient(),
-                            icon: Icon(Icons.add_circle,
-                                color: context.color.primaryColor),
+                            icon: Icon(
+                              Icons.add_circle,
+                              color: context.color.primaryColor,
+                            ),
                           ),
                         ],
                       ),
@@ -148,19 +153,21 @@ class _AddFoodViewState extends State<AddFoodView> {
                                 ? () {
                                     final List<IngredientModel> ingredients =
                                         _ingredients.map((i) {
-                                      return IngredientModel(
-                                        name: i['nameController'].text,
-                                        quantityGrams: double.tryParse(
-                                                i['quantityController'].text) ??
-                                            0,
-                                      );
-                                    }).toList();
+                                          return IngredientModel(
+                                            name: i['nameController'].text,
+                                            quantityGrams:
+                                                double.tryParse(
+                                                  i['quantityController'].text,
+                                                ) ??
+                                                0,
+                                          );
+                                        }).toList();
 
                                     context.read<FoodCubit>().addMeal(
-                                          name: _mealNameController.text,
-                                          ingredients: ingredients,
-                                          imagePath: _image?.path,
-                                        );
+                                      name: _mealNameController.text,
+                                      ingredients: ingredients,
+                                      imagePath: _image?.path,
+                                    );
                                   }
                                 : null,
                           );
@@ -179,10 +186,10 @@ class _AddFoodViewState extends State<AddFoodView> {
   }
 
   TextStyle get _headerStyle => TextStyle(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.bold,
-        color: context.color.textColor,
-      );
+    fontSize: 16.sp,
+    fontWeight: FontWeight.bold,
+    color: context.color.textColor,
+  );
 
   Widget _buildImagePicker() {
     return GestureDetector(
@@ -199,11 +206,16 @@ class _AddFoodViewState extends State<AddFoodView> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add_a_photo,
-                      size: 40.sp, color: context.color.primaryColor),
+                  Icon(
+                    Icons.add_a_photo,
+                    size: 40.sp,
+                    color: context.color.primaryColor,
+                  ),
                   SizedBox(height: 10.h),
-                  Text("Add Meal Image",
-                      style: TextStyle(color: context.color.textColor)),
+                  Text(
+                    "Add Meal Image",
+                    style: TextStyle(color: context.color.textColor),
+                  ),
                 ],
               )
             : ClipRRect(

@@ -151,7 +151,10 @@ class _FoodScannerBottomSheetState extends State<FoodScannerBottomSheet> {
                             child: CircleAvatar(
                               backgroundColor: Colors.white,
                               child: IconButton(
-                                icon: const Icon(Icons.close, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     _image = null;
@@ -198,14 +201,19 @@ class _FoodScannerBottomSheetState extends State<FoodScannerBottomSheet> {
                             children: state.ingredients.map((ing) {
                               return Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 12.w, vertical: 8.h),
+                                  horizontal: 12.w,
+                                  vertical: 8.h,
+                                ),
                                 decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xff2D9CDB).withOpacity(0.1),
+                                  color: const Color(
+                                    0xff2D9CDB,
+                                  ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(20.r),
                                   border: Border.all(
-                                      color: const Color(0xff2D9CDB)
-                                          .withOpacity(0.3)),
+                                    color: const Color(
+                                      0xff2D9CDB,
+                                    ).withOpacity(0.3),
+                                  ),
                                 ),
                                 child: Text(
                                   ing,
