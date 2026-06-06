@@ -1,7 +1,9 @@
+import 'dart:io';
+
 class EndPoint {
-  static const String baseUrl =
-      // 'https://diamate-edh9dcadbffdfack.francecentral-01.azurewebsites.net/api/';
-      'https://diamate-production.up.railway.app/api/';
+  static String get baseUrl => Platform.isAndroid 
+      ? 'http://10.0.2.2:8080/api/' 
+      : 'http://127.0.0.1:8080/api/';
   static const String login = 'Account/LogIn';
   static const String signUp = 'Account/RegisterNewUser';
   static const String getUserData = 'student/profile';
