@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
@@ -39,9 +41,9 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
       }
     }
   }
@@ -79,7 +81,9 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
                     BlocBuilder<DfuPredictionCubit, DfuPredictionState>(
                       builder: (context, state) {
                         if (state is DfuPredictionLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         } else if (state is DfuPredictionError) {
                           return Container(
                             padding: EdgeInsets.all(16.w),
@@ -90,7 +94,10 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
                             ),
                             child: Text(
                               state.message,
-                              style: TextStyle(color: Colors.red, fontFamily: K.sg),
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFamily: K.sg,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           );
@@ -142,7 +149,9 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
           border: Border.all(
             color: context.color.primaryColor?.withOpacity(0.5) ?? Colors.blue,
             width: 2,
-            style: _selectedImage == null ? BorderStyle.solid : BorderStyle.none,
+            style: _selectedImage == null
+                ? BorderStyle.solid
+                : BorderStyle.none,
           ),
         ),
         child: _selectedImage != null
@@ -185,16 +194,34 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
           child: Wrap(
             children: [
               ListTile(
-                leading: Icon(Icons.photo_library, color: context.color.primaryColor),
-                title: Text('Gallery', style: TextStyle(fontFamily: K.sg, color: context.color.textColor)),
+                leading: Icon(
+                  Icons.photo_library,
+                  color: context.color.primaryColor,
+                ),
+                title: Text(
+                  'Gallery',
+                  style: TextStyle(
+                    fontFamily: K.sg,
+                    color: context.color.textColor,
+                  ),
+                ),
                 onTap: () {
                   context.pop();
                   _pickImage(ImageSource.gallery);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: context.color.primaryColor),
-                title: Text('Camera', style: TextStyle(fontFamily: K.sg, color: context.color.textColor)),
+                leading: Icon(
+                  Icons.camera_alt,
+                  color: context.color.primaryColor,
+                ),
+                title: Text(
+                  'Camera',
+                  style: TextStyle(
+                    fontFamily: K.sg,
+                    color: context.color.textColor,
+                  ),
+                ),
                 onTap: () {
                   context.pop();
                   _pickImage(ImageSource.camera);
@@ -227,7 +254,9 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
         Container(
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: response.ulcerDetected ? Colors.red.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+            color: response.ulcerDetected
+                ? Colors.red.withOpacity(0.1)
+                : Colors.green.withOpacity(0.1),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: response.ulcerDetected ? Colors.red : Colors.green,
@@ -238,19 +267,25 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
               Row(
                 children: [
                   Icon(
-                    response.ulcerDetected ? Icons.warning_rounded : Icons.check_circle_rounded,
+                    response.ulcerDetected
+                        ? Icons.warning_rounded
+                        : Icons.check_circle_rounded,
                     color: response.ulcerDetected ? Colors.red : Colors.green,
                     size: 32.sp,
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
                     child: Text(
-                      response.ulcerDetected ? "Ulcer Detected" : "No Ulcer Detected",
+                      response.ulcerDetected
+                          ? "Ulcer Detected"
+                          : "No Ulcer Detected",
                       style: TextStyle(
                         fontFamily: K.sg,
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
-                        color: response.ulcerDetected ? Colors.red : Colors.green,
+                        color: response.ulcerDetected
+                            ? Colors.red
+                            : Colors.green,
                       ),
                     ),
                   ),
@@ -258,7 +293,10 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
               ),
               if (response.ulcerDetected) ...[
                 SizedBox(height: 16.h),
-                _buildStatRow("Coverage", "${response.ulcerCoverage.toStringAsFixed(2)}%"),
+                _buildStatRow(
+                  "Coverage",
+                  "${response.ulcerCoverage.toStringAsFixed(2)}%",
+                ),
                 SizedBox(height: 8.h),
                 _buildStatRow("Ulcer Pixels", "${response.ulcerPixels}"),
               ],
@@ -287,8 +325,117 @@ class _DfuPredictionViewState extends State<DfuPredictionView> {
             ),
           ),
         ],
+        SizedBox(height: 24.h),
+        ElevatedButton(
+          onPressed: () => _showSaveDialog(state),
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(vertical: 16.h),
+            backgroundColor: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            "Save Result",
+            style: TextStyle(
+              fontFamily: K.sg,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  void _showSaveDialog(DfuPredictionSuccess state) {
+    final titleController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: context.color.cardColor,
+          title: Text(
+            "Save DFU Assessment",
+            style: TextStyle(fontFamily: K.sg, color: context.color.textColor),
+          ),
+          content: TextField(
+            controller: titleController,
+            style: TextStyle(color: context.color.textColor),
+            decoration: InputDecoration(
+              hintText: "Enter a title (e.g. Left Foot)",
+              hintStyle: TextStyle(color: context.color.hintColor),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: context.color.primaryColor ?? Colors.blue,
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: context.color.hintColor),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (titleController.text.trim().isEmpty) return;
+                Navigator.pop(ctx);
+                _saveResult(titleController.text.trim(), state);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.color.primaryColor,
+              ),
+              child: const Text("Save", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _saveResult(String title, DfuPredictionSuccess state) async {
+    if (_selectedImage == null) return;
+    try {
+      final response = state.response;
+      String? overlayPath;
+
+      if (response.overlayB64.isNotEmpty) {
+        final bytes = base64Decode(response.overlayB64);
+        final dir = await getApplicationDocumentsDirectory();
+        final file = File(
+          '${dir.path}/dfu_overlay_${DateTime.now().millisecondsSinceEpoch}.png',
+        );
+        await file.writeAsBytes(bytes);
+        overlayPath = file.path;
+      }
+
+      if (mounted) {
+        await context.read<DfuTestCubit>().addDfuTest(
+          name: title,
+          imagePaths: [_selectedImage!.path],
+          ulcerDetected: response.ulcerDetected,
+          ulcerCoverage: response.ulcerCoverage,
+          ulcerPixels: response.ulcerPixels,
+          overlayImagePath: overlayPath,
+          inferenceMs: response.inferenceMs.toInt(),
+        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Saved successfully!')));
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving: $e')));
+      }
+    }
   }
 
   Widget _buildStatRow(String label, String value) {

@@ -236,8 +236,8 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
               onTap: () async {
                 if (_nameController.text.isNotEmpty && _imagePaths.isNotEmpty) {
                   await context.read<DfuTestCubit>().addDfuTest(
-                    _nameController.text,
-                    _imagePaths,
+                    name: _nameController.text,
+                    imagePaths: _imagePaths,
                   );
 
                   if (mounted) {

@@ -21,13 +21,26 @@ class DfuTestCubit extends Cubit<DfuTestState> {
     }
   }
 
-  Future<void> addDfuTest(String name, List<String> imagePaths) async {
+  Future<void> addDfuTest({
+    required String name,
+    required List<String> imagePaths,
+    bool? ulcerDetected,
+    double? ulcerCoverage,
+    int? ulcerPixels,
+    String? overlayImagePath,
+    int? inferenceMs,
+  }) async {
     try {
       final persistentPaths = await FileHelper.saveFilesToAppDir(imagePaths);
       final newTest = DfuTestModel(
         name: name,
         imagePaths: persistentPaths,
         addDate: DateTime.now(),
+        ulcerDetected: ulcerDetected,
+        ulcerCoverage: ulcerCoverage,
+        ulcerPixels: ulcerPixels,
+        overlayImagePath: overlayImagePath,
+        inferenceMs: inferenceMs,
       );
       await _localService.addDfuTest(newTest);
       loadDfuTests();

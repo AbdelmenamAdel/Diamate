@@ -70,9 +70,17 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
           ? null
           : FloatingActionButton.extended(
               onPressed: () {
+                final dfuTestCubit = context.read<DfuTestCubit>();
                 context.push(
-                  BlocProvider<DfuPredictionCubit>(
-                    create: (context) => sl<DfuPredictionCubit>(),
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider<DfuPredictionCubit>(
+                        create: (context) => sl<DfuPredictionCubit>(),
+                      ),
+                      BlocProvider<DfuTestCubit>.value(
+                        value: dfuTestCubit,
+                      ),
+                    ],
                     child: const DfuPredictionView(),
                   ),
                 );
@@ -170,8 +178,7 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
                               if (allExist) {
                                 _showImageViewer(
                                   context,
-                                  test.name,
-                                  test.imagePaths,
+                                  test,
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -307,13 +314,40 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
             color: context.color.textColor,
           ),
         ),
-        subtitle: Text(
-          "${test.imagePaths.length} Images • ${TimeAgo.formatWithDate(test.addDate, context)}",
-          style: TextStyle(
-            fontFamily: K.sg,
-            fontSize: 12.sp,
-            color: context.color.hintColor ?? Colors.grey[600],
-          ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${test.imagePaths.length} Images • ${TimeAgo.formatWithDate(test.addDate, context)}",
+              style: TextStyle(
+                fontFamily: K.sg,
+                fontSize: 12.sp,
+                color: context.color.hintColor ?? Colors.grey[600],
+              ),
+            ),
+            if (test.ulcerDetected != null) ...[
+              SizedBox(height: 4.h),
+              Row(
+                children: [
+                  Icon(
+                    test.ulcerDetected ? Icons.warning_rounded : Icons.check_circle_rounded,
+                    color: test.ulcerDetected ? Colors.red : Colors.green,
+                    size: 14.sp,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    test.ulcerDetected ? "Ulcer Detected" : "No Ulcer Detected",
+                    style: TextStyle(
+                      fontFamily: K.sg,
+                      fontSize: 12.sp,
+                      color: test.ulcerDetected ? Colors.red : Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
         ),
         trailing: _isSelectionMode
             ? null
@@ -330,26 +364,103 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
 
   void _showImageViewer(
     BuildContext context,
-    String title,
-    List<String> images,
+    dynamic test,
   ) {
+    List<String> images = List<String>.from(test.imagePaths);
+    if (test.overlayImagePath != null) {
+      images.add(test.overlayImagePath);
+    }
     context.push(
       Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.black,
-          title: Text(title, style: const TextStyle(color: Colors.white)),
+          title: Text(test.name, style: const TextStyle(color: Colors.white)),
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: PageView.builder(
-          itemCount: images.length,
-          itemBuilder: (context, index) {
-            return Center(
-              child: InteractiveViewer(
-                child: Image.file(File(images[index]), fit: BoxFit.contain),
+        body: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                itemCount: images.length,
+                itemBuilder: (context, index) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: InteractiveViewer(
+                            child: Image.file(File(images[index]), fit: BoxFit.contain),
+                          ),
+                        ),
+                        if (images.length > 1)
+                          Padding(
+                            padding: EdgeInsets.all(8.h),
+                            child: Text(
+                              index == 0 ? "Original Image" : "Segmentation Overlay",
+                              style: TextStyle(color: Colors.white, fontFamily: K.sg, fontSize: 16.sp),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+            if (test.ulcerDetected != null)
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          test.ulcerDetected ? Icons.warning_rounded : Icons.check_circle_rounded,
+                          color: test.ulcerDetected ? Colors.red : Colors.green,
+                          size: 28.sp,
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Text(
+                            test.ulcerDetected ? "Ulcer Detected" : "No Ulcer Detected",
+                            style: TextStyle(
+                              fontFamily: K.sg,
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                              color: test.ulcerDetected ? Colors.red : Colors.green,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (test.ulcerDetected) ...[
+                      SizedBox(height: 12.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Coverage", style: TextStyle(color: Colors.white70, fontFamily: K.sg, fontSize: 14.sp)),
+                          Text("${test.ulcerCoverage?.toStringAsFixed(2)}%", style: TextStyle(color: Colors.white, fontFamily: K.sg, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      SizedBox(height: 4.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Ulcer Pixels", style: TextStyle(color: Colors.white70, fontFamily: K.sg, fontSize: 14.sp)),
+                          Text("${test.ulcerPixels}", style: TextStyle(color: Colors.white, fontFamily: K.sg, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                    SizedBox(height: MediaQuery.of(context).padding.bottom + 8.h),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );

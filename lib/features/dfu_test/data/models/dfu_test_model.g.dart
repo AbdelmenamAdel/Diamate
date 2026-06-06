@@ -20,19 +20,34 @@ class DfuTestModelAdapter extends TypeAdapter<DfuTestModel> {
       name: fields[0] as String,
       imagePaths: (fields[1] as List).cast<String>(),
       addDate: fields[2] as DateTime,
+      ulcerDetected: fields[3] as bool?,
+      ulcerCoverage: fields[4] as double?,
+      ulcerPixels: fields[5] as int?,
+      overlayImagePath: fields[6] as String?,
+      inferenceMs: fields[7] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DfuTestModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.imagePaths)
       ..writeByte(2)
-      ..write(obj.addDate);
+      ..write(obj.addDate)
+      ..writeByte(3)
+      ..write(obj.ulcerDetected)
+      ..writeByte(4)
+      ..write(obj.ulcerCoverage)
+      ..writeByte(5)
+      ..write(obj.ulcerPixels)
+      ..writeByte(6)
+      ..write(obj.overlayImagePath)
+      ..writeByte(7)
+      ..write(obj.inferenceMs);
   }
 
   @override
