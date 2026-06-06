@@ -26,6 +26,8 @@ import 'package:diamate/features/lab_tests/data/services/lab_test_local_service.
 import 'package:diamate/features/lab_tests/presentation/managers/lab_test_cubit.dart';
 import 'package:diamate/features/dfu_test/data/services/dfu_test_local_service.dart';
 import 'package:diamate/features/dfu_test/presentation/managers/dfu_test_cubit.dart';
+import 'package:diamate/features/dfu_test/data/services/dfu_remote_service.dart';
+import 'package:diamate/features/dfu_test/presentation/managers/dfu_prediction_cubit.dart';
 import 'package:diamate/features/glucose/data/services/glucose_local_service.dart';
 import 'package:diamate/features/glucose/domain/repos/glucose_repo.dart';
 import 'package:diamate/features/food/data/repos/food_repo_impl.dart';
@@ -92,6 +94,12 @@ Future<void> _initDfuTests() async {
   sl.registerLazySingleton<DfuTestLocalService>(() => dfuService);
   sl.registerFactory<DfuTestCubit>(
     () => DfuTestCubit(sl<DfuTestLocalService>()),
+  );
+  sl.registerLazySingleton<DfuRemoteService>(
+    () => DfuRemoteService(sl<Dio>()),
+  );
+  sl.registerFactory<DfuPredictionCubit>(
+    () => DfuPredictionCubit(sl<DfuRemoteService>()),
   );
 }
 

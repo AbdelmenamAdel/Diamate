@@ -21,30 +21,56 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> register({required UserEntity user}) async {
     emit(RegisterLoading());
     var result = await authRepo.signupWithEmailAndPassword(user: user);
-    result.fold(
-      (failure) => emit(RegisterFailure(message: failure)),
-      (text) => emit(RegisterSuccess()),
-    );
+    result.fold((failure) => emit(RegisterFailure(message: failure)), (
+      success,
+    ) async {
+      // Automatically login to get the token and user data
+      var loginResult = await authRepo.signinWithEmailAndPassword(
+        user.userName,
+        user.password,
+      );
+      loginResult.fold(
+        (failure) => emit(
+          RegisterFailure(
+            message: 'Signup successful, but login failed: $failure',
+          ),
+        ),
+        (loginResponse) async {
+          final userResult = await authRepo.getUserData(
+            token: loginResponse.token,
+          );
+          userResult.fold(
+            (failure) => emit(
+              RegisterFailure(
+                message:
+                    'Signup successful, but fetching user data failed: $failure',
+              ),
+            ),
+            (userEntity) {
+              this.user = userEntity;
+              emit(AuthAuthenticated(user: this.user!));
+              emit(RegisterSuccess());
+            },
+          );
+        },
+      );
+    });
   }
 
   Future<void> login({required String email, required String password}) async {
     emit(LoginLoading());
     var result = await authRepo.signinWithEmailAndPassword(email, password);
-    result.fold(
-      (failure) => emit(LoginFailure(message: failure)),
-      (loginResponse) async {
-        final userResult = await authRepo.getUserData(
-          token: loginResponse.token,
-        );
-        userResult.fold(
-          (failure) => emit(LoginFailure(message: failure)),
-          (userEntity) {
-            user = userEntity;
-            emit(AuthAuthenticated(user: user!));
-            emit(LoginSuccess());
-          },
-        );
-      },
-    );
+    result.fold((failure) => emit(LoginFailure(message: failure)), (
+      loginResponse,
+    ) async {
+      final userResult = await authRepo.getUserData(token: loginResponse.token);
+      userResult.fold((failure) => emit(LoginFailure(message: failure)), (
+        userEntity,
+      ) {
+        user = userEntity;
+        emit(AuthAuthenticated(user: user!));
+        emit(LoginSuccess());
+      });
+    });
   }
 }

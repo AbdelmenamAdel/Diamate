@@ -8,6 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:diamate/core/services/services_locator.dart';
+import 'package:diamate/features/dfu_test/presentation/managers/dfu_prediction_cubit.dart';
+import 'package:diamate/features/dfu_test/presentation/views/dfu_prediction_view.dart';
+
 class DfuTestsListView extends StatefulWidget {
   const DfuTestsListView({super.key});
 
@@ -62,6 +66,24 @@ class _DfuTestsListViewState extends State<DfuTestsListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      floatingActionButton: _isSelectionMode
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                context.push(
+                  BlocProvider<DfuPredictionCubit>(
+                    create: (context) => sl<DfuPredictionCubit>(),
+                    child: const DfuPredictionView(),
+                  ),
+                );
+              },
+              backgroundColor: context.color.primaryColor,
+              icon: const Icon(Icons.analytics_outlined, color: Colors.white),
+              label: const Text(
+                "AI Analysis",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
       body: SafeArea(
         child: Column(
           children: [

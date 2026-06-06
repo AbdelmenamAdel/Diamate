@@ -91,10 +91,16 @@ class AuthRepoImpl extends AuthRepo {
       final userEntity = UserEntity.fromMap(userMap);
       log("userEntity created: ${userEntity.firstName} ${userEntity.lastName}, id: ${userEntity.id}");
       
+      // Do not save giant base64 strings in SecureStorage (it causes iOS keychain hangs)
+      final userMapToSave = userEntity.toMap();
+      if (userMapToSave[Apikeys.profileImage] != null && userMapToSave[Apikeys.profileImage].toString().length > 500) {
+        userMapToSave[Apikeys.profileImage] = ""; 
+      }
+
       // Save full UserEntity to SecureStorage
       await SecureStorage.setString(
         key: 'user_data',
-        value: jsonEncode(userEntity.toMap()),
+        value: jsonEncode(userMapToSave),
       );
       log("user_data saved to SecureStorage");
 
