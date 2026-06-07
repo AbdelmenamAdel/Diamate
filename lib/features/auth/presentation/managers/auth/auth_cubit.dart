@@ -36,22 +36,19 @@ class AuthCubit extends Cubit<AuthState> {
           ),
         ),
         (loginResponse) async {
-          final userResult = await authRepo.getUserData(
-            token: loginResponse.token,
-          );
-          userResult.fold(
-            (failure) => emit(
-              RegisterFailure(
-                message:
-                    'Signup successful, but fetching user data failed: $failure',
-              ),
-            ),
-            (userEntity) {
-              this.user = userEntity;
-              emit(AuthAuthenticated(user: this.user!));
+          // signinWithEmailAndPassword already fetched and saved the user to SecureStorage.
+          try {
+            final userData = await SecureStorage.getString(key: 'user_data');
+            if (userData != null) {
+              user = UserEntity.fromMap(jsonDecode(userData));
+              emit(AuthAuthenticated(user: user!));
               emit(RegisterSuccess());
-            },
-          );
+            } else {
+              emit(RegisterFailure(message: "Failed to load user data locally"));
+            }
+          } catch (e) {
+            emit(RegisterFailure(message: "Error loading user data: $e"));
+          }
         },
       );
     });
@@ -63,14 +60,21 @@ class AuthCubit extends Cubit<AuthState> {
     result.fold((failure) => emit(LoginFailure(message: failure)), (
       loginResponse,
     ) async {
-      final userResult = await authRepo.getUserData(token: loginResponse.token);
-      userResult.fold((failure) => emit(LoginFailure(message: failure)), (
-        userEntity,
-      ) {
-        user = userEntity;
-        emit(AuthAuthenticated(user: user!));
-        emit(LoginSuccess());
-      });
+      // signinWithEmailAndPassword already fetched and saved the user to SecureStorage.
+      // We just need to load it from there instead of making a duplicate network request 
+      // which is causing a connection hang.
+      try {
+        final userData = await SecureStorage.getString(key: 'user_data');
+        if (userData != null) {
+          user = UserEntity.fromMap(jsonDecode(userData));
+          emit(AuthAuthenticated(user: user!));
+          emit(LoginSuccess());
+        } else {
+          emit(LoginFailure(message: "Failed to load user data locally"));
+        }
+      } catch (e) {
+        emit(LoginFailure(message: "Error loading user data: $e"));
+      }
     });
   }
 }

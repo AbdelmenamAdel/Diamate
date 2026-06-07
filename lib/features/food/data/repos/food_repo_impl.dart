@@ -20,57 +20,6 @@ class FoodRepoImpl implements FoodRepo {
 
   FoodRepoImpl({required this.api, required this.localService});
 
-  Future<List<String>?> _getIngredientsFromGemini(File image) async {
-    try {
-      final dio = Dio();
-      final url =
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${K.geminiApiKey}";
-
-      final imageBytes = await image.readAsBytes();
-      final base64Image = base64Encode(imageBytes);
-
-      final ext = image.path.split('.').last.toLowerCase();
-      final mimeType = ext == 'png' ? 'image/png' : 'image/jpeg';
-
-      final prompt = '''
-Analyze this food image and list the main visible ingredients.
-Return ONLY a valid JSON array of strings, for example: ["Chicken", "Rice", "Tomato"].
-Do not include any other text or markdown formatting.
-''';
-
-      log("Calling Gemini API for image analysis...");
-      final response = await dio.post(
-        url,
-        data: {
-          "contents": [
-            {
-              "parts": [
-                {"text": prompt},
-                {
-                  "inlineData": {"mimeType": mimeType, "data": base64Image},
-                },
-              ],
-            },
-          ],
-          "generationConfig": {
-            "temperature": 0.4,
-            "responseMimeType": "application/json",
-          },
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final text =
-            response.data['candidates'][0]['content']['parts'][0]['text'];
-        final List<dynamic> jsonList = jsonDecode(text);
-        return jsonList.map((e) => e.toString()).toList();
-      }
-    } catch (e) {
-      log("Gemini image analysis failed: $e");
-    }
-    return null;
-  }
-
   @override
   Future<Either<String, List<String>>> analyzeFoodImage(File image) async {
     try {
@@ -78,6 +27,7 @@ Do not include any other text or markdown formatting.
 
       List<String>? ingredients;
 
+      // 1st Option: detectFood
       try {
         final response = await api.post(
           EndPoint.detectFood,
@@ -85,7 +35,7 @@ Do not include any other text or markdown formatting.
           data: {"file": await MultipartFile.fromFile(image.path)},
         );
 
-        log("Food analysis response: $response");
+        log("First option (detectFood) response: $response");
         if (response != null &&
             response is Map<String, dynamic> &&
             response['food_detected'] == true &&
@@ -97,11 +47,43 @@ Do not include any other text or markdown formatting.
               .toList();
         }
       } catch (e) {
-        log("Server endpoint failed, falling back to Gemini API. Error: $e");
+        log("First option failed. Error: $e");
       }
 
+      // 2nd Option: analyzeFood (Project B)
       if (ingredients == null || ingredients.isEmpty) {
-        ingredients = await _getIngredientsFromGemini(image);
+        try {
+          log("Falling back to second option (analyzeFood)...");
+          final response = await api.post(
+            EndPoint.analyzeFood,
+            isFormData: true,
+            data: {"file": await MultipartFile.fromFile(image.path)},
+          );
+
+          log("Second option (analyzeFood) response: $response");
+          
+          if (response != null) {
+            // Flexible parsing to handle potential different response structures
+            if (response is List) {
+              ingredients = response.map((e) => e.toString()).toList();
+            } else if (response is Map<String, dynamic>) {
+              if (response['detected_items'] != null) {
+                final List<dynamic> items = response['detected_items'];
+                ingredients = items
+                    .where((item) => item != null && item['class_name'] != null)
+                    .map((item) => item['class_name'] as String)
+                    .toList();
+              } else if (response['ingredients'] != null) {
+                final List<dynamic> items = response['ingredients'];
+                ingredients = items.map((e) => e.toString()).toList();
+              } else if (response['data'] != null && response['data'] is List) {
+                 ingredients = (response['data'] as List).map((e) => e.toString()).toList();
+              }
+            }
+          }
+        } catch (e) {
+          log("Second option also failed. Error: $e");
+        }
       }
 
       if (ingredients != null && ingredients.isNotEmpty) {
