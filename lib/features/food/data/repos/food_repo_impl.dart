@@ -41,10 +41,23 @@ class FoodRepoImpl implements FoodRepo {
             response['food_detected'] == true &&
             response['detected_items'] != null) {
           final List<dynamic> items = response['detected_items'];
-          ingredients = items
-              .where((item) => item != null && item['class_name'] != null)
-              .map((item) => item['class_name'] as String)
-              .toList();
+          final Set<String> extractedIngredients = {};
+          
+          for (var item in items) {
+            if (item != null && item['class_name'] != null) {
+              final String className = item['class_name'] as String;
+              // Split compound class names by comma, 'and', 'with', '-', or just any space
+              final parts = className.split(RegExp(r',\s*|\s+and\s+|\s+with\s+|\s*-\s*|\s+'));
+              for (var part in parts) {
+                if (part.trim().isNotEmpty) {
+                  // Capitalize first letter
+                  final capitalized = part.trim()[0].toUpperCase() + part.trim().substring(1).toLowerCase();
+                  extractedIngredients.add(capitalized);
+                }
+              }
+            }
+          }
+          ingredients = extractedIngredients.toList();
         }
       } catch (e) {
         log("First option failed. Error: $e");

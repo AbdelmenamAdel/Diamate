@@ -72,6 +72,7 @@ class DioConsumer extends ApiConsumer {
         path,
         data: isFormData ? FormData.fromMap(data) : data,
         queryParameters: queryParameters,
+        options: isFormData ? Options(contentType: Headers.multipartFormDataContentType) : null,
       );
       return res.data;
     } on DioException catch (e) {
@@ -88,11 +89,15 @@ class DioConsumer extends ApiConsumer {
     Options? options,
   }) async {
     try {
+      Options finalOptions = options ?? Options();
+      if (isFormData) {
+        finalOptions.contentType = Headers.multipartFormDataContentType;
+      }
       var res = await dio.post(
         path,
         data: isFormData ? FormData.fromMap(data) : data,
         queryParameters: queryParameters,
-        options: options,
+        options: finalOptions,
       );
       return res.data;
     } on DioException catch (e) {
