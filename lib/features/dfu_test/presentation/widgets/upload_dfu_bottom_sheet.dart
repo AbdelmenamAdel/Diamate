@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:convert';
 import 'dart:ui' as ui;
+import 'package:path_provider/path_provider.dart';
+import 'package:diamate/features/dfu_test/data/services/dfu_remote_service.dart';
 import 'package:diamate/constant.dart';
 import 'package:diamate/core/extensions/context_extension.dart';
 import 'package:diamate/core/widgets/custom_achievement_notification.dart';
@@ -235,18 +238,62 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
             CustomButton(
               onTap: () async {
                 if (_nameController.text.isNotEmpty && _imagePaths.isNotEmpty) {
-                  await context.read<DfuTestCubit>().addDfuTest(
-                    name: _nameController.text,
-                    imagePaths: _imagePaths,
+                  // Show loading
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const Center(child: CircularProgressIndicator()),
                   );
 
-                  if (mounted) {
-                    Navigator.pop(context);
-                    showAchievementView(
-                      context: context,
-                      title: "DFU Images Uploaded Successfully",
-                      color: primaryColor,
-                    );
+                  try {
+                    // Analyze the first image
+                    final remoteService = sl<DfuRemoteService>();
+                    final response = await remoteService.predictDfu(File(_imagePaths.first));
+
+                    String? overlayPath;
+                    if (response.overlayB64.isNotEmpty) {
+                      final bytes = base64Decode(response.overlayB64);
+                      final dir = await getApplicationDocumentsDirectory();
+                      final file = File('${dir.path}/dfu_overlay_${DateTime.now().millisecondsSinceEpoch}.png');
+                      await file.writeAsBytes(bytes);
+                      overlayPath = file.path;
+                    }
+
+                    if (mounted) {
+                      await context.read<DfuTestCubit>().addDfuTest(
+                            name: _nameController.text,
+                            imagePaths: _imagePaths,
+                            ulcerDetected: response.ulcerDetected,
+                            ulcerCoverage: response.ulcerCoverage,
+                            ulcerPixels: response.ulcerPixels,
+                            overlayImagePath: overlayPath,
+                            inferenceMs: response.inferenceMs.toInt(),
+                          );
+
+                      // Pop loading dialog
+                      Navigator.pop(context);
+                      // Pop bottom sheet
+                      Navigator.pop(context);
+
+                      String resultText = response.ulcerDetected
+                          ? "Ulcer Detected! Coverage: ${response.ulcerCoverage.toStringAsFixed(1)}%"
+                          : "No Ulcer Detected.";
+
+                      showAchievementView(
+                        context: context,
+                        title: "Analysis Complete & Saved",
+                        subTitle: resultText,
+                        color: response.ulcerDetected ? Colors.red : Colors.green,
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      // Pop loading dialog
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Analysis failed: $e")),
+                      );
+                    }
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -256,7 +303,7 @@ class _UploadDfuBottomSheetState extends State<UploadDfuBottomSheet> {
                   );
                 }
               },
-              text: "Save Assessment",
+              text: "Analyze & Save",
             ),
           ],
         ),
