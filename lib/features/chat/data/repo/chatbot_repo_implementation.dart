@@ -21,7 +21,7 @@ class ChatbotRepoImplementation implements ChatbotRepo {
     try {
       final response = await api.post(
         // EndPoint.chatBotSendMessage,
-        "http://localhost:8000/${EndPoint.chatBotSendMessage}/",
+        "http://localhost:8002/${EndPoint.chatBotSendMessage}/",
         data: {Apikeys.sessionId: sessionID, Apikeys.question: question},
       );
 
@@ -61,7 +61,7 @@ class ChatbotRepoImplementation implements ChatbotRepo {
   }
 
   String _extractServerError(ServerFailure e) {
-    // The errorModel.errorMessage defaults to "User not authenticated" 
+    // The errorModel.errorMessage defaults to "User not authenticated"
     // because Failure.fromJson looks for 'title' key which doesn't exist
     // in our chat API response. We return a generic failure message instead.
     return 'Failed to generate response. Please try again.';
