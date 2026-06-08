@@ -42,16 +42,20 @@ class FoodRepoImpl implements FoodRepo {
             response['detected_items'] != null) {
           final List<dynamic> items = response['detected_items'];
           final Set<String> extractedIngredients = {};
-          
+
           for (var item in items) {
             if (item != null && item['class_name'] != null) {
               final String className = item['class_name'] as String;
               // Split compound class names by comma, 'and', 'with', '-', or just any space
-              final parts = className.split(RegExp(r',\s*|\s+and\s+|\s+with\s+|\s*-\s*|\s+'));
+              final parts = className.split(
+                RegExp(r',\s*|\s+and\s+|\s+with\s+|\s*-\s*|\s+'),
+              );
               for (var part in parts) {
                 if (part.trim().isNotEmpty) {
                   // Capitalize first letter
-                  final capitalized = part.trim()[0].toUpperCase() + part.trim().substring(1).toLowerCase();
+                  final capitalized =
+                      part.trim()[0].toUpperCase() +
+                      part.trim().substring(1).toLowerCase();
                   extractedIngredients.add(capitalized);
                 }
               }
@@ -74,7 +78,7 @@ class FoodRepoImpl implements FoodRepo {
           );
 
           log("Second option (analyzeFood) response: $response");
-          
+
           if (response != null) {
             // Flexible parsing to handle potential different response structures
             if (response is List) {
@@ -90,7 +94,9 @@ class FoodRepoImpl implements FoodRepo {
                 final List<dynamic> items = response['ingredients'];
                 ingredients = items.map((e) => e.toString()).toList();
               } else if (response['data'] != null && response['data'] is List) {
-                 ingredients = (response['data'] as List).map((e) => e.toString()).toList();
+                ingredients = (response['data'] as List)
+                    .map((e) => e.toString())
+                    .toList();
               }
             }
           }
@@ -171,38 +177,42 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     required int patientId,
   }) async {
     try {
+      // 1. First calculate nutrition from Gemini (since backend requires it)
+      NutritionModel? nutritionInfo = await _getNutritionFromGemini(
+        meal.ingredients,
+      );
+      // Fallback if Gemini fails
+      nutritionInfo ??= const NutritionModel(
+        calories: 300,
+        protein: 15,
+        fat: 10,
+        carbs: 40,
+      );
+
+      // 2. Prepare data for backend
       final data = {
         "patientId": patientId,
-        "mealName": meal.name,
-        "mealImage": meal.imagePath,
-        "ingredients": meal.ingredients.map((i) => i.toJson()).toList(),
+        "name": meal.name,
+        "read_date": DateTime.now().toIso8601String(),
+        "calories": nutritionInfo.calories,
+        "protein": nutritionInfo.protein,
+        "carbs": nutritionInfo.carbs,
+        "fats": nutritionInfo.fat,
+        "notes": meal.ingredients
+            .map((i) => "${i.name} (${i.quantityGrams}g)")
+            .join(', '),
       };
 
       log("Sending food meal to server: $data");
 
-      NutritionModel? nutritionInfo;
-
+      // 3. Send to API
       try {
         final response = await api.post(EndPoint.addFoodMeal, data: data);
-        if (response != null) {
-          nutritionInfo = NutritionModel.fromJson(
-            response as Map<String, dynamic>,
-          );
-        }
+        log("Backend response for AddNewMeal: $response");
       } catch (e) {
-        log("Server endpoint failed, falling back to Gemini API. Error: $e");
-      }
-
-      // Generate nutrition from Gemini if server failed
-      if (nutritionInfo == null) {
-        nutritionInfo = await _getNutritionFromGemini(meal.ingredients);
-        // Fallback to mock if Gemini also fails
-        nutritionInfo ??= const NutritionModel(
-          calories: 300,
-          protein: 15,
-          fat: 10,
-          carbs: 40,
-        );
+        log("Server endpoint failed. Error: $e");
+        // Still return Right if you want to allow offline saving when server fails,
+        // or return Left if you want strict server syncing.
       }
 
       // Save locally
