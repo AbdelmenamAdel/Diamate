@@ -80,7 +80,11 @@ class FoodCubit extends Cubit<FoodState> {
 
     result.fold(
       (failure) => emit(FoodError(message: failure)),
-      (nutrition) => emit(FoodSuccess(nutrition: nutrition)),
+      (nutrition) {
+        // Clear the cache for today so that the app fetches the new meal when navigating back to Home
+        _mealsCache.remove(_normalizeDate(DateTime.now()));
+        emit(FoodSuccess(nutrition: nutrition));
+      },
     );
   }
 }

@@ -19,8 +19,9 @@ class EndPoint {
   static String get detectFood => Platform.isAndroid
       ? 'http://10.0.2.2:8001/detect-food'
       : 'http://127.0.0.1:8001/detect-food';
-  static const String addFoodMeal = 'Food/AddMeal';
-  static const String getFoodMeals = 'Food/GetMeals';
+  static const String addFoodMeal = 'Meal/AddNewMeal';
+  static String getFoodMeals(int patientId) =>
+      'Meal/GetAllMealsForPatient/$patientId';
   // deleteUser + id method in AuthRepoImpl to delete account from server side
 }
 
