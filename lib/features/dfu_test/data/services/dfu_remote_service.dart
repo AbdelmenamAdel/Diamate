@@ -10,9 +10,9 @@ class DfuRemoteService {
 
   String get _baseUrl {
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:5000';
+      return 'http://10.0.2.2:5001';
     } else {
-      return 'http://127.0.0.1:5000';
+      return 'http://127.0.0.1:5001';
     }
   }
 
@@ -23,20 +23,16 @@ class DfuRemoteService {
 
       final response = await _dio.post(
         '$_baseUrl/api/v1/segmentation/',
-        data: {
-          'image_b64': base64Image,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        ),
+        data: {'image_b64': base64Image},
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
       return DfuPredictionResponse.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response != null) {
-        throw Exception('Server error: ${e.response?.data['signal'] ?? e.response?.statusCode}');
+        throw Exception(
+          'Server error: ${e.response?.data['signal'] ?? e.response?.statusCode}',
+        );
       } else {
         throw Exception('Network error: ${e.message}');
       }

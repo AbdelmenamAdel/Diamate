@@ -1,8 +1,8 @@
 import 'dart:io';
 
 class EndPoint {
-  static String get baseUrl => Platform.isAndroid 
-      ? 'http://10.0.2.2:8080/api/' 
+  static String get baseUrl => Platform.isAndroid
+      ? 'http://10.0.2.2:8080/api/'
       : 'http://127.0.0.1:8080/api/';
   static const String login = 'Account/LogIn';
   static const String signUp = 'Account/RegisterNewUser';
@@ -16,9 +16,9 @@ class EndPoint {
       'BloodGlucoseReading/AddReadingForPatient';
   static const String addMedicine = 'Medicine/AddNewMedicine';
   static const String analyzeFood = 'Food/AnalyzeImage';
-  static String get detectFood => Platform.isAndroid 
-      ? 'http://10.0.2.2:8000/detect-food' 
-      : 'http://127.0.0.1:8000/detect-food';
+  static String get detectFood => Platform.isAndroid
+      ? 'http://10.0.2.2:8001/detect-food'
+      : 'http://127.0.0.1:8001/detect-food';
   static const String addFoodMeal = 'Food/AddMeal';
   static const String getFoodMeals = 'Food/GetMeals';
   // deleteUser + id method in AuthRepoImpl to delete account from server side
