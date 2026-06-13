@@ -70,6 +70,7 @@ class HomeView extends StatelessWidget {
 
                 // ! Daily Calory Section
                 BlocBuilder<FoodCubit, FoodState>(
+                  buildWhen: (previous, current) => current is FoodHistoryLoaded,
                   builder: (context, state) {
                     double totalCalories = 0;
                     double totalProtein = 0;

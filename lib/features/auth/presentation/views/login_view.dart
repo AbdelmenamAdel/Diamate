@@ -41,8 +41,8 @@ class _LoginViewState extends State<LoginView> {
     // ارتفاع الكيبورد (0 لو مفيش كيبورد)
     final bottomInset = MediaQuery.of(context).viewInsets.bottom / 6;
 
-    return BlocProvider<AuthCubit>(
-      create: (context) => sl<AuthCubit>(),
+    return BlocProvider<AuthCubit>.value(
+      value: sl<AuthCubit>(),
       child: Theme(
         data: themeLight(),
         child: Scaffold(

@@ -1,9 +1,11 @@
 import 'dart:io';
 
 class EndPoint {
+  static const String iphoneIp = '127.0.0.1';
+  static const String androidIp = '10.0.2.2';
   static String get baseUrl => Platform.isAndroid
-      ? 'http://10.0.2.2:8080/api/'
-      : 'http://127.0.0.1:8080/api/';
+      ? 'http://$androidIp:8080/api/'
+      : 'http://$iphoneIp:8080/api/';
   static const String login = 'Account/LogIn';
   static const String signUp = 'Account/RegisterNewUser';
   static const String getUserData = 'student/profile';
@@ -17,8 +19,8 @@ class EndPoint {
   static const String addMedicine = 'Medicine/AddNewMedicine';
   static const String analyzeFood = 'Food/AnalyzeImage';
   static String get detectFood => Platform.isAndroid
-      ? 'http://10.0.2.2:8001/detect-food'
-      : 'http://127.0.0.1:8001/detect-food';
+      ? 'http://$androidIp:8001/detect-food'
+      : 'http://$iphoneIp:8001/detect-food';
   static const String addFoodMeal = 'Meal/AddNewMeal';
   static String getFoodMeals(int patientId) =>
       'Meal/GetAllMealsForPatient/$patientId';

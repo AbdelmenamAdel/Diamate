@@ -84,6 +84,8 @@ class FoodCubit extends Cubit<FoodState> {
         // Clear the cache for today so that the app fetches the new meal when navigating back to Home
         _mealsCache.remove(_normalizeDate(DateTime.now()));
         emit(FoodSuccess(nutrition: nutrition));
+        // Automatically fetch the updated meals for today so the Dashboard updates
+        loadMealsForDate(DateTime.now());
       },
     );
   }

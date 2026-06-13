@@ -564,8 +564,8 @@ class _SignupViewState extends State<SignupView> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom / 4;
-    return BlocProvider<AuthCubit>(
-      create: (context) => sl<AuthCubit>(),
+    return BlocProvider<AuthCubit>.value(
+      value: sl<AuthCubit>(),
       child: Theme(
         data: themeLight(),
         child: BlocConsumer<AuthCubit, AuthState>(

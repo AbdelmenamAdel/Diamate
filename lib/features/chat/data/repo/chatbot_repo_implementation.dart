@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:diamate/core/database/api/api_consumer.dart';
@@ -21,7 +22,9 @@ class ChatbotRepoImplementation implements ChatbotRepo {
     try {
       final response = await api.post(
         // EndPoint.chatBotSendMessage,
-        "http://localhost:8002/${EndPoint.chatBotSendMessage}/",
+        Platform.isAndroid
+            ? "http://${EndPoint.androidIp}:8002/${EndPoint.chatBotSendMessage}/"
+            : "http://${EndPoint.iphoneIp}:8002/${EndPoint.chatBotSendMessage}/",
         data: {Apikeys.sessionId: sessionID, Apikeys.question: question},
       );
 

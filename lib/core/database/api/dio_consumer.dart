@@ -12,6 +12,8 @@ class DioConsumer extends ApiConsumer {
   DioConsumer(this.dio) {
     dio.options.baseUrl = EndPoint.baseUrl;
     dio.options.contentType = Headers.jsonContentType;
+    dio.options.connectTimeout = const Duration(seconds: 30);
+    dio.options.receiveTimeout = const Duration(seconds: 30);
     dio.interceptors.add(ApiInterceptors(dio));
     dio.interceptors.add(
       LogInterceptor(

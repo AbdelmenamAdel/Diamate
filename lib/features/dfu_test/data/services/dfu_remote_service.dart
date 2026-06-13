@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:diamate/core/database/api/end_points.dart';
 import 'package:dio/dio.dart';
 import 'package:diamate/features/dfu_test/data/models/dfu_prediction_response.dart';
 
@@ -10,9 +11,9 @@ class DfuRemoteService {
 
   String get _baseUrl {
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:5001';
+      return 'http://${EndPoint.androidIp}:5001';
     } else {
-      return 'http://127.0.0.1:5001';
+      return 'http://${EndPoint.iphoneIp}:5001';
     }
   }
 
