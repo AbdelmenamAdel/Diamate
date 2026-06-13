@@ -12,7 +12,6 @@ import '../models/meal_model.dart';
 import '../models/recommended_meal_model.dart';
 import '../services/food_local_service.dart';
 import 'package:diamate/core/utils/file_helper.dart';
-import 'package:diamate/core/services/ai_engine_service.dart';
 
 class FoodRepoImpl implements FoodRepo {
   final ApiConsumer api;
@@ -255,19 +254,7 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     }
   }
 
-  // ============================================================
-  // Arab & Middle Eastern areas — Egyptian first, then neighbors
-  // ============================================================
-  static const List<String> _arabAreas = [
-    'Egyptian',
-    'Moroccan',
-    'Tunisian',
-    'Turkish',
-    'Lebanese',
-    'Greek', // Mediterranean — close to Egyptian cuisine
-    'Indian', // popular healthy dishes
-    'Malaysian', // spiced healthy dishes
-  ];
+
 
   /// Estimated nutrition per meal by cuisine area (single serving ~300g)
   static const Map<String, Map<String, double>> _nutritionByArea = {
@@ -281,17 +268,7 @@ ${ingredients.map((i) => "- ${i.name} (${i.quantityGrams}g)").join('\\n')}
     'Malaysian': {'cal': 260, 'pro': 16, 'carb': 28, 'fat': 9},
   };
 
-  /// Friendly Arabic description by area
-  static const Map<String, String> _areaDescriptionAr = {
-    'Egyptian': 'أكلة مصرية أصيلة',
-    'Moroccan': 'أكلة مغربية شهية',
-    'Tunisian': 'أكلة تونسية مميزة',
-    'Turkish': 'أكلة تركية تقليدية',
-    'Lebanese': 'أكلة لبنانية طازجة',
-    'Greek': 'أكلة إغريقية متوسطية',
-    'Indian': 'أكلة هندية غنية بالبهارات',
-    'Malaysian': 'أكلة آسيوية صحية',
-  };
+
 
   /// Builds a list of image URLs for the meal carousel:
   /// 1. Main meal thumbnail (always included)

@@ -4,6 +4,8 @@ import 'package:diamate/core/language/app_Localizations.dart';
 import 'package:diamate/core/widgets/custom_app_bar.dart';
 import 'package:diamate/core/widgets/custom_button.dart';
 import 'package:diamate/core/widgets/custom_text_form_field.dart';
+import 'package:diamate/features/food/presentation/managers/food_cubit.dart';
+import 'package:diamate/features/food/presentation/widgets/meal_history_card.dart';
 import 'package:diamate/features/main/presentation/views/widgets/recommeded_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,8 +17,22 @@ import 'package:diamate/core/extensions/context_extension.dart';
 
 import 'package:diamate/core/routes/app_routes.dart';
 
-class FoodView extends StatelessWidget {
+class FoodView extends StatefulWidget {
   const FoodView({super.key});
+
+  @override
+  State<FoodView> createState() => _FoodViewState();
+}
+
+class _FoodViewState extends State<FoodView> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +44,22 @@ class FoodView extends StatelessWidget {
         children: [
           CustomAppBar(
             back: false,
-            title: AppLocalizations.of(context)?.translate('food_log') ?? 'Food Log',
+            title:
+                AppLocalizations.of(context)?.translate('food_log') ??
+                'Food Log',
           ),
 
           CustomTextFormField(
-            hint: 'Search',
+            controller: _searchController,
+            hint: 'Search cached meals',
             nodivider: true,
             height: 48.h,
             image: Assets.searchIcon,
+            onChanged: (val) {
+              setState(() {
+                _searchQuery = val!;
+              });
+            },
           ),
           SizedBox(
             height: 44.h,
@@ -48,7 +72,11 @@ class FoodView extends StatelessWidget {
                     onTap: () {
                       context.pushNamed(AppRoutes.addFood);
                     },
-                    text: AppLocalizations.of(context)?.translate('add_manually') ?? '+ Add Manually',
+                    text:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('add_manually') ??
+                        '+ Add Manually',
                     color: const Color(0xff2D9CDB),
                   ),
                 ),
@@ -66,7 +94,9 @@ class FoodView extends StatelessWidget {
                       Icons.camera_alt_outlined,
                       color: Colors.white,
                     ),
-                    text: AppLocalizations.of(context)?.translate('scan_food') ?? 'Scan Food',
+                    text:
+                        AppLocalizations.of(context)?.translate('scan_food') ??
+                        'Scan Food',
                     color: const Color(0xff2D9CDB),
                   ),
                 ),
@@ -75,133 +105,207 @@ class FoodView extends StatelessWidget {
           ),
 
           Expanded(
-            child: CustomScrollView(
-              slivers: [
-                BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
-                  builder: (context, rState) {
-                    // --- Header row with refresh button ---
-                    final header = SliverToBoxAdapter(
+            child: _searchQuery.isNotEmpty
+                ? _buildSearchResults()
+                : _buildRecommendedMeals(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    final searchResults = context.read<FoodCubit>().searchCachedMeals(
+      _searchQuery,
+    );
+
+    if (searchResults.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off_rounded,
+              size: 48,
+              color: Colors.grey.withOpacity(0.5),
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              "No cached meals found",
+              style: TextStyle(color: Colors.grey, fontSize: 16.sp),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0.h),
+            child: Text(
+              'Search Results',
+              style: TextStyle(
+                fontFamily: K.sg,
+                fontSize: 14,
+                height: .5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: 12.h),
+              child: MealHistoryCard(meal: searchResults[index]),
+            );
+          }, childCount: searchResults.length),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecommendedMeals() {
+    return CustomScrollView(
+      slivers: [
+        BlocBuilder<RecommendedFoodCubit, RecommendedFoodState>(
+          builder: (context, rState) {
+            // --- Header row with refresh button ---
+            final header = SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.0.h),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('recommended_for_you') ??
+                            'Recommended for you',
+                        style: TextStyle(
+                          fontFamily: K.sg,
+                          fontSize: 14,
+                          height: .5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: rState is RecommendedFoodLoading
+                          ? null
+                          : () => context
+                                .read<RecommendedFoodCubit>()
+                                .refreshMeals(),
+                      borderRadius: BorderRadius.circular(8),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.0.h),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                AppLocalizations.of(context)?.translate('recommended_for_you') ?? 'Recommended for you',
-                                style: TextStyle(
-                                  fontFamily: K.sg,
-                                  fontSize: 14,
-                                  height: .5,
-                                  fontWeight: FontWeight.w700,
+                        padding: const EdgeInsets.all(6.0),
+                        child: rState is RecommendedFoodLoading
+                            ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: context.color.primaryColor,
                                 ),
+                              )
+                            : Icon(
+                                Icons.refresh_rounded,
+                                size: 20,
+                                color: context.color.primaryColor,
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+
+            if (rState is RecommendedFoodLoading) {
+              return SliverMainAxisGroup(
+                slivers: [
+                  header,
+                  const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 48),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            if (rState is RecommendedFoodError) {
+              return SliverMainAxisGroup(
+                slivers: [
+                  header,
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.wifi_off_rounded,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              rState.message,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: K.sg,
+                                fontSize: 12,
+                                color: Colors.grey,
                               ),
                             ),
-                            InkWell(
-                              onTap: rState is RecommendedFoodLoading
-                                  ? null
-                                  : () => context.read<RecommendedFoodCubit>().refreshMeals(),
-                              borderRadius: BorderRadius.circular(8),
-                              child: Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: rState is RecommendedFoodLoading
-                                    ? SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: context.color.primaryColor,
-                                        ),
-                                      )
-                                    : Icon(
-                                        Icons.refresh_rounded,
-                                        size: 20,
-                                        color: context.color.primaryColor,
-                                      ),
-                              ),
+                            const SizedBox(height: 12),
+                            TextButton.icon(
+                              onPressed: () => context
+                                  .read<RecommendedFoodCubit>()
+                                  .refreshMeals(),
+                              icon: const Icon(Icons.refresh_rounded),
+                              label: const Text("Try Again"),
                             ),
                           ],
                         ),
                       ),
-                    );
+                    ),
+                  ),
+                ],
+              );
+            }
 
-                    if (rState is RecommendedFoodLoading) {
-                      return SliverMainAxisGroup(
-                        slivers: [
-                          header,
-                          const SliverToBoxAdapter(
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 48),
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
+            List<dynamic> recs = [];
+            if (rState is RecommendedFoodLoaded) {
+              recs = rState.recommendations;
+            }
 
-                    if (rState is RecommendedFoodError) {
-                      return SliverMainAxisGroup(
-                        slivers: [
-                          header,
-                          SliverToBoxAdapter(
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 32),
-                                child: Column(
-                                  children: [
-                                    Icon(Icons.wifi_off_rounded, size: 40, color: Colors.grey),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      rState.message,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontFamily: K.sg, fontSize: 12, color: Colors.grey),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    TextButton.icon(
-                                      onPressed: () => context.read<RecommendedFoodCubit>().refreshMeals(),
-                                      icon: const Icon(Icons.refresh_rounded),
-                                      label: const Text("Try Again"),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-
-                    List<dynamic> recs = [];
-                    if (rState is RecommendedFoodLoaded) {
-                      recs = rState.recommendations;
-                    }
-
-                    return SliverMainAxisGroup(
-                      slivers: [
-                        header,
-                        SliverGrid.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.78,
-                            crossAxisSpacing: 10.w,
-                            mainAxisSpacing: 10.h,
-                          ),
-                          itemCount: recs.isNotEmpty ? recs.length : 4,
-                          itemBuilder: (context, index) {
-                            final meal = recs.isNotEmpty ? recs[index] : null;
-                            return RecommededItem(meal: meal);
-                          },
-                        ),
-                      ],
-                    );
+            return SliverMainAxisGroup(
+              slivers: [
+                header,
+                SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.78,
+                    crossAxisSpacing: 10.w,
+                    mainAxisSpacing: 10.h,
+                  ),
+                  itemCount: recs.isNotEmpty ? recs.length : 4,
+                  itemBuilder: (context, index) {
+                    final meal = recs.isNotEmpty ? recs[index] : null;
+                    return RecommededItem(meal: meal);
                   },
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

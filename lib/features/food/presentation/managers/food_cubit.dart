@@ -89,4 +89,22 @@ class FoodCubit extends Cubit<FoodState> {
       },
     );
   }
+  List<MealModel> searchCachedMeals(String query) {
+    if (query.trim().isEmpty) return [];
+    
+    final lowerQuery = query.toLowerCase();
+    final List<MealModel> results = [];
+    
+    for (final dayMeals in _mealsCache.values) {
+      for (final meal in dayMeals) {
+        if (meal.name.toLowerCase().contains(lowerQuery)) {
+          results.add(meal);
+        } else if (meal.ingredients.any((i) => i.name.toLowerCase().contains(lowerQuery))) {
+          results.add(meal);
+        }
+      }
+    }
+    
+    return results.toSet().toList(); // Remove duplicates if any
+  }
 }
