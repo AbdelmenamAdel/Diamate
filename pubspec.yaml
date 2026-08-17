@@ -61,6 +61,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/mockups/
     - assets/fonts/
     - assets/langs/
     - assets/video/

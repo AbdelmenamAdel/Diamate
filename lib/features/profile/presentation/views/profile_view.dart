@@ -5,6 +5,7 @@ import 'package:diamate/core/generated/app_assets.dart';
 import 'package:diamate/core/routes/app_routes.dart';
 import 'package:diamate/features/auth/presentation/managers/auth/auth_cubit.dart';
 import 'package:diamate/features/profile/presentation/widgets/permissions_bottom_sheet.dart';
+import 'package:diamate/features/profile/presentation/widgets/change_password_bottom_sheet.dart';
 import 'package:diamate/features/profile/presentation/widgets/theme_bottom_sheet.dart';
 import 'package:diamate/features/profile/presentation/widgets/language_bottom_sheet.dart';
 import 'package:diamate/core/app/app_cubit/app_cubit.dart';
@@ -176,7 +177,21 @@ class _ProfileViewState extends State<ProfileView> {
                       _ProfileTile(
                         title: "Account Information",
                         icon: Icons.person_outline_rounded,
-                        onTap: () {},
+                        onTap: () {
+                          context.pushNamed(AppRoutes.updatePatientInfo);
+                        },
+                      ),
+                      _ProfileTile(
+                        title: "Change Password",
+                        icon: Icons.lock_outline_rounded,
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => const ChangePasswordBottomSheet(),
+                          );
+                        },
                       ),
                       BlocBuilder<MedicationCubit, MedicationState>(
                         builder: (context, state) {

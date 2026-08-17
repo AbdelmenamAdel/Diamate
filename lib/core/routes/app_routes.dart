@@ -22,6 +22,7 @@ import 'package:diamate/features/food/presentation/views/food_history_view.dart'
 import 'package:diamate/features/food/presentation/views/saved_meals_view.dart';
 import 'package:diamate/core/utils/mini/recomte_configure.dart';
 import 'package:diamate/core/utils/mini/lol_view.dart';
+import 'package:diamate/features/profile/presentation/views/update_patient_info_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'base_routes.dart';
@@ -49,7 +50,7 @@ class AppRoutes {
   static const String addFood = 'addFood';
   static const String foodHistory = 'foodHistory';
   static const String savedMeals = 'savedMeals';
-
+  static const String updatePatientInfo = 'updatePatientInfo';
   static Route<void> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case initial:
@@ -129,6 +130,8 @@ class AppRoutes {
         );
       case savedMeals:
         return BaseRoute(page: const SavedMealsView());
+      case updatePatientInfo:
+        return BaseRoute(page: const UpdatePatientInfoView());
       default:
         return BaseRoute(
           page: const Scaffold(body: Center(child: Text('Page not found'))),
