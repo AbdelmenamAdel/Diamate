@@ -40,8 +40,9 @@ class AuthCubit extends Cubit<AuthState> {
           try {
             final userData = await SecureStorage.getString(key: 'user_data');
             if (userData != null) {
-              user = UserEntity.fromMap(jsonDecode(userData));
-              emit(AuthAuthenticated(user: user!));
+              final fetchedUser = UserEntity.fromMap(jsonDecode(userData));
+              user = fetchedUser;
+              emit(AuthAuthenticated(user: fetchedUser));
               emit(RegisterSuccess());
             } else {
               emit(RegisterFailure(message: "Failed to load user data locally"));

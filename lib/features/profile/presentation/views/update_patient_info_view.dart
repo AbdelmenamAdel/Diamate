@@ -33,12 +33,12 @@ class _UpdatePatientInfoViewState extends State<UpdatePatientInfoView> {
   void _loadCurrentData() {
     final user = context.read<AuthCubit>().user;
     if (user != null) {
-      _firstNameController.text = user.firstName ?? '';
-      _lastNameController.text = user.lastName ?? '';
-      _emailController.text = user.email ?? '';
-      _phoneController.text = user.phone ?? '';
-      _weightController.text = user.weight?.toString() ?? '';
-      _heightController.text = user.height?.toString() ?? '';
+      _firstNameController.text = user.firstName;
+      _lastNameController.text = user.lastName;
+      _emailController.text = user.email;
+      _phoneController.text = user.phone;
+      _weightController.text = user.weight.toString();
+      _heightController.text = user.height.toString();
     }
   }
 
