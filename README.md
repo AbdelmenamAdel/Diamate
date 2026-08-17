@@ -50,19 +50,19 @@
 
 </div>
 
-### 📱 Full Application Mockup Suite (Horizontal Gallery)
+### 📱 Full Application Mockup Suite (Large Horizontal Carousel)
 <div align="center">
   <table display="block" overflow-x="auto">
     <tr>
-      <td><img src="assets/mockups/diamate_1.webp" width="180" alt="Mockup 1"/></td>
-      <td><img src="assets/mockups/diamate_2.webp" width="180" alt="Mockup 2"/></td>
-      <td><img src="assets/mockups/diamate_3.webp" width="180" alt="Mockup 3"/></td>
-      <td><img src="assets/mockups/diamate_4.webp" width="180" alt="Mockup 4"/></td>
-      <td><img src="assets/mockups/diamate_5.webp" width="180" alt="Mockup 5"/></td>
-      <td><img src="assets/mockups/diamate_6.webp" width="180" alt="Mockup 6"/></td>
-      <td><img src="assets/mockups/diamate_7.webp" width="180" alt="Mockup 7"/></td>
-      <td><img src="assets/mockups/diamate_8.webp" width="180" alt="Mockup 8"/></td>
-      <td><img src="assets/mockups/diamate_9.webp" width="180" alt="Mockup 9"/></td>
+      <td><img src="assets/mockups/diamate_1.webp" width="650" alt="Mockup 1"/></td>
+      <td><img src="assets/mockups/diamate_2.webp" width="650" alt="Mockup 2"/></td>
+      <td><img src="assets/mockups/diamate_3.webp" width="650" alt="Mockup 3"/></td>
+      <td><img src="assets/mockups/diamate_4.webp" width="650" alt="Mockup 4"/></td>
+      <td><img src="assets/mockups/diamate_5.webp" width="650" alt="Mockup 5"/></td>
+      <td><img src="assets/mockups/diamate_6.webp" width="650" alt="Mockup 6"/></td>
+      <td><img src="assets/mockups/diamate_7.webp" width="650" alt="Mockup 7"/></td>
+      <td><img src="assets/mockups/diamate_8.webp" width="650" alt="Mockup 8"/></td>
+      <td><img src="assets/mockups/diamate_9.webp" width="650" alt="Mockup 9"/></td>
     </tr>
   </table>
 </div>
