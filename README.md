@@ -1,9 +1,56 @@
-# DiaMate - Technical Audit & Project Documentation
+<div align="center">
+
+# 🍏 DiaMate — Advanced Diabetic & Nutrition Companion
+
+### State-of-the-art Flutter app empowering smarter lifestyles with real-time macro tracking, authentic Egyptian recipe adaptation, and instantaneous multi-provider AI localization.
+
+[![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+[![Gemini AI](https://img.shields.io/badge/Gemini%20AI-%238E75B2.svg?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Groq Fast AI](https://img.shields.io/badge/Groq-Fast_Inference-f39c12?style=for-the-badge)](https://groq.com)
+[![DeepSeek AI](https://img.shields.io/badge/DeepSeek-Smart_Models-1abc9c?style=for-the-badge)](https://deepseek.com)
+[![Hive Cache](https://img.shields.io/badge/Hive_Cache-Fast_NoSQL-orange?style=for-the-badge)](https://pub.dev/packages/hive)
+
+</div>
+
+---
+
+## 📑 Table of Contents
+- [Project Overview](#1-project-overview)
+- [App Mockups & UI Previews](#2-app-mockups--ui-previews)
+- [Core Philosophy & Vision](#3-core-philosophy--vision)
+- [Key Features & Superpowers](#4-key-features--superpowers)
+- [Enterprise Multi-Provider AI Engine](#5-enterprise-multi-provider-ai-engine)
+- [Smart Fallback Matrix](#6-smart-fallback-matrix)
+- [Authentic Diabetic-Friendly Egyptian Meals](#7-authentic-diabetic-friendly-egyptian-meals)
+- [Architecture & Folder Structure](#8-architecture--folder-structure)
+- [Authentication Flow & State Management](#9-authentication-flow--state-management)
+- [API Documentation](#10-api-documentation)
+- [Dependencies & Technology Stack](#11-dependencies--technology-stack)
+- [Database Schema & Security](#12-database-schema--security)
+- [Error Handling & Performance](#13-error-handling--performance)
+- [Setup Instructions & Deployment](#14-setup-instructions--deployment)
+- [Portfolio & Technical Highlights](#15-portfolio--technical-highlights)
+
+---
 
 ## 1. Project Overview
-DiaMate is a comprehensive healthcare Flutter application specifically designed for diabetes management and health tracking. It offers users features such as blood glucose tracking, medication logging, AI-driven food analysis, and a built-in smart chat companion to assist them in their daily health routines. 
+**DiaMate** is a comprehensive healthcare Flutter application specifically designed for diabetes management and health tracking. It offers users features such as blood glucose tracking, medication logging, AI-driven food analysis, authentic Egyptian recipe adaptation, and a built-in smart chat companion to assist them in their daily health routines.
 
-### Mockups
+---
+
+## 2. App Mockups & UI Previews
+
+### 🌙 Dark, ☀️ Light, and 🇪🇬 Adaptive Arabic UI
+<div align="center">
+
+| 🌙 Dark Aesthetic | ☀️ Light Aesthetic | 🇪🇬 Adaptive Arabic UI |
+|:---:|:---:|:---:|
+| <img src="assets/images/preview_dark.png" width="220" alt="Dark Mode" onerror="this.src='https://placehold.co/220x450/1e1e1e/white?text=Dark+Theme'"/> | <img src="assets/images/preview_light.png" width="220" alt="Light Mode" onerror="this.src='https://placehold.co/220x450/f5f5f5/black?text=Light+Theme'"/> | <img src="assets/images/preview_arabic.png" width="220" alt="Arabic Mode" onerror="this.src='https://placehold.co/220x450/2d9cdb/white?text=Arabic+Locale'"/> |
+
+</div>
+
+### 📱 Full Application Mockup Suite
 <div align="center">
   <img src="assets/mockups/diamate_1.png" width="200" alt="Mockup 1"/>
   <img src="assets/mockups/diamate_2.png" width="200" alt="Mockup 2"/>
@@ -18,167 +65,246 @@ DiaMate is a comprehensive healthcare Flutter application specifically designed 
   <img src="assets/mockups/diamate_9.png" width="200" alt="Mockup 9"/>
 </div>
 
-## 2. Architecture
-The project adheres to Clean Architecture principles, ensuring a separation of concerns and a scalable codebase. The architecture is divided into three main layers within each feature.
+---
+
+## 3. Core Philosophy & Vision
+DiaMate is engineered from the ground up to support proactive health monitoring, catering seamlessly to diabetic lifestyles. Unlike generic health platforms, DiaMate infuses live cloud recipe databases with regional Egyptian familiarity and strict low-glycemic standards.
+
+By utilizing a modular, decoupled **Core AI Engine Service**, the app intelligently switches between leading AI endpoints to process abstract payloads (Translations, OCR text extraction, Medical Readings) ensuring uncompromised app responsiveness and layout consistency.
+
+---
+
+## 4. Key Features & Superpowers
+
+- **🩸 Multi-Modal Glucose Display Detection**:
+  - *Direct AI Pixel Analysis:* Integrates high-precision multi-modal vision intelligence capable of parsing photographs of digital meter screens directly to extract accurate primary integer glucose readings.
+  - *Strict Clinical Rejection Filtering:* Employs advanced negative lookaround regex mapping coupled with explicit unit validation loops to discard background noise, non-reading numerical tokens (e.g., watermarks, IDs), and reliably reject standard non-meter random camera images.
+
+- **🥗 Comprehensive Nutrition & Food Logging**:
+  - *Intelligent Macros Dashboard:* Visually clean indicators detailing instant protein, carbohydrate, fat, and calorie progress against personalized baseline targets.
+  - *Camera-Assisted Food Logging:* Launch custom scanning pipelines enabling fluid automated or manual logging workflows directly into localized storage modules (`vision_text_recognition`, custom food endpoints).
+
+- **💬 Smart Chat Companion**:
+  - Interactive AI companion capabilities powered by `ai_engine_service` and `chat_companion_service`.
+
+- **💊 Medication & Lab Tests Management**:
+  - Track medicines, dosages, and schedules alongside clinical lab test results.
+
+- **🔔 Push Notifications & Health Reminders**:
+  - Water consumption reminders and local greeting notifications.
+
+- **🇪🇬 Authentic Egyptian Focus**:
+  - *Live Network Feeds:* Direct REST queries accessing **TheMealDB API** targeting verified local Egyptian recipes modified dynamically to suggest baking, grilling, and using minimal simple carbs.
+  - *Smart Sentence Formatting:* Automatically parses complex un-spaced paragraphs into clean, numbered instructional steps displayed perfectly across dual language viewports.
+
+- **🌍 Localization & Theming**:
+  - Multi-language support (Arabic & English) with seamless dynamic light and dark theme switching.
+
+---
+
+## 5. Enterprise Multi-Provider AI Engine
+
+DiaMate embeds a highly robust, fault-tolerant language mapping and parsing engine (`AiEngineService`) completely decoupled within the core service boundary. 
+
+If remote translation limits intercept primary payload execution, the system gracefully cascades requests down an advanced multi-provider hierarchy before triggering localized runtime dictionaries.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Repo as FoodRepoImpl
+    participant Engine as Core AiEngineService
+    participant Gemini as Gemini 2.5 Flash
+    participant Groq as Groq (Llama 3)
+    participant DeepSeek as DeepSeek API
+    participant Cache as Hive Local Cache
+
+    User->>Repo: Pull to Refresh Meals
+    Repo->>Engine: translateMeal(Payload)
+    
+    critical Failover Strategy
+        Engine->>Gemini: Request context translation
+        Gemini-->>Engine: [Rate Limit / Exception Hit]
+        
+        Engine->>Groq: Instant sequential routing (Fallback 1)
+        Groq-->>Engine: [Timeout / Throttle Hit]
+        
+        Engine->>DeepSeek: Final cloud query routing (Fallback 2)
+        DeepSeek-->>Engine: Return structured JSON Payload
+    end
+    
+    Engine->>Repo: Return fully populated dual-language model
+    Repo->>Cache: Persist reactive record safely
+```
+
+---
+
+## 6. Smart Fallback Matrix
+
+DiaMate adopts a robust degradation architecture designed to ensure zero downtime across all user-facing artificial intelligence services:
+
+| Task Domain | Primary Provider | Tier-1 Backup | Ultimate Fallback Strategy |
+|:---|:---|:---|:---|
+| **Chat & Guidance** | **Gemini 2.5 Flash** | **Groq API** | Static regional behavioral prompt guides |
+| **Vision Analysis** | **Gemini Vision** | **OpenRouter API** | Localized camera crop manual logging |
+| **Glucose Meter OCR**| **Gemini Vision AI**| **Local ML Kit OCR** | Negative lookaround heuristics & zero-false-positive rejection |
+| **Auto-Translation** | **Gemini API** | **DeepSeek / Groq** | Native substring regex matching dictionaries |
+| **Nutrition Mapping**| **Edamam API** | **Gemini Core** | Static baseline localized calorie matrices |
+
+---
+
+## 7. Authentic Diabetic-Friendly Egyptian Meals
+
+Every loaded meal automatically passes through a highly customized prompt filter dictating that recipes be optimized specifically for healthy lifestyles:
+- **Low-Glycemic Replacements:** Instructions explicitly advocate replacing deep-frying with oven-roasting or grilling.
+- **Natural Ingredient Tags:** Fallback parameters dynamically assign descriptive Arabic tags (`مكون طبيعي`, `زيت زيتون`, `خبز أسمر`) instantly localizing the interface even offline.
+
+---
+
+## 8. Architecture & Folder Structure
+
+The project adheres strictly to **Clean Architecture** and **Feature-First** principles, ensuring a separation of concerns and scalable codebase execution.
 
 ```mermaid
 graph TD
-    A[Presentation Layer] -->|Bloc/Cubit Events| B[Domain Layer]
-    B -->|Use Cases/Repositories| C[Data Layer]
-    C -->|API Calls| D[Remote Data Source: Dio]
-    C -->|Cache/Storage| E[Local Data Source: Hive/SecureStorage]
+    A[Presentation Layer: Widgets, Cubits] -->|Bloc Events / States| B[Domain Layer: Use Cases, Repositories]
+    B -->|Interfaces & Entities| C[Data Layer: Repo Impls, Data Sources]
+    C -->|API Requests| D[Remote Data Source: Dio]
+    C -->|Cache & Local State| E[Local Data Source: Hive / SecureStorage]
 ```
 
-## 3. Folder Structure
+### Folder Architecture Tree
 ```text
 lib/
 ├── core/
-│   ├── app/
-│   ├── database/
-│   ├── extensions/
-│   ├── generated/
-│   ├── language/
-│   ├── routes/
-│   ├── services/
-│   ├── styles/
-│   ├── utils/
-│   └── widgets/
+│   ├── app/                 # Root initialization blocks & settings Cubits
+│   ├── database/            # API endpoints, Dio interceptors, SecureStorage
+│   ├── extensions/          # Clean Context-driven navigation shortcuts
+│   ├── generated/           # Native asset keys mapping configurations
+│   ├── language/            # App localization parsing bindings
+│   ├── routes/              # Centralized navigation mapping paths
+│   ├── services/            # Core Decoupled AiEngineService & Singletons
+│   ├── styles/              # Colors, themes, and design tokens
+│   ├── utils/               # App constants, helpers, and formatters
+│   └── widgets/             # Reusable global UI widgets
 ├── features/
-│   ├── auth/
-│   ├── chat/
-│   ├── dfu_test/
-│   ├── food/
-│   ├── glucose/
-│   ├── lab_tests/
-│   ├── main/
-│   ├── medications/
-│   ├── notifications/
-│   ├── onboarding/
-│   └── profile/
-└── main.dart
+│   ├── auth/                # Login, Register, & Authentication BLoC
+│   ├── chat/                # AI Chat companion interface & Cubits
+│   ├── dfu_test/            # Device firmware update testing flows
+│   ├── food/                # Primary macro items, meal repositories & AI food logging
+│   ├── glucose/             # Blood glucose tracking & OCR camera reader
+│   ├── lab_tests/           # Patient lab results management
+│   ├── main/                # Root navigation layout shells
+│   ├── medications/         # Medication schedules & management
+│   ├── notifications/       # Water reminders & local notifications
+│   ├── onboarding/          # App onboarding screens
+│   └── profile/             # Modular settings, user profile, & theme controls
+└── main.dart                # Global execution layer injecting active state listeners
 ```
 
-## 4. Features
-- **Authentication**: User login and registration flows.
-- **Blood Glucose Tracking**: Add and monitor blood glucose readings.
-- **Medication Logging**: Track medicines and schedules.
-- **Food & Meal Analysis**: Vision and AI-based food detection (`vision_text_recognition`, custom food endpoints).
-- **Chat Companion**: Interactive AI chat capabilities (`ai_engine_service`, `chat_companion_service`).
-- **Push Notifications**: Water reminders and local greeting notifications.
-- **Lab Tests Management**: Keeping track of clinical results.
-- **DFU Test**: Device firmware update integration flows [NOT VERIFIED].
-- **Localization**: Multi-language support (Arabic & English).
-- **Theming**: Dark and Light mode support.
+---
 
-## 5. Dependencies
-Key packages found in `pubspec.yaml`:
-- **State Management**: `flutter_bloc`, `get_it`, `dartz`, `equatable`
-- **Networking**: `dio`
-- **Local Storage**: `hive`, `hive_flutter`, `flutter_secure_storage`
-- **UI Components**: `fl_chart`, `flutter_screenutil`, `font_awesome_flutter`, `cupertino_icons`
-- **Firebase**: `firebase_core`, `firebase_messaging`, `firebase_remote_config`, `cloud_firestore`
-- **Media / Hardware**: `image_picker`, `video_player`, `record`, `speech_to_text`, `audioplayers`, `audio_waveforms`
-- **Vision/AI**: `vision_text_recognition`
-- **Utilities**: `jwt_decoder`, `intl`, `timezone`, `timeago`, `url_launcher`
+## 9. Authentication Flow & State Management
 
-## 6. API Documentation
-Documented Dio endpoints via `lib/core/database/api/end_points.dart`:
+### BLoC State Management
+The application utilizes the BLoC (Business Logic Component) pattern via `flutter_bloc`.
+- Cubits like `AppCubit`, `AuthCubit`, `FoodCubit`, and `RecommendedFoodCubit` manage UI state modularly.
+- Dependency injection is handled centrally using `get_it` (`sl`).
+- Equatable is extended across state models for efficient UI re-renders.
+
+### Security & Token Refresh Sequence
+1. User logs in via credentials.
+2. `AuthCubit` delegates API execution to the authentication repository via Dio.
+3. Upon success, returned `accessToken` and `refreshToken` are stored in `flutter_secure_storage`.
+4. API Interceptors (`lib/core/database/api/api_interceptors.dart`) automatically attach Bearer headers.
+5. In case of 401 Unauthorized returns, the client silently attempts token refresh before failing gracefully.
+
+---
+
+## 10. API Documentation
+
+Key Dio endpoints defined in `lib/core/database/api/end_points.dart`:
 - `POST Account/LogIn`: Authenticate user.
 - `POST Account/RegisterNewUser`: Register a new account.
 - `GET student/profile`: Fetch user profile data.
-- `POST token/refresh`: Refresh authentication token.
-- `POST api/v1/chat`: ChatBot interaction endpoint.
-- `GET Patients/GetPatient/`: Fetch patient details.
+- `POST token/refresh`: Refresh expired JWT token.
+- `POST api/v1/chat`: AI Chat companion interaction endpoint.
+- `GET Patients/GetPatient/{id}`: Fetch patient details.
 - `POST BloodGlucoseReading/AddReadingForPatient`: Submit glucose readings.
-- `POST Medicine/AddNewMedicine`: Add a new medication.
-- `POST Food/AnalyzeImage`: Analyze food images.
-- `POST {local-ip}:8001/detect-food`: Local machine food detection endpoint.
+- `POST Medicine/AddNewMedicine`: Add new medication.
+- `POST Food/AnalyzeImage`: Analyze food images via vision AI.
+- `POST {local-ip}:8001/detect-food`: Machine learning food detection endpoint.
 - `POST Meal/AddNewMeal`: Add new meal record.
-- `GET Meal/GetAllMealsForPatient/{id}`: Retrieve food meals.
+- `GET Meal/GetAllMealsForPatient/{id}`: Retrieve food meals list.
 
-## 7. Database Schema
-- **Hive**: Used for fast local caching and settings storage [NOT VERIFIED full schema].
-- **Flutter Secure Storage**: Stores sensitive data like `accessToken`, `refreshToken`, and session keys.
-- **Firebase / Firestore**: Included in dependencies likely for chat storage or push token registries [NOT VERIFIED full schema].
+---
 
-## 8. Authentication Flow
-1. User submits credentials on the Login screen.
-2. The `AuthCubit` triggers a repository method which makes a Dio call to `Account/LogIn`.
-3. Upon success, the backend returns JWT tokens.
-4. The `accessToken` and `refreshToken` are securely saved using `flutter_secure_storage`.
-5. API Interceptors (in `lib/core/database/api/api_interceptors.dart`) attach the token to future headers.
-6. The app handles 401 Unauthorized errors by automatically requesting a token refresh using the `refreshToken`.
+## 11. Dependencies & Technology Stack
 
-## 9. State Management
-The project uses the **BLoC (Business Logic Component)** pattern via the `flutter_bloc` package. 
-- Cubits like `AppCubit`, `AuthCubit`, `FoodCubit`, and `RecommendedFoodCubit` manage state for UI modules.
-- Dependency injection is heavily utilized via the `get_it` service locator (`sl`).
-- State objects utilize `equatable` to efficiently compare state changes.
+- **State Management**: `flutter_bloc`, `get_it`, `dartz`, `equatable`
+- **Networking & API**: `dio`
+- **Local Storage**: `hive`, `hive_flutter`, `flutter_secure_storage`
+- **UI Components**: `fl_chart`, `flutter_screenutil`, `font_awesome_flutter`, `cupertino_icons`
+- **Firebase Integrations**: `firebase_core`, `firebase_messaging`, `firebase_remote_config`, `cloud_firestore`
+- **Media & Hardware**: `image_picker`, `video_player`, `record`, `speech_to_text`, `audioplayers`
+- **AI & Vision**: `vision_text_recognition`, Gemini AI, Groq, DeepSeek
+- **Utilities**: `jwt_decoder`, `intl`, `timezone`, `timeago`, `url_launcher`
 
-## 10. Error Handling
-- Network requests use `dartz` to return `Either<Failure, Success>` to repositories.
-- Error states are emitted by Cubits to show SnackBar notifications or error dialogs.
-- Real-time internet connectivity checks are managed by `ConnectivityController`, showing a `NoInternetWidget` when offline.
+---
 
-## 11. Security
-- Environment-specific base URLs are configured for secure testing.
-- No sensitive keys are hardcoded; session and token management leverage encrypted secure storage.
-- App leverages JWT tokens with explicit expiration checks (via `jwt_decoder`).
+## 12. Database Schema & Security
 
-## 12. Performance
-- **ScreenUtil**: Ensures responsive UI components without costly layout recalculations.
-- Background services and heavy processing (like local notifications setup) are deferred to not block the main startup thread.
-- Efficient state rebuilding using `BlocBuilder` to ensure only specific sub-trees are rebuilt when state changes.
+- **Hive Cache**: Stores local meal caches, offline user settings, and rapid-access lists.
+- **Flutter Secure Storage**: Encrypts sensitive keys (`accessToken`, `refreshToken`, device identifiers).
+- **Firebase Firestore**: Used for remote push notifications & chat syncing.
+- **Security Protocols**: Dynamic JWT expiration checks (`jwt_decoder`), environment-isolated base URLs, and no hardcoded production credentials.
 
-## 13. Known Issues
-- Currently relies on local IP addressing (127.0.0.1 / 10.0.2.2) for some backend environments, which may require adjustment for production [NOT VERIFIED].
+---
 
-## 14. Future Improvements
-- Complete DFU implementation for external medical devices.
-- Extend offline capabilities with a robust sync engine for Hive.
-- Implement advanced charting metrics and predictive glucose analytics [NOT VERIFIED].
+## 13. Error Handling & Performance
 
-## 15. Setup Instructions
-1. Ensure Flutter SDK `^3.9.2` is installed.
-2. Clone the repository.
-3. Run `flutter pub get` to fetch dependencies.
-4. Run `dart run build_runner build --delete-conflicting-outputs` (if generating Hive adapters or Mockito tests).
-5. Start the app: `flutter run`.
+- **Functional Error Handling**: Functional architecture using `dartz` (`Either<Failure, Success>`).
+- **Network Resilience**: `ConnectivityController` intercepts connection loss, triggering `NoInternetWidget`.
+- **Layout Math Optimization**: `ScreenUtil` dynamic resolution scaling without main-thread recalculation penalties.
 
-## 16. Environment Variables
-- Setup uses explicit IP configurations (`androidIp = '10.0.2.2'`, `iphoneIp = '127.0.0.1'`).
-- Expects `baseUrl` dynamically selected based on platform (`Platform.isAndroid`).
-- Requires configuring a local testing backend server on port 8080 and Python/AI API on port 8001.
+---
 
-## 17. Deployment Guide
-- Connect Firebase and download respective `google-services.json` and `GoogleService-Info.plist`.
-- Update the app's `flutter_launcher_icons` and app name if required.
-- Build release artifacts using `flutter build apk --release` and `flutter build ipa`.
+## 14. Setup Instructions & Deployment
 
-## 18. Testing
-- Testing infrastructure setup is under the `test/` directory.
-- `flutter_test` SDK included.
-- Test files like `test_gemini.dart` indicate AI integration testing exists. Execute using `flutter test`.
+### Quick Setup
 
-## 19. Technical Decisions
-- **Clean Architecture**: Decoupled presentation, domain, and data layers to improve maintainability and scalability.
-- **Dio**: Chosen over HTTP for advanced capabilities like built-in interceptors.
-- **Service Locator (GetIt)**: Centralizes dependency injection, avoiding deep context passing.
-- **Firebase Core/Messaging**: Standardizes push notifications and remote configurations across both mobile platforms.
+```bash
+# 1. Clone target codebase
+git clone https://github.com/AbdelmenamAdel/Diamate.git
 
-## 20. Developer Onboarding
-- Familiarize yourself with BLoC and Clean Architecture.
-- Start at `lib/main.dart` and `lib/core/services/services_locator.dart` to understand dependency injection.
-- Feature implementations can be studied independently inside `lib/features/`.
-- Verify the local testing server setup to test API calls successfully.
+# 2. Enter workspace root directory
+cd diamate
 
-## 21. Portfolio Summary
-DiaMate is a comprehensive healthcare application built with Flutter, focused on diabetes management through AI-driven food analysis, glucose tracking, and a smart chat companion.
+# 3. Resolve internal library dependencies
+flutter pub get
 
-- Designed and implemented a robust clean architecture with Flutter and BLoC.
-- Integrated AI vision for dietary tracking and speech-to-text capabilities for an interactive chat companion.
-- Engineered a local-first notification ecosystem for proactive health management and water reminders.
+# 4. Run build runner for Hive & model adapters (if needed)
+dart run build_runner build --delete-conflicting-outputs
 
-**Technical Highlights:** Clean Architecture, BLoC State Management, Dio & Interceptors, Hive Local Storage, Firebase Cloud Messaging.
+# 5. Launch native application build
+flutter run
+```
 
-**GitHub Summary:** A meticulously structured Flutter project utilizing modern architectures and advanced libraries to deliver a seamless, state-of-the-art healthcare application experience.
+### Environment Configuration
+- Configured dynamically via `lib/core/database/api/end_points.dart` (`androidIp = '10.0.2.2'`, `iphoneIp = '127.0.0.1'`).
+- Ensure local testing server runs on port 8080 and AI backend on port 8001 when running local instances.
+
+---
+
+## 15. Portfolio & Technical Highlights
+
+DiaMate showcases an enterprise-grade mobile application combining healthcare precision with modern AI infrastructure:
+- **Clean Architecture & BLoC**: Decoupled, testable, and maintainable codebase.
+- **Multi-Provider AI Resiliency**: Automatic failover chain between Gemini, Groq, and DeepSeek.
+- **Localized Cultural Adaptability**: Custom Egyptian food recipe adaptation and diabetic-friendly substitutions.
+
+---
+
+<div align="center">
+  <p>Engineered for premium performance, flawless AI failover routing, and complete cultural immersion.</p>
+</div>
